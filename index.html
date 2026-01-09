@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dept Innovations Tracker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1A5F7A">
+
+<!-- Styles -->
+<style>
+  body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f0f4f8; color:#333; }
+  header { background:#1A5F7A; color:white; padding:1em; text-align:center; }
+  main { padding:1em; max-width:900px; margin:auto; }
+  .project { background:white; margin:0.5em 0; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:0.3s; }
+  .project:hover { transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+  .innovation { border-left:6px solid #2D9596; }
+  .project h3 { margin:0 0 0.5em 0; }
+  .project small { color:#666; }
+  button { margin:0.25em; padding:0.3em 0.6em; border:none; border-radius:0.3em; cursor:pointer; transition:0.2s; }
+  button.edit { background:#FFA500; color:white; }
+  button.delete { background:#FF4C4C; color:white; }
+  button.add { background:#2D9596; color:white; margin-bottom:1em; }
+  form { background:white; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:1em; display:none; }
+  form input, form textarea, form select { width:100%; margin-bottom:0.5em; padding:0.4em; border-radius:0.3em; border:1px solid #ccc; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Innovation Projects Tracker</h1>
+</header>
+<main>
+  <button class="add" onclick="toggleForm()">+ Add Project</button>
+
+  <form id="projectForm">
+    <input type="hidden" id="projectId">
+    <input type="text" id="name" placeholder="Project Name" required>
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="date" id="start_date">
+    <input type="date" id="end_date">
+    <select id="status">
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+      <option value="paused">Paused</option>
+    </select>
+    <label><input type="checkbox" id="is_innovation"> Innovation Project</label>
+    <input type="text" id="team" placeholder="Team members (comma-separated)">
+    <input type="text" id="category" placeholder="Category">
+    <input type="text" id="priority" placeholder="Priority">
+    <input type="text" id="tags" placeholder="Tags (comma-separated)">
+    <button type="submit">Save Project</button>
+    <button type="button" onclick="toggleForm()">Cancel</button>
+  </form>
+
+  <div id="projectList">Loading projects...</div>
+</main>
+
+<!-- Scripts -->
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabaseUrl = 'https://hkrgtxclyuoxjhxnuejt.supabase.co'; // anon key only
+const supabaseKey = 'sb_publishable_ZZ39cxAfXWtpRyx_ksnBQA_moK7Norx';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const projectList = document.getElementById('projectList');
+const form = document.getElementById('projectForm');
+
+async function loadProjects() {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('start_date', { ascending: false });
+
+  projectList.innerHTML = '';
+  if (error) return projectList.innerHTML = 'Error loading projects';
+
+  if (!data.length) return projectList.innerHTML = 'No projects found.';
+
+  data.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'project' + (p.is_innovation ? ' innovation' : '');
+    div.innerHTML = `
+      <h3>${p.name}</h3>
+      <p>${p.description || ''}</p>
+      <small>Status: ${p.status} | Start: ${p.start_date || '-'} | Team: ${(p.team || []).join(', ')}</small>
+      <br>
+      <button class="edit" onclick="editProject(${p.id})">Edit</button>
+      <button class="delete" onclick="deleteProject(${p.id})">Delete</button>
+    `;
+    projectList.appendChild(div);
+  });
+}
+
+// Toggle Add/Edit Form
+function toggleForm() {
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  form.reset();
+  document.getElementById('projectId').value = '';
+}
+
+// Populate form for editing
+async function editProject(id) {
+  const { data } = await supabase.from('projects').select('*').eq('id', id).single();
+  if (!data) return;
+  form.style.display = 'block';
+  document.getElementById('projectId').value = data.id;
+  document.getElementById('name').value = data.name;
+  document.getElementById('description').value = data.description;
+  document.getElementById('start_date').value = data.start_date;
+  document.getElementById('end_date').value = data.end_date;
+  document.getElementById('status').value = data.status;
+  document.getElementById('is_innovation').checked = data.is_innovation;
+  document.getElementById('team').value = (data.team || []).join(', ');
+  document.getElementById('category').value = data.category;
+  document.getElementById('priority').value = data.priority;
+  document.getElementById('tags').value = (data.tags || []).join(', ');
+}
+
+// Add/Edit project
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('projectId').value;
+  const projectData = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('description').value,
+    start_date: document.getElementById('start_date').value,
+    end_date: document.getElementById('end_date').value,
+    status: document.getElementById('status').value,
+    is_innovation: document.getElementById('is_innovation').checked,
+    team: document.getElementById('team').value.split(',').map(t => t.trim()).filter(t => t),
+    category: document.getElementById('category').value,
+    priority: document.getElementById('priority').value,
+    tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t)
+  };
+
+  if (id) {
+    // Update
+    await supabase.from('projects').update(projectData).eq('id', id);
+  } else {
+    // Insert
+    await supabase.from('projects').insert([projectData]);
+  }
+
+  toggleForm();
+  loadProjects();
+});
+
+// Delete project
+async function deleteProject(id) {
+  if (confirm('Delete this project?')) {
+    await supabase.from('projects').delete().eq('id', id);
+    loadProjects();
+  }
+}
+
+// Initial load
+loadProjects();
+</script>
+</body>
+</html>
