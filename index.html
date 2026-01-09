@@ -23,6 +23,9 @@
   button.add { background:#2D9596; color:white; margin-bottom:1em; }
   form { background:white; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:1em; display:none; }
   form input, form textarea, form select { width:100%; margin-bottom:0.5em; padding:0.4em; border-radius:0.3em; border:1px solid #ccc; }
+  #notification { text-align:center; padding:0.5em; margin-bottom:1em; display:none; border-radius:0.3em; }
+  #notification.success { background:#2D9596; color:white; }
+  #notification.error { background:#FF4C4C; color:white; }
 </style>
 </head>
 <body>
@@ -30,6 +33,8 @@
   <h1>Innovation Projects Tracker</h1>
 </header>
 <main>
+  <div id="notification"></div>
+
   <button class="add" onclick="toggleForm()">+ Add Project</button>
 
   <form id="projectForm">
@@ -59,37 +64,52 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabaseUrl = 'https://hkrgtxclyuoxjhxnuejt.supabase.co'; // anon key only
+const supabaseUrl = 'https://hkrgtxclyuoxjhxnuejt.supabase.co';
 const supabaseKey = 'sb_publishable_ZZ39cxAfXWtpRyx_ksnBQA_moK7Norx';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const projectList = document.getElementById('projectList');
 const form = document.getElementById('projectForm');
+const notification = document.getElementById('notification');
 
+// Utility: Show notification
+function showNotification(message, type='success') {
+  notification.textContent = message;
+  notification.className = type === 'success' ? 'success' : 'error';
+  notification.style.display = 'block';
+  setTimeout(() => { notification.style.display = 'none'; }, 3000);
+}
+
+// Load all projects
 async function loadProjects() {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('start_date', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('start_date', { ascending: false });
 
-  projectList.innerHTML = '';
-  if (error) return projectList.innerHTML = 'Error loading projects';
+    if (error) throw error;
 
-  if (!data.length) return projectList.innerHTML = 'No projects found.';
+    projectList.innerHTML = '';
+    if (!data.length) return projectList.innerHTML = 'No projects found.';
 
-  data.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'project' + (p.is_innovation ? ' innovation' : '');
-    div.innerHTML = `
-      <h3>${p.name}</h3>
-      <p>${p.description || ''}</p>
-      <small>Status: ${p.status} | Start: ${p.start_date || '-'} | Team: ${(p.team || []).join(', ')}</small>
-      <br>
-      <button class="edit" onclick="editProject(${p.id})">Edit</button>
-      <button class="delete" onclick="deleteProject(${p.id})">Delete</button>
-    `;
-    projectList.appendChild(div);
-  });
+    data.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'project' + (p.is_innovation ? ' innovation' : '');
+      div.innerHTML = `
+        <h3>${p.name}</h3>
+        <p>${p.description || ''}</p>
+        <small>Status: ${p.status} | Start: ${p.start_date || '-'} | Team: ${(p.team || []).join(', ')}</small>
+        <br>
+        <button class="edit" onclick="editProject(${p.id})">Edit</button>
+        <button class="delete" onclick="deleteProject(${p.id})">Delete</button>
+      `;
+      projectList.appendChild(div);
+    });
+  } catch (err) {
+    projectList.innerHTML = 'Error loading projects';
+    console.error(err);
+  }
 }
 
 // Toggle Add/Edit Form
@@ -101,20 +121,26 @@ function toggleForm() {
 
 // Populate form for editing
 async function editProject(id) {
-  const { data } = await supabase.from('projects').select('*').eq('id', id).single();
-  if (!data) return;
-  form.style.display = 'block';
-  document.getElementById('projectId').value = data.id;
-  document.getElementById('name').value = data.name;
-  document.getElementById('description').value = data.description;
-  document.getElementById('start_date').value = data.start_date;
-  document.getElementById('end_date').value = data.end_date;
-  document.getElementById('status').value = data.status;
-  document.getElementById('is_innovation').checked = data.is_innovation;
-  document.getElementById('team').value = (data.team || []).join(', ');
-  document.getElementById('category').value = data.category;
-  document.getElementById('priority').value = data.priority;
-  document.getElementById('tags').value = (data.tags || []).join(', ');
+  try {
+    const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+    if (error) throw error;
+
+    form.style.display = 'block';
+    document.getElementById('projectId').value = data.id;
+    document.getElementById('name').value = data.name;
+    document.getElementById('description').value = data.description;
+    document.getElementById('start_date').value = data.start_date;
+    document.getElementById('end_date').value = data.end_date;
+    document.getElementById('status').value = data.status;
+    document.getElementById('is_innovation').checked = data.is_innovation;
+    document.getElementById('team').value = (data.team || []).join(', ');
+    document.getElementById('category').value = data.category;
+    document.getElementById('priority').value = data.priority;
+    document.getElementById('tags').value = (data.tags || []).join(', ');
+  } catch (err) {
+    showNotification('Failed to load project', 'error');
+    console.error(err);
+  }
 }
 
 // Add/Edit project
@@ -134,23 +160,32 @@ form.addEventListener('submit', async (e) => {
     tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t)
   };
 
-  if (id) {
-    // Update
-    await supabase.from('projects').update(projectData).eq('id', id);
-  } else {
-    // Insert
-    await supabase.from('projects').insert([projectData]);
+  try {
+    if (id) {
+      await supabase.from('projects').update(projectData).eq('id', id);
+      showNotification('Project updated successfully');
+    } else {
+      await supabase.from('projects').insert([projectData]);
+      showNotification('Project added successfully');
+    }
+    toggleForm();
+    loadProjects();
+  } catch (err) {
+    showNotification('Failed to save project', 'error');
+    console.error(err);
   }
-
-  toggleForm();
-  loadProjects();
 });
 
 // Delete project
 async function deleteProject(id) {
-  if (confirm('Delete this project?')) {
+  if (!confirm('Delete this project?')) return;
+  try {
     await supabase.from('projects').delete().eq('id', id);
+    showNotification('Project deleted successfully');
     loadProjects();
+  } catch (err) {
+    showNotification('Failed to delete project', 'error');
+    console.error(err);
   }
 }
 
@@ -159,3 +194,4 @@ loadProjects();
 </script>
 </body>
 </html>
+
