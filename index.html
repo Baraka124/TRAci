@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dept Innovations Tracker</title>
+<title>Innovation Projects Tracker</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1A5F7A">
 
-<!-- Styles -->
 <style>
   body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f0f4f8; color:#333; }
   header { background:#1A5F7A; color:white; padding:1em; text-align:center; }
   main { padding:1em; max-width:900px; margin:auto; }
+  .controls { display:flex; flex-wrap:wrap; gap:0.5em; margin-bottom:1em; }
+  .controls input, .controls select { padding:0.4em; border-radius:0.3em; border:1px solid #ccc; flex:1; min-width:120px; }
   .project { background:white; margin:0.5em 0; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:0.3s; }
   .project:hover { transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
   .innovation { border-left:6px solid #2D9596; }
@@ -34,6 +35,18 @@
 </header>
 <main>
   <div id="notification"></div>
+
+  <!-- Filters -->
+  <div class="controls">
+    <input type="text" id="searchName" placeholder="Search by project name" oninput="loadProjects()">
+    <select id="filterStatus" onchange="loadProjects()">
+      <option value="">All Statuses</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+      <option value="paused">Paused</option>
+    </select>
+    <label><input type="checkbox" id="filterInnovation" onchange="loadProjects()"> Innovation Only</label>
+  </div>
 
   <button class="add" onclick="toggleForm()">+ Add Project</button>
 
@@ -60,7 +73,6 @@
   <div id="projectList">Loading projects...</div>
 </main>
 
-<!-- Scripts -->
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
@@ -72,7 +84,7 @@ const projectList = document.getElementById('projectList');
 const form = document.getElementById('projectForm');
 const notification = document.getElementById('notification');
 
-// Utility: Show notification
+// Show notification
 function showNotification(message, type='success') {
   notification.textContent = message;
   notification.className = type === 'success' ? 'success' : 'error';
@@ -80,14 +92,27 @@ function showNotification(message, type='success') {
   setTimeout(() => { notification.style.display = 'none'; }, 3000);
 }
 
-// Load all projects
+// Toggle form visibility
+function toggleForm() {
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  form.reset();
+  document.getElementById('projectId').value = '';
+}
+
+// Load projects with filters
 async function loadProjects() {
   try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('start_date', { ascending: false });
+    let query = supabase.from('projects').select('*').order('start_date', { ascending: false });
 
+    const nameFilter = document.getElementById('searchName').value.trim();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const innovationFilter = document.getElementById('filterInnovation').checked;
+
+    if (nameFilter) query = query.ilike('name', `%${nameFilter}%`);
+    if (statusFilter) query = query.eq('status', statusFilter);
+    if (innovationFilter) query = query.eq('is_innovation', true);
+
+    const { data, error } = await query;
     if (error) throw error;
 
     projectList.innerHTML = '';
@@ -106,20 +131,13 @@ async function loadProjects() {
       `;
       projectList.appendChild(div);
     });
-  } catch (err) {
-    projectList.innerHTML = 'Error loading projects';
+  } catch(err) {
+    showNotification('Failed to load projects', 'error');
     console.error(err);
   }
 }
 
-// Toggle Add/Edit Form
-function toggleForm() {
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-  form.reset();
-  document.getElementById('projectId').value = '';
-}
-
-// Populate form for editing
+// Edit project
 async function editProject(id) {
   try {
     const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
@@ -191,7 +209,13 @@ async function deleteProject(id) {
 
 // Initial load
 loadProjects();
+
+// PWA service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(() => console.log('Service Worker registered'));
+}
 </script>
 </body>
 </html>
+
 
