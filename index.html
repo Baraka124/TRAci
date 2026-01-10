@@ -6,12 +6,12 @@
 <title>Innovation Projects Tracker</title>
 <meta name="theme-color" content="#0f172a">
 
-<!-- Tailwind CDN for ultra-clean UI -->
+<!-- Tailwind CDN for styling -->
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
   body { background: #0f172a; color: #e5e7eb; min-height: 100vh; }
-  .innovation { border-left: 4px solid #10b981; }
+  .innovation { border-left: 4px solid #10b981; padding-left: 0.5rem; }
 </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -39,8 +39,7 @@
         <option value="paused">Paused</option>
       </select>
       <label class="flex items-center gap-1">
-        <input type="checkbox" id="isInnovation">
-        Innovation
+        <input type="checkbox" id="isInnovation"> Innovation
       </label>
     </div>
     <input id="tags" placeholder="Tags (comma-separated)" class="w-full mb-2 p-2 rounded">
@@ -213,7 +212,7 @@ async function deleteProject(id) {
   loadProjects();
 }
 
-// Expose to global
+// Expose functions globally
 window.loadProjects = loadProjects;
 window.editProject = editProject;
 window.deleteProject = deleteProject;
