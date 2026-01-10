@@ -1,221 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Innovation Projects Tracker</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1A5F7A">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Innovation Projects Tracker</title>
 
-<style>
-  body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f0f4f8; color:#333; }
-  header { background:#1A5F7A; color:white; padding:1em; text-align:center; }
-  main { padding:1em; max-width:900px; margin:auto; }
-  .controls { display:flex; flex-wrap:wrap; gap:0.5em; margin-bottom:1em; }
-  .controls input, .controls select { padding:0.4em; border-radius:0.3em; border:1px solid #ccc; flex:1; min-width:120px; }
-  .project { background:white; margin:0.5em 0; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:0.3s; }
-  .project:hover { transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-  .innovation { border-left:6px solid #2D9596; }
-  .project h3 { margin:0 0 0.5em 0; }
-  .project small { color:#666; }
-  button { margin:0.25em; padding:0.3em 0.6em; border:none; border-radius:0.3em; cursor:pointer; transition:0.2s; }
-  button.edit { background:#FFA500; color:white; }
-  button.delete { background:#FF4C4C; color:white; }
-  button.add { background:#2D9596; color:white; margin-bottom:1em; }
-  form { background:white; padding:1em; border-radius:0.5em; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:1em; display:none; }
-  form input, form textarea, form select { width:100%; margin-bottom:0.5em; padding:0.4em; border-radius:0.3em; border:1px solid #ccc; }
-  #notification { text-align:center; padding:0.5em; margin-bottom:1em; display:none; border-radius:0.3em; }
-  #notification.success { background:#2D9596; color:white; }
-  #notification.error { background:#FF4C4C; color:white; }
-</style>
+  <!-- PWA meta -->
+  <meta name="theme-color" content="#0f172a">
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 1rem;
+      background: #020617;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button {
+      background: #2563eb;
+      border: none;
+      color: white;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button.danger {
+      background: #dc2626;
+    }
+    main {
+      padding: 1rem;
+    }
+    .project {
+      background: #020617;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .project h3 {
+      margin: 0 0 0.3rem 0;
+    }
+    .tags {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    #formContainer {
+      display: none;
+      background: #020617;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      margin-bottom: 0.6rem;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: none;
+    }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  </style>
 </head>
+
 <body>
 <header>
-  <h1>Innovation Projects Tracker</h1>
+  <h2>🚀 Innovation Projects</h2>
+  <button onclick="toggleForm()">+ Add</button>
 </header>
+
 <main>
-  <div id="notification"></div>
 
-  <!-- Filters -->
-  <div class="controls">
-    <input type="text" id="searchName" placeholder="Search by project name" oninput="loadProjects()">
-    <select id="filterStatus" onchange="loadProjects()">
-      <option value="">All Statuses</option>
-      <option value="ongoing">Ongoing</option>
-      <option value="completed">Completed</option>
-      <option value="paused">Paused</option>
-    </select>
-    <label><input type="checkbox" id="filterInnovation" onchange="loadProjects()"> Innovation Only</label>
-  </div>
-
-  <button class="add" onclick="toggleForm()">+ Add Project</button>
-
-  <form id="projectForm">
-    <input type="hidden" id="projectId">
-    <input type="text" id="name" placeholder="Project Name" required>
+  <!-- FORM -->
+  <div id="formContainer">
+    <input type="hidden" id="projectId" />
+    <input id="name" placeholder="Project name" />
     <textarea id="description" placeholder="Description"></textarea>
-    <input type="date" id="start_date">
-    <input type="date" id="end_date">
     <select id="status">
       <option value="ongoing">Ongoing</option>
       <option value="completed">Completed</option>
       <option value="paused">Paused</option>
     </select>
-    <label><input type="checkbox" id="is_innovation"> Innovation Project</label>
-    <input type="text" id="team" placeholder="Team members (comma-separated)">
-    <input type="text" id="category" placeholder="Category">
-    <input type="text" id="priority" placeholder="Priority">
-    <input type="text" id="tags" placeholder="Tags (comma-separated)">
-    <button type="submit">Save Project</button>
-    <button type="button" onclick="toggleForm()">Cancel</button>
-  </form>
+    <label>
+      <input type="checkbox" id="isInnovation" /> Innovation project
+    </label>
+    <input id="tags" placeholder="Tags (comma separated)" />
+    <button onclick="saveProject()">Save</button>
+  </div>
 
-  <div id="projectList">Loading projects...</div>
+  <!-- LIST -->
+  <div id="projects"></div>
+
 </main>
 
+<!-- SUPABASE + APP LOGIC -->
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const supabaseUrl = 'https://hkrgtxclyuoxjhxnuejt.supabase.co';
-const supabaseKey = 'sb_publishable_ZZ39cxAfXWtpRyx_ksnBQA_moK7Norx';
-const supabase = createClient(supabaseUrl, supabaseKey);
+  const SUPABASE_URL = "https://hkrgtxclyuoxjhxnuejt.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_ZZ39cxAfXWtpRyx_ksnBQA_moK7Norx";
 
-const projectList = document.getElementById('projectList');
-const form = document.getElementById('projectForm');
-const notification = document.getElementById('notification');
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Show notification
-function showNotification(message, type='success') {
-  notification.textContent = message;
-  notification.className = type === 'success' ? 'success' : 'error';
-  notification.style.display = 'block';
-  setTimeout(() => { notification.style.display = 'none'; }, 3000);
-}
+  const listEl = document.getElementById("projects");
+  const formEl = document.getElementById("formContainer");
 
-// Toggle form visibility
-function toggleForm() {
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-  form.reset();
-  document.getElementById('projectId').value = '';
-}
+  async function loadProjects() {
+    listEl.innerHTML = "Loading...";
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-// Load projects with filters
-async function loadProjects() {
-  try {
-    let query = supabase.from('projects').select('*').order('start_date', { ascending: false });
+    if (error) {
+      listEl.innerHTML = "Error loading projects";
+      console.error(error);
+      return;
+    }
 
-    const nameFilter = document.getElementById('searchName').value.trim();
-    const statusFilter = document.getElementById('filterStatus').value;
-    const innovationFilter = document.getElementById('filterInnovation').checked;
-
-    if (nameFilter) query = query.ilike('name', `%${nameFilter}%`);
-    if (statusFilter) query = query.eq('status', statusFilter);
-    if (innovationFilter) query = query.eq('is_innovation', true);
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    projectList.innerHTML = '';
-    if (!data.length) return projectList.innerHTML = 'No projects found.';
-
+    listEl.innerHTML = "";
     data.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'project' + (p.is_innovation ? ' innovation' : '');
+      const div = document.createElement("div");
+      div.className = "project";
       div.innerHTML = `
         <h3>${p.name}</h3>
-        <p>${p.description || ''}</p>
-        <small>Status: ${p.status} | Start: ${p.start_date || '-'} | Team: ${(p.team || []).join(', ')}</small>
-        <br>
-        <button class="edit" onclick="editProject(${p.id})">Edit</button>
-        <button class="delete" onclick="deleteProject(${p.id})">Delete</button>
+        <p>${p.description || ""}</p>
+        <div class="tags">
+          ${p.status} ${p.is_innovation ? "• Innovation" : ""}<br/>
+          ${p.tags?.join(", ") || ""}
+        </div>
+        <div class="actions">
+          <button onclick="editProject(${p.id})">Edit</button>
+          <button class="danger" onclick="deleteProject(${p.id})">Delete</button>
+        </div>
       `;
-      projectList.appendChild(div);
+      listEl.appendChild(div);
     });
-  } catch(err) {
-    showNotification('Failed to load projects', 'error');
-    console.error(err);
   }
-}
 
-// Edit project
-async function editProject(id) {
-  try {
-    const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
-    if (error) throw error;
-
-    form.style.display = 'block';
-    document.getElementById('projectId').value = data.id;
-    document.getElementById('name').value = data.name;
-    document.getElementById('description').value = data.description;
-    document.getElementById('start_date').value = data.start_date;
-    document.getElementById('end_date').value = data.end_date;
-    document.getElementById('status').value = data.status;
-    document.getElementById('is_innovation').checked = data.is_innovation;
-    document.getElementById('team').value = (data.team || []).join(', ');
-    document.getElementById('category').value = data.category;
-    document.getElementById('priority').value = data.priority;
-    document.getElementById('tags').value = (data.tags || []).join(', ');
-  } catch (err) {
-    showNotification('Failed to load project', 'error');
-    console.error(err);
+  function toggleForm() {
+    formEl.style.display = formEl.style.display === "none" ? "block" : "none";
+    document.getElementById("projectId").value = "";
   }
-}
 
-// Add/Edit project
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = document.getElementById('projectId').value;
-  const projectData = {
-    name: document.getElementById('name').value,
-    description: document.getElementById('description').value,
-    start_date: document.getElementById('start_date').value,
-    end_date: document.getElementById('end_date').value,
-    status: document.getElementById('status').value,
-    is_innovation: document.getElementById('is_innovation').checked,
-    team: document.getElementById('team').value.split(',').map(t => t.trim()).filter(t => t),
-    category: document.getElementById('category').value,
-    priority: document.getElementById('priority').value,
-    tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t)
-  };
+  async function saveProject() {
+    const id = document.getElementById("projectId").value;
+    const payload = {
+      name: name.value,
+      description: description.value,
+      status: status.value,
+      is_innovation: isInnovation.checked,
+      tags: tags.value.split(",").map(t => t.trim())
+    };
 
-  try {
+    let result;
     if (id) {
-      await supabase.from('projects').update(projectData).eq('id', id);
-      showNotification('Project updated successfully');
+      result = await supabase.from("projects").update(payload).eq("id", id);
     } else {
-      await supabase.from('projects').insert([projectData]);
-      showNotification('Project added successfully');
+      result = await supabase.from("projects").insert(payload);
     }
+
+    if (result.error) {
+      alert(result.error.message);
+      return;
+    }
+
     toggleForm();
     loadProjects();
-  } catch (err) {
-    showNotification('Failed to save project', 'error');
-    console.error(err);
   }
-});
 
-// Delete project
-async function deleteProject(id) {
-  if (!confirm('Delete this project?')) return;
-  try {
-    await supabase.from('projects').delete().eq('id', id);
-    showNotification('Project deleted successfully');
+  async function editProject(id) {
+    const { data } = await supabase.from("projects").select("*").eq("id", id).single();
+    projectId.value = data.id;
+    name.value = data.name;
+    description.value = data.description;
+    status.value = data.status;
+    isInnovation.checked = data.is_innovation;
+    tags.value = data.tags?.join(", ") || "";
+    formEl.style.display = "block";
+  }
+
+  async function deleteProject(id) {
+    if (!confirm("Delete this project?")) return;
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) alert(error.message);
     loadProjects();
-  } catch (err) {
-    showNotification('Failed to delete project', 'error');
-    console.error(err);
   }
-}
 
-// Initial load
-loadProjects();
+  // 🔴 expose functions (IMPORTANT)
+  window.loadProjects = loadProjects;
+  window.toggleForm = toggleForm;
+  window.saveProject = saveProject;
+  window.editProject = editProject;
+  window.deleteProject = deleteProject;
 
-// PWA service worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(() => console.log('Service Worker registered'));
-}
+  loadProjects();
+
+  // PWA SW
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+  }
 </script>
 </body>
 </html>
-
-
