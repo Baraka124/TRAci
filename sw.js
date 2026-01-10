@@ -1,10 +1,15 @@
-const CACHE_NAME = 'projects-cache-v1';
-const urlsToCache = ['index.html', 'manifest.json'];
+const CACHE = "projects-pwa-v1";
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      c.addAll(["./"])
+    )
+  );
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
+  );
 });
