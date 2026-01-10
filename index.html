@@ -151,30 +151,40 @@
   }
 
   async function saveProject() {
-    const id = document.getElementById("projectId").value;
-    const payload = {
-      name: name.value,
-      description: description.value,
-      status: status.value,
-      is_innovation: isInnovation.checked,
-      tags: tags.value.split(",").map(t => t.trim())
-    };
-
-    let result;
-    if (id) {
-      result = await supabase.from("projects").update(payload).eq("id", id);
-    } else {
-      result = await supabase.from("projects").insert(payload);
-    }
-
-    if (result.error) {
-      alert(result.error.message);
-      return;
-    }
-
-    toggleForm();
-    loadProjects();
+  const projectName = document.getElementById("name").value.trim();
+  if (!projectName) {
+    alert("Project name is required!");
+    return;
   }
+
+  const payload = {
+    name: projectName,
+    description: document.getElementById("description").value,
+    status: document.getElementById("status").value,
+    is_innovation: document.getElementById("isInnovation").checked,
+    tags: document.getElementById("tags").value
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t)
+  };
+
+  const id = document.getElementById("projectId").value;
+  let result;
+  if (id) {
+    result = await supabase.from("projects").update(payload).eq("id", id);
+  } else {
+    result = await supabase.from("projects").insert(payload);
+  }
+
+  if (result.error) {
+    alert(result.error.message);
+    return;
+  }
+
+  toggleForm();
+  loadProjects();
+}
+
 
   async function editProject(id) {
     const { data } = await supabase.from("projects").select("*").eq("id", id).single();
