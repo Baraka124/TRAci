@@ -1,232 +1,1170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Innovation Projects Tracker</title>
-<meta name="theme-color" content="#0f172a">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neumology Innovation Project Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --border: #cbd5e1;
+            --card-bg: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
 
-<!-- Tailwind CDN for styling -->
-<script src="https://cdn.tailwindcss.com"></script>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-  body { background: #0f172a; color: #e5e7eb; min-height: 100vh; }
-  .innovation { border-left: 4px solid #10b981; padding-left: 0.5rem; }
-</style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .title p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .last-updated {
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .stat-icon.tools { background: linear-gradient(135deg, var(--primary), #60a5fa); }
+        .stat-icon.projects { background: linear-gradient(135deg, var(--secondary), #a78bfa); }
+        .stat-icon.feedback { background: linear-gradient(135deg, var(--warning), #fbbf24); }
+        .stat-icon.active { background: linear-gradient(135deg, var(--success), #34d399); }
+
+        .stat-info h3 {
+            font-size: 12px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-info .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        /* Main Content */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Sections */
+        .section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            padding: 20px 25px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h2 i {
+            font-size: 22px;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        /* Tools Section */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+        }
+
+        .tool-card.operational {
+            border-left: 4px solid var(--success);
+        }
+
+        .tool-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .tool-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--dark);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .tool-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-operational {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .tool-description {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tool-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .tool-updated {
+            color: var(--gray);
+        }
+
+        .tool-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .tool-link:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Projects Section */
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .project-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .project-card.needs-feedback {
+            border: 2px solid var(--warning);
+            background-color: #fffbeb;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .project-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-status {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-development { background-color: #dbeafe; color: var(--primary); }
+        .status-testing { background-color: #f0f9ff; color: var(--info); }
+        .status-staging { background-color: #fef3c7; color: var(--warning); }
+        .status-production { background-color: #d1fae5; color: var(--success); }
+        .status-planning { background-color: #f3f4f6; color: var(--gray); }
+
+        .project-description {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .project-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 1s ease-in-out;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .project-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .project-link:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .project-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .last-commit {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .feedback-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-badge {
+            background-color: var(--warning);
+            color: white;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .feedback-channels {
+            display: flex;
+            gap: 10px;
+        }
+
+        .channel-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .channel-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .whatsapp { background-color: #25D366; }
+        .email { background-color: var(--primary); }
+        .github { background-color: var(--dark); }
+        .slack { background-color: #4A154B; }
+
+        /* Updates Section */
+        .updates-section {
+            margin-top: 40px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .timeline-date {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timeline-content {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .timeline-content h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .timeline-content p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .timeline-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .timeline-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .loading-spinner {
+            border: 4px solid var(--gray-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--gray-light);
+        }
+    </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">NIP</div>
+                <div class="title">
+                    <h1>Neumology Innovation Project Dashboard</h1>
+                    <p>Real-time status of all development projects & tools</p>
+                </div>
+            </div>
+            <div class="last-updated">
+                <i class="fas fa-sync-alt"></i>
+                <span>Last updated: <strong id="lastUpdatedTime">Loading...</strong></span>
+            </div>
+        </header>
 
-<!-- HEADER -->
-<header class="bg-gray-900 p-4 flex justify-between items-center shadow-md">
-  <h1 class="text-white text-xl font-bold">🚀 Innovation Projects</h1>
-  <button onclick="toggleForm()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded shadow">+ Add Project</button>
-</header>
+        <!-- Stats Overview -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon tools">
+                    <i class="fas fa-toolbox"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Tools</h3>
+                    <div class="number" id="toolsCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon projects">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>GitHub Projects</h3>
+                    <div class="number" id="projectsCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon feedback">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Awaiting Feedback</h3>
+                    <div class="number" id="feedbackCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon active">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Development</h3>
+                    <div class="number" id="activeCount">0</div>
+                </div>
+            </div>
+        </div>
 
-<main class="flex-1 p-4 max-w-4xl mx-auto">
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Tools Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-toolbox"></i> Live Tools & Resources</h2>
+                    <span class="status-operational tool-status" id="toolsStatus">All Systems Operational</span>
+                </div>
+                <div class="section-content">
+                    <div class="tools-grid" id="toolsGrid">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading tools...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <!-- NOTIFICATION -->
-  <div id="notification" class="hidden p-3 rounded mb-4"></div>
+            <!-- Projects Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-code-branch"></i> Active Development</h2>
+                    <div class="feedback-badge" id="feedbackBadge" style="display: none;">0 projects need feedback</div>
+                </div>
+                <div class="section-content">
+                    <div class="projects-list" id="projectsList">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading projects...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- FORM -->
-  <div id="formContainer" class="hidden bg-gray-800 p-4 rounded shadow mb-4">
-    <input type="hidden" id="projectId">
-    <input id="name" placeholder="Project Name" class="w-full mb-2 p-2 rounded" required>
-    <textarea id="description" placeholder="Description" class="w-full mb-2 p-2 rounded"></textarea>
-    <div class="flex gap-2 mb-2">
-      <select id="status" class="flex-1 p-2 rounded">
-        <option value="ongoing">Ongoing</option>
-        <option value="completed">Completed</option>
-        <option value="paused">Paused</option>
-      </select>
-      <label class="flex items-center gap-1">
-        <input type="checkbox" id="isInnovation"> Innovation
-      </label>
+        <!-- Recent Updates -->
+        <div class="section updates-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Recent Updates & Shipments</h2>
+            </div>
+            <div class="section-content">
+                <div class="timeline" id="timeline">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading updates...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Neumology Innovation Project Dashboard • Powered by Supabase • 
+                <a href="#" id="refreshLink">Refresh Data</a> • 
+                <a href="https://github.com" target="_blank">GitHub Organization</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 13px;">
+                <i class="fas fa-mobile-alt"></i> Bookmark this page for quick access • 
+                Auto-sync: <span id="syncTime">Offline</span>
+            </p>
+        </footer>
     </div>
-    <input id="tags" placeholder="Tags (comma-separated)" class="w-full mb-2 p-2 rounded">
-    <div class="flex gap-2">
-      <button onclick="saveProject()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">Save</button>
-      <button onclick="toggleForm()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">Cancel</button>
-    </div>
-  </div>
+<script>
+    // ========== CONFIGURATION ==========
+    // Replace these with your actual Supabase credentials
+    const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-  <!-- FILTERS -->
-  <div class="flex flex-wrap gap-2 mb-4">
-    <input id="searchName" placeholder="Search by name" class="p-2 rounded flex-1" oninput="loadProjects()">
-    <select id="filterStatus" class="p-2 rounded" onchange="loadProjects()">
-      <option value="">All Statuses</option>
-      <option value="ongoing">Ongoing</option>
-      <option value="completed">Completed</option>
-      <option value="paused">Paused</option>
-    </select>
-    <label class="flex items-center gap-1">
-      <input type="checkbox" id="filterInnovation" onchange="loadProjects()"> Innovation Only
-    </label>
-  </div>
+    // ========== STATE MANAGEMENT ==========
+    let dashboardData = {
+        projects: [],
+        tools: [],
+        updates: [],
+        lastUpdated: new Date()
+    };
 
-  <!-- PROJECT LIST -->
-  <div id="projects" class="space-y-4">Loading projects...</div>
+    // ========== MAIN FUNCTIONS ==========
+    async function initDashboard() {
+        showLoadingState();
+        
+        try {
+            await Promise.all([
+                fetchProjects(),
+                fetchTools(),
+                fetchUpdates()
+            ]);
+            
+            updateStats();
+            renderDashboard();
+            updateTimestamp();
+            
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+            showErrorState();
+        }
+    }
 
-</main>
+    async function fetchProjects() {
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await supabaseClient
+            .from('projects')
+            .select(`
+                *,
+                feedback_channels (*)
+            `)
+            .order('needs_feedback', { ascending: false })
+            .order('status', { ascending: true });
+        
+        if (error) {
+            console.error('Error fetching projects:', error);
+            dashboardData.projects = [];
+            return;
+        }
+        
+        dashboardData.projects = data || [];
+    }
 
-<!-- SUPABASE + LOGIC -->
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+    async function fetchTools() {
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await supabaseClient
+            .from('tools')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Error fetching tools:', error);
+            dashboardData.tools = [];
+            return;
+        }
+        
+        dashboardData.tools = data || [];
+    }
 
-const SUPABASE_URL = "https://hkrgtxclyuoxjhxnuejt.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ZZ39cxAfXWtpRyx_ksnBQA_moK7Norx";
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    async function fetchUpdates() {
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await supabaseClient
+            .from('updates')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10);
+        
+        if (error) {
+            console.error('Error fetching updates:', error);
+            dashboardData.updates = [];
+            return;
+        }
+        
+        dashboardData.updates = data || [];
+    }
 
-// Elements
-const projectIdEl = document.getElementById("projectId");
-const nameEl = document.getElementById("name");
-const descriptionEl = document.getElementById("description");
-const statusEl = document.getElementById("status");
-const isInnovationEl = document.getElementById("isInnovation");
-const tagsEl = document.getElementById("tags");
-const projectsEl = document.getElementById("projects");
-const formEl = document.getElementById("formContainer");
-const notificationEl = document.getElementById("notification");
-const searchNameEl = document.getElementById("searchName");
-const filterStatusEl = document.getElementById("filterStatus");
-const filterInnovationEl = document.getElementById("filterInnovation");
+    function updateStats() {
+        const toolsCount = dashboardData.tools.length;
+        const projectsCount = dashboardData.projects.length;
+        const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+        const activeCount = dashboardData.projects.filter(p => 
+            p.status === 'development' || p.status === 'testing'
+        ).length;
 
-// Notifications
-function showNotification(message, type="success") {
-  notificationEl.textContent = message;
-  notificationEl.className = type==="success" ? "p-3 mb-4 rounded bg-green-600" : "p-3 mb-4 rounded bg-red-600";
-  notificationEl.classList.remove("hidden");
-  setTimeout(()=>notificationEl.classList.add("hidden"), 3000);
-}
+        document.getElementById('toolsCount').textContent = toolsCount;
+        document.getElementById('projectsCount').textContent = projectsCount;
+        document.getElementById('feedbackCount').textContent = feedbackCount;
+        document.getElementById('activeCount').textContent = activeCount;
 
-// Toggle form
-function toggleForm() {
-  formEl.classList.toggle("hidden");
-  projectIdEl.value = "";
-  nameEl.value = "";
-  descriptionEl.value = "";
-  statusEl.value = "ongoing";
-  isInnovationEl.checked = false;
-  tagsEl.value = "";
-}
+        // Update feedback badge
+        const feedbackBadge = document.getElementById('feedbackBadge');
+        if (feedbackCount > 0) {
+            feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
+            feedbackBadge.style.display = 'block';
+        } else {
+            feedbackBadge.style.display = 'none';
+        }
 
-// Load projects
-async function loadProjects() {
-  projectsEl.innerHTML = "Loading...";
-  let query = supabase.from("projects").select("*");
+        // Update tools status
+        const toolsStatus = document.getElementById('toolsStatus');
+        const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+        if (hasWarning) {
+            toolsStatus.textContent = 'Needs Attention';
+            toolsStatus.className = 'tool-status status-warning';
+        } else {
+            toolsStatus.textContent = 'All Systems Operational';
+            toolsStatus.className = 'tool-status status-operational';
+        }
+    }
 
-  // Filters
-  const nameFilter = searchNameEl.value.trim();
-  const statusFilter = filterStatusEl.value;
-  const innovationFilter = filterInnovationEl.checked;
+    function renderDashboard() {
+        renderTools();
+        renderProjects();
+        renderUpdates();
+    }
 
-  if (nameFilter) query = query.ilike("name", `%${nameFilter}%`);
-  if (statusFilter) query = query.eq("status", statusFilter);
-  if (innovationFilter) query = query.eq("is_innovation", true);
+    function renderTools() {
+        const toolsGrid = document.getElementById('toolsGrid');
+        
+        if (dashboardData.tools.length === 0) {
+            toolsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-toolbox"></i>
+                    <p>No tools found. Add some in Supabase.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let toolsHTML = '';
+        
+        dashboardData.tools.forEach(tool => {
+            const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+            const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+            
+            // Format last checked date
+            const lastChecked = tool.last_checked ? 
+                new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : 'Never';
+            
+            toolsHTML += `
+                <div class="tool-card ${tool.status}">
+                    <div class="tool-header">
+                        <div class="tool-name">
+                            <div class="tool-icon">${tool.icon || '🛠️'}</div>
+                            <span>${tool.name}</span>
+                        </div>
+                        <span class="tool-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <p class="tool-description">${tool.description || 'No description available'}</p>
+                    <div class="tool-footer">
+                        <span class="tool-updated">Last checked: ${lastChecked}</span>
+                        <a href="${tool.url}" target="_blank" class="tool-link">
+                            Access <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+        
+        toolsGrid.innerHTML = toolsHTML;
+    }
 
-  query = query.order("id", { ascending: false }); // use id if no created_at
+    function renderProjects() {
+        const projectsList = document.getElementById('projectsList');
+        
+        if (dashboardData.projects.length === 0) {
+            projectsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-code-branch"></i>
+                    <p>No projects found. Add some in Supabase.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let projectsHTML = '';
+        
+        dashboardData.projects.forEach(project => {
+            const statusClass = `status-${project.status}`;
+            const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+            
+            // Format dates
+            const lastUpdated = project.last_updated ? 
+                new Date(project.last_updated).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                }) : 'Never';
+            
+            // Build feedback channels
+            let feedbackChannelsHTML = '';
+            if (project.needs_feedback && project.feedback_channels) {
+                project.feedback_channels.forEach(channel => {
+                    let icon = 'fas fa-comment';
+                    let className = 'message';
+                    let link = channel.action_url || '#';
+                    
+                    if (channel.channel === 'whatsapp') {
+                        icon = 'fab fa-whatsapp';
+                        className = 'whatsapp';
+                        // Add project name to WhatsApp message
+                        link = `${link}${encodeURIComponent(project.name)}`;
+                    } else if (channel.channel === 'email') {
+                        icon = 'fas fa-envelope';
+                        className = 'email';
+                    } else if (channel.channel === 'github') {
+                        icon = 'fab fa-github';
+                        className = 'github';
+                    } else if (channel.channel === 'slack') {
+                        icon = 'fab fa-slack';
+                        className = 'slack';
+                    }
+                    
+                    feedbackChannelsHTML += `
+                        <a href="${link}" target="_blank" class="channel-btn ${className}" 
+                           title="${channel.label || `Send ${channel.channel} feedback`}">
+                            <i class="${icon}"></i>
+                        </a>
+                    `;
+                });
+            }
+            
+            // Build feedback section
+            let feedbackSection = '';
+            if (project.needs_feedback) {
+                feedbackSection = `
+                    <div class="feedback-section">
+                        <span class="feedback-badge">Ready for review</span>
+                        <div class="feedback-channels">
+                            ${feedbackChannelsHTML}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Build project links
+            let projectLinks = '';
+            if (project.github_url) {
+                projectLinks += `
+                    <a href="${project.github_url}" target="_blank" class="project-link">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                `;
+            }
+            if (project.live_url) {
+                projectLinks += `
+                    <a href="${project.live_url}" target="_blank" class="project-link">
+                        <i class="fas fa-external-link-alt"></i> Live Demo
+                    </a>
+                `;
+            }
+            
+            projectsHTML += `
+                <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                    <div class="project-header">
+                        <div class="project-title">
+                            <i class="fas fa-code"></i>
+                            ${project.name}
+                        </div>
+                        <span class="project-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <p class="project-description">${project.description || 'No description available'}</p>
+                    
+                    <div class="project-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>${project.progress || 0}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                        </div>
+                    </div>
+                    
+                    ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                    
+                    <div class="project-footer">
+                        <div class="last-commit">
+                            <i class="fas fa-calendar"></i>
+                            <span>Last updated: ${lastUpdated}</span>
+                        </div>
+                        ${feedbackSection}
+                    </div>
+                </div>
+            `;
+        });
+        
+        projectsList.innerHTML = projectsHTML;
+    }
 
-  const { data, error } = await query;
-  if (error) {
-    projectsEl.innerHTML = "Error loading projects.";
-    console.error(error);
-    return;
-  }
+    function renderUpdates() {
+        const timeline = document.getElementById('timeline');
+        
+        if (dashboardData.updates.length === 0) {
+            timeline.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <p>No updates yet. Add some in Supabase.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let updatesHTML = '';
+        
+        dashboardData.updates.forEach(update => {
+            const date = update.created_at ? 
+                new Date(update.created_at).toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : 'Recently';
+            
+            updatesHTML += `
+                <div class="timeline-item">
+                    <div class="timeline-date">
+                        <i class="far fa-clock"></i> ${date}
+                    </div>
+                    <div class="timeline-content">
+                        <h4>${update.title}</h4>
+                        <p>${update.content || ''}</p>
+                        ${update.link ? `
+                            <a href="${update.link}" target="_blank" class="timeline-link">
+                                <i class="fas fa-external-link-alt"></i> View Details
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        timeline.innerHTML = updatesHTML;
+    }
 
-  if (!data.length) {
-    projectsEl.innerHTML = "No projects found.";
-    return;
-  }
+    function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        const dateString = now.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+        
+        document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+        document.getElementById('syncTime').textContent = timeString;
+        
+        dashboardData.lastUpdated = now;
+    }
 
-  projectsEl.innerHTML = "";
-  data.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "project p-4 rounded shadow " + (p.is_innovation ? "innovation" : "");
-    div.innerHTML = `
-      <h3 class="text-lg font-semibold">${p.name}</h3>
-      <p>${p.description || ""}</p>
-      <div class="text-sm opacity-70">
-        ${p.status} ${p.is_innovation ? "• Innovation" : ""} | ${p.tags?.join(", ") || ""}
-      </div>
-      <div class="mt-2 flex gap-2">
-        <button onclick="editProject(${p.id})" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-white">Edit</button>
-        <button onclick="deleteProject(${p.id})" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">Delete</button>
-      </div>
-    `;
-    projectsEl.appendChild(div);
-  });
-}
+    // ========== UI STATE FUNCTIONS ==========
+    function showLoadingState() {
+        document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    }
 
-// Save project
-async function saveProject() {
- const payload = {
-  name: nameEl.value.trim() || "Untitled Project",  // Fallback to "Untitled Project" if empty
-  description: descriptionEl.value.trim() || null,  // Allow empty description
-  status: statusEl.value || "ongoing",  // Default to "ongoing"
-  is_innovation: isInnovationEl.checked,  // Boolean
-  tags: tagsEl.value.split(",").map(t => t.trim()).filter(t => t) // Clean and split tags
-};
+    function showErrorState() {
+        document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
+        
+        // Show error messages in each section
+        const sections = ['toolsGrid', 'projectsList', 'timeline'];
+        sections.forEach(sectionId => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                        <p>Failed to load data. Check Supabase connection.</p>
+                        <button onclick="initDashboard()" style="
+                            margin-top: 10px;
+                            padding: 8px 16px;
+                            background: var(--primary);
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                        ">Retry</button>
+                    </div>
+                `;
+            }
+        });
+    }
 
+    // ========== EVENT LISTENERS ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for supabase to load
+        setTimeout(initDashboard, 100);
+        
+        // Setup refresh button
+        document.getElementById('refreshLink').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const lastUpdated = document.getElementById('lastUpdatedTime');
+            lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            
+            await initDashboard();
+            
+            // Show success animation
+            lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
+            setTimeout(() => updateTimestamp(), 2000);
+        });
 
-  if (!payload.name) {
-    alert("Project name is required!");
-    return;
-  }
-
-  const id = projectIdEl.value;
-  let result;
-  if (id) {
-    result = await supabase.from("projects").update(payload).eq("id", id);
-  } else {
-    result = await supabase.from("projects").insert(payload);
-  }
-
-  if (result.error) {
-    showNotification(result.error.message, "error");
-    return;
-  }
-
-  toggleForm();
-  showNotification(id ? "Project updated!" : "Project added!");
-  loadProjects();
-}
-
-// Edit project
-async function editProject(id) {
-  const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
-  if (error) { showNotification(error.message,"error"); return; }
-
-  projectIdEl.value = data.id;
-  nameEl.value = data.name;
-  descriptionEl.value = data.description || "";
-  statusEl.value = data.status;
-  isInnovationEl.checked = data.is_innovation;
-  tagsEl.value = data.tags?.join(", ") || "";
-  formEl.classList.remove("hidden");
-}
-
-// Delete project
-async function deleteProject(id) {
-  if (!confirm("Delete this project?")) return;
-  const { error } = await supabase.from("projects").delete().eq("id", id);
-  if (error) { showNotification(error.message,"error"); return; }
-  showNotification("Project deleted!");
-  loadProjects();
-}
-
-// Expose functions globally
-window.loadProjects = loadProjects;
-window.editProject = editProject;
-window.deleteProject = deleteProject;
-window.toggleForm = toggleForm;
-window.saveProject = saveProject;
-
-// Initial load
-loadProjects();
-
-// PWA SW
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
+        // Auto-refresh every 5 minutes
+        setInterval(async () => {
+            console.log('Auto-refreshing dashboard...');
+            await initDashboard();
+        }, 5 * 60 * 1000);
+    });
 </script>
-</body>
+   </body>
 </html>
