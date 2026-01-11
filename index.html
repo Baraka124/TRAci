@@ -1,18 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neumology Innovation Dashboard</title>
-    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase JS -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            /* Modern Color Palette */
             --primary: #6366f1;
             --primary-light: #818cf8;
             --primary-dark: #4f46e5;
@@ -21,32 +17,21 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
-            
-            /* Neutral Colors */
             --dark: #1e293b;
             --darker: #0f172a;
             --gray: #64748b;
             --gray-light: #e2e8f0;
             --light: #f8fafc;
             --lighter: #ffffff;
-            
-            /* UI Elements */
             --border: #e2e8f0;
-            --card-bg: #ffffff;
             --sidebar-bg: #0f172a;
             --sidebar-text: #cbd5e1;
-            
-            /* Effects */
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Gradients */
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
             --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
             --gradient-dark: linear-gradient(135deg, var(--darker), #1e293b);
-            
-            /* Border Radius */
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -66,6 +51,34 @@
             color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
+        }
+
+        /* ===== DEVELOPMENT BANNER ===== */
+        .dev-banner {
+            background: linear-gradient(90deg, var(--warning), #f59e0b);
+            color: white;
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dev-banner i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         /* ===== LOGIN SCREEN ===== */
@@ -93,7 +106,7 @@
         .login-container {
             margin: auto;
             width: 100%;
-            max-width: 440px;
+            max-width: 480px;
             z-index: 10;
         }
 
@@ -140,6 +153,72 @@
             font-size: 16px;
         }
 
+        /* Credentials Display */
+        .credentials-panel {
+            background: var(--light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px dashed var(--warning);
+        }
+
+        .credentials-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--warning);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .credential-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .credential-role {
+            font-size: 12px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .credential-user {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 3px;
+        }
+
+        .credential-pass {
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .development-warning {
+            background: #fef3c7;
+            color: var(--warning);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Form Styles */
         .form-group {
             margin-bottom: 24px;
         }
@@ -192,8 +271,41 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .login-btn:active {
-            transform: translateY(0);
+        .quick-login-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quick-btn {
+            padding: 12px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .quick-btn.viewer {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .quick-btn.admin {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .error-message {
@@ -221,17 +333,7 @@
         #dashboardContainer {
             display: none;
             min-height: 100vh;
-        }
-
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--dark);
-            cursor: pointer;
-            padding: 10px;
+            padding-top: 40px; /* For dev banner */
         }
 
         /* Sidebar */
@@ -240,7 +342,7 @@
             background: var(--sidebar-bg);
             color: var(--sidebar-text);
             position: fixed;
-            top: 0;
+            top: 40px;
             left: 0;
             bottom: 0;
             padding: 24px;
@@ -392,7 +494,7 @@
         /* Main Content */
         .main-content {
             margin-left: 280px;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             transition: margin-left 0.3s ease;
         }
 
@@ -405,7 +507,7 @@
             justify-content: space-between;
             align-items: center;
             position: sticky;
-            top: 0;
+            top: 40px;
             z-index: 50;
             box-shadow: var(--shadow);
         }
@@ -718,74 +820,6 @@
             color: white;
         }
 
-        /* Admin Panel */
-        #adminPanel {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 500px;
-            max-width: 90vw;
-            background: white;
-            z-index: 1000;
-            box-shadow: var(--shadow-xl);
-            border-left: 1px solid var(--border);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        #adminPanel.active {
-            transform: translateX(0);
-        }
-
-        .admin-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .admin-tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-        }
-
-        .admin-tab {
-            flex: 1;
-            padding: 16px;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-weight: 500;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 120px;
-            white-space: nowrap;
-        }
-
-        .admin-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .admin-content {
-            padding: 24px;
-            height: calc(100vh - 160px);
-            overflow-y: auto;
-        }
-
         /* Loading States */
         .loading {
             text-align: center;
@@ -823,6 +857,8 @@
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
+                top: 0;
+                height: 100vh;
             }
             
             .sidebar.active {
@@ -831,10 +867,6 @@
             
             .main-content {
                 margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
             }
             
             .stats-grid {
@@ -861,13 +893,16 @@
                 font-size: 24px;
             }
             
-            .stats-grid {
+            .credentials-grid {
                 grid-template-columns: 1fr;
             }
             
-            .top-bar-right {
-                flex-wrap: wrap;
-                justify-content: flex-end;
+            .quick-login-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
             
             .section-header {
@@ -906,31 +941,112 @@
             .stat-value {
                 font-size: 28px;
             }
-            
-            .admin-toggle, .refresh-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
         }
 
-        /* Overlay for mobile menu */
-        .sidebar-overlay {
-            display: none;
+        /* Development Console */
+        .dev-console {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            bottom: 20px;
+            right: 20px;
+            background: var(--darker);
+            color: white;
+            border-radius: var(--radius-md);
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 9999;
+            box-shadow: var(--shadow-xl);
+            display: none;
         }
 
-        .sidebar-overlay.active {
-            display: block;
+        .dev-console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dev-console-title {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .dev-console-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .dev-console-log {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .log-item {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 11px;
+        }
+
+        .log-item.error {
+            color: #ff6b6b;
+        }
+
+        .log-item.success {
+            color: #51cf66;
+        }
+
+        .dev-console-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--warning);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9998;
+            box-shadow: var(--shadow-lg);
         }
     </style>
 </head>
 <body>
+    <!-- Development Banner -->
+    <div class="dev-banner">
+        <i class="fas fa-code"></i>
+        DEVELOPMENT MODE - Credentials visible in frontend
+        <i class="fas fa-code"></i>
+    </div>
+
+    <!-- Development Console Toggle -->
+    <div class="dev-console-toggle" onclick="toggleDevConsole()">
+        <i class="fas fa-terminal"></i>
+    </div>
+
+    <!-- Development Console -->
+    <div class="dev-console" id="devConsole">
+        <div class="dev-console-header">
+            <div class="dev-console-title">Developer Console</div>
+            <button class="dev-console-close" onclick="toggleDevConsole()">×</button>
+        </div>
+        <div class="dev-console-log" id="devConsoleLog">
+            <!-- Logs will appear here -->
+        </div>
+        <div style="font-size: 10px; color: var(--gray); text-align: center;">
+            Debug logs appear here
+        </div>
+    </div>
+
     <!-- Login Screen -->
     <div id="loginScreen">
         <div class="login-background"></div>
@@ -938,8 +1054,36 @@
             <div class="login-card">
                 <div class="logo-large">NIP</div>
                 <h1 class="login-title">Neumology Innovation Dashboard</h1>
-                <p class="login-subtitle">Track projects, provide feedback, and monitor progress</p>
+                <p class="login-subtitle">Development Mode - Hardcoded Credentials</p>
                 
+                <!-- Credentials Panel -->
+                <div class="credentials-panel">
+                    <div class="credentials-title">
+                        <i class="fas fa-key"></i>
+                        Available Credentials (Development)
+                    </div>
+                    
+                    <div class="credentials-grid">
+                        <div class="credential-card">
+                            <div class="credential-role">Viewer</div>
+                            <div class="credential-user">Username: neumo</div>
+                            <div class="credential-pass">Password: innovation</div>
+                        </div>
+                        
+                        <div class="credential-card">
+                            <div class="credential-role">Administrator</div>
+                            <div class="credential-user">Username: baraka</div>
+                            <div class="credential-pass">Password: Baraka</div>
+                        </div>
+                    </div>
+                    
+                    <div class="development-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Warning: Credentials are visible in frontend. For production, use Supabase authentication.</span>
+                    </div>
+                </div>
+                
+                <!-- Login Form -->
                 <div class="form-group">
                     <label class="form-label">Username</label>
                     <input type="text" id="username" class="form-input" placeholder="Enter username" autocomplete="username" value="neumo">
@@ -955,16 +1099,25 @@
                     Sign In to Dashboard
                 </button>
                 
+                <!-- Quick Login Buttons -->
+                <div class="quick-login-buttons">
+                    <button class="quick-btn viewer" onclick="quickLogin('neumo', 'innovation')">
+                        <i class="fas fa-eye"></i>
+                        Login as Viewer
+                    </button>
+                    <button class="quick-btn admin" onclick="quickLogin('baraka', 'Baraka')">
+                        <i class="fas fa-crown"></i>
+                        Login as Admin
+                    </button>
+                </div>
+                
                 <div id="loginError" class="error-message">
                     <i class="fas fa-exclamation-circle"></i>
                     <span id="errorText">Invalid credentials</span>
                 </div>
                 
                 <div class="login-footer">
-                    <p><i class="fas fa-shield-alt"></i> Secure authentication powered by Supabase</p>
-                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
-                        Test users: neumo/innovation (Viewer) | baraka/Baraka (Admin)
-                    </p>
+                    <p><i class="fas fa-shield-alt"></i> Development Mode - No database connection required</p>
                 </div>
             </div>
         </div>
@@ -972,9 +1125,6 @@
 
     <!-- Dashboard Container -->
     <div id="dashboardContainer">
-        <!-- Sidebar Overlay (Mobile) -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-        
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -982,7 +1132,7 @@
                     <div class="sidebar-logo-icon">NIP</div>
                     <div class="sidebar-logo-text">Neumology Dashboard</div>
                 </div>
-                <p class="sidebar-tagline">Innovation Project Tracker</p>
+                <p class="sidebar-tagline">Development Mode Active</p>
             </div>
             
             <nav class="sidebar-nav">
@@ -1028,9 +1178,6 @@
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="top-bar-left">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
                     <h1 id="pageTitle">Dashboard Overview</h1>
                 </div>
                 <div class="top-bar-right">
@@ -1059,7 +1206,7 @@
                     </div>
                     <div class="stat-change">
                         <i class="fas fa-arrow-up"></i>
-                        <span>Updated just now</span>
+                        <span>Sample Data</span>
                     </div>
                 </div>
                 
@@ -1075,7 +1222,7 @@
                     </div>
                     <div class="stat-change">
                         <i class="fas fa-check-circle"></i>
-                        <span>All operational</span>
+                        <span>Development Mode</span>
                     </div>
                 </div>
                 
@@ -1165,56 +1312,151 @@
                 </div>
             </div>
         </div>
-
-        <!-- Admin Panel -->
-        <div id="adminPanel">
-            <div class="admin-header">
-                <h2 class="admin-title">Admin Dashboard</h2>
-                <button class="logout-btn" onclick="toggleAdminPanel()">
-                    <i class="fas fa-times"></i>
-                    Close
-                </button>
-            </div>
-            
-            <div class="admin-tabs">
-                <button class="admin-tab active" data-tab="projects">Projects</button>
-                <button class="admin-tab" data-tab="tools">Tools</button>
-                <button class="admin-tab" data-tab="users">Users</button>
-                <button class="admin-tab" data-tab="settings">Settings</button>
-            </div>
-            
-            <div class="admin-content">
-                <div id="adminProjectsTab" class="admin-tab-content active">
-                    <h3 style="margin-bottom: 20px;">Manage Projects</h3>
-                    <div id="adminProjectsList" class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading projects for editing...</p>
-                    </div>
-                </div>
-                
-                <div id="adminToolsTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Manage Tools</h3>
-                    <p>Tools management coming soon...</p>
-                </div>
-                
-                <div id="adminUsersTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Manage Users</h3>
-                    <p>User management coming soon...</p>
-                </div>
-                
-                <div id="adminSettingsTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Settings</h3>
-                    <p>Settings management coming soon...</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
+        // ========== DEVELOPMENT CONSOLE ==========
+        function devLog(message, type = 'info') {
+            const consoleLog = document.getElementById('devConsoleLog');
+            const logItem = document.createElement('div');
+            logItem.className = `log-item ${type}`;
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleLog.appendChild(logItem);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+            
+            // Also log to browser console
+            if (type === 'error') {
+                console.error(message);
+            } else {
+                console.log(message);
+            }
+        }
+
+        function toggleDevConsole() {
+            const console = document.getElementById('devConsole');
+            console.style.display = console.style.display === 'block' ? 'none' : 'block';
+        }
+
         // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
         
+        // Hardcoded credentials (Development Mode)
+        const HARDCODED_USERS = {
+            'neumo': {
+                password: 'innovation',
+                role: 'viewer',
+                name: 'Department Head',
+                id: 'user_neumo_dev'
+            },
+            'baraka': {
+                password: 'Baraka',
+                role: 'admin',
+                name: 'Admin User',
+                id: 'user_baraka_dev'
+            }
+        };
+
+        // Sample data for development
+        const SAMPLE_PROJECTS = [
+            {
+                id: 'proj_1',
+                name: 'ThoraxLab Platform',
+                description: 'Medical imaging analysis tool for CT scans with DICOM viewer',
+                status: 'production',
+                progress: 100,
+                github_url: 'https://github.com/baraka124/ThoraxLab',
+                live_url: 'https://baraka124.github.io/ThoraxLab/',
+                needs_feedback: true,
+                last_updated: new Date().toISOString(),
+                created_at: '2024-01-15T10:00:00Z'
+            },
+            {
+                id: 'proj_2',
+                name: 'Patient Management System v2',
+                description: 'Complete patient record management with telehealth integration',
+                status: 'development',
+                progress: 75,
+                github_url: 'https://github.com/example/patient-mgmt',
+                live_url: 'https://staging-patient.example.com',
+                needs_feedback: false,
+                last_updated: '2024-01-18T14:30:00Z',
+                created_at: '2024-01-10T09:00:00Z'
+            },
+            {
+                id: 'proj_3',
+                name: 'Clinical Analytics Dashboard',
+                description: 'Real-time analytics and visualization for clinical data',
+                status: 'testing',
+                progress: 90,
+                github_url: 'https://github.com/example/analytics',
+                live_url: 'https://staging-analytics.example.com',
+                needs_feedback: true,
+                last_updated: '2024-01-17T16:45:00Z',
+                created_at: '2024-01-05T11:00:00Z'
+            }
+        ];
+
+        const SAMPLE_TOOLS = [
+            {
+                id: 'tool_1',
+                name: 'ThoraxLab',
+                description: 'CT scan visualization and analysis tool',
+                url: 'https://baraka124.github.io/ThoraxLab/',
+                icon: '🔬',
+                category: 'medical-imaging',
+                status: 'operational',
+                last_checked: new Date().toISOString()
+            },
+            {
+                id: 'tool_2',
+                name: 'Admin Dashboard',
+                description: 'System administration and user management',
+                url: 'https://admin.example.com',
+                icon: '🛠️',
+                category: 'administration',
+                status: 'operational',
+                last_checked: '2024-01-18T09:00:00Z'
+            },
+            {
+                id: 'tool_3',
+                name: 'API Documentation',
+                description: 'Interactive API documentation with testing interface',
+                url: 'https://api-docs.example.com',
+                icon: '📚',
+                category: 'developer',
+                status: 'operational',
+                last_checked: '2024-01-17T14:20:00Z'
+            }
+        ];
+
+        const SAMPLE_UPDATES = [
+            {
+                id: 'update_1',
+                title: 'ThoraxLab deployed to GitHub Pages',
+                content: 'Medical imaging platform now publicly accessible with DICOM viewer',
+                type: 'deploy',
+                link: 'https://baraka124.github.io/ThoraxLab/',
+                created_at: '2024-01-18T10:30:00Z'
+            },
+            {
+                id: 'update_2',
+                title: 'Patient portal video consultation added',
+                content: 'Implemented WebRTC for telehealth functionality',
+                type: 'feature',
+                link: 'https://staging-patient.example.com',
+                created_at: '2024-01-17T15:45:00Z'
+            },
+            {
+                id: 'update_3',
+                title: 'Analytics dashboard testing phase',
+                content: 'Started user testing for new analytics features',
+                type: 'testing',
+                link: 'https://staging-analytics.example.com',
+                created_at: '2024-01-16T11:20:00Z'
+            }
+        ];
+
         // ========== GLOBAL VARIABLES ==========
         let supabase = null;
         let currentUser = null;
@@ -1224,158 +1466,104 @@
             tools: [],
             updates: []
         };
-        
+
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard initializing...');
+            devLog('🚀 Dashboard initializing...', 'success');
             initializeApp();
         });
-        
+
         async function initializeApp() {
             try {
-                // Initialize Supabase
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase initialized');
+                devLog('Initializing Supabase...');
                 
+                // Try to initialize Supabase (optional for development)
+                try {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    devLog('✅ Supabase initialized (optional)', 'success');
+                } catch (supabaseError) {
+                    devLog('⚠️ Supabase initialization failed (using sample data)', 'error');
+                    // Continue with sample data
+                }
+
                 // Check for stored authentication
                 if (checkStoredAuth()) {
-                    console.log('✅ Found stored auth');
+                    devLog('✅ Found stored authentication', 'success');
                     await loadDashboard();
                 } else {
-                    console.log('⚠️ No stored auth, showing login');
+                    devLog('Showing login screen', 'info');
                     showLoginScreen();
                 }
-                
+
                 // Setup event listeners
                 setupEventListeners();
                 
+                devLog('✅ App initialization complete', 'success');
+
             } catch (error) {
-                console.error('❌ App initialization failed:', error);
-                showError('Failed to initialize application. Please refresh.');
+                devLog(`❌ App initialization failed: ${error.message}`, 'error');
+                showError('Failed to initialize application. Using development mode.');
+                
+                // Force show login screen anyway
+                showLoginScreen();
             }
         }
-        
+
         // ========== AUTHENTICATION ==========
-        async function login() {
+        function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
-            // Clear previous errors
             hideError();
+            devLog(`Attempting login for: ${username}`);
             
-            // Validation
             if (!username || !password) {
                 showError('Please enter both username and password');
+                devLog('Login failed: Missing credentials', 'error');
                 return;
             }
+
+            // Check against hardcoded credentials
+            const user = HARDCODED_USERS[username];
             
-            console.log(`🔄 Attempting login for: ${username}`);
-            
-            try {
-                // Try Supabase authentication first
-                let userData = null;
+            if (user && user.password === password) {
+                // Login successful
+                currentUser = {
+                    id: user.id,
+                    username: username,
+                    name: user.name,
+                    role: user.role
+                };
+                isAdmin = user.role === 'admin';
                 
-                // Method 1: Try RPC function
-                try {
-                    const { data, error } = await supabase.rpc('verify_password', {
-                        input_username: username,
-                        input_password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    if (data && data.length > 0) {
-                        userData = data[0];
-                        console.log('✅ RPC authentication successful');
-                    }
-                } catch (rpcError) {
-                    console.log('⚠️ RPC failed, trying direct query...', rpcError.message);
-                    
-                    // Method 2: Direct query fallback
-                    const { data: directData, error: directError } = await supabase
-                        .from('dashboard_users')
-                        .select('*')
-                        .eq('username', username)
-                        .single();
-                    
-                    if (!directError && directData) {
-                        // For now, use simple password check (in production, use proper hashing)
-                        // TEMPORARY: Simple password comparison
-                        if (password === 'innovation' && username === 'neumo') {
-                            userData = {
-                                user_id: directData.id,
-                                username: directData.username,
-                                full_name: directData.full_name,
-                                role: directData.role
-                            };
-                        } else if (password === 'Baraka' && username === 'baraka') {
-                            userData = {
-                                user_id: directData.id,
-                                username: directData.username,
-                                full_name: directData.full_name,
-                                role: directData.role
-                            };
-                        }
-                    }
-                }
+                devLog(`✅ Login successful: ${username} (${user.role})`, 'success');
                 
-                if (userData) {
-                    // Login successful
-                    currentUser = {
-                        id: userData.user_id,
-                        username: userData.username,
-                        name: userData.full_name,
-                        role: userData.role
-                    };
-                    isAdmin = userData.role === 'admin';
-                    
-                    console.log('✅ Login successful:', currentUser);
-                    
-                    // Save authentication
-                    saveAuthToStorage();
-                    
-                    // Load dashboard
-                    await loadDashboard();
-                    
-                } else {
-                    // Fallback to hardcoded credentials (for testing)
-                    console.log('⚠️ Database auth failed, trying fallback...');
-                    
-                    const fallbackUsers = {
-                        'neumo': { password: 'innovation', role: 'viewer', name: 'Department Head' },
-                        'baraka': { password: 'Baraka', role: 'admin', name: 'Admin User' }
-                    };
-                    
-                    if (fallbackUsers[username] && fallbackUsers[username].password === password) {
-                        currentUser = {
-                            username: username,
-                            name: fallbackUsers[username].name,
-                            role: fallbackUsers[username].role
-                        };
-                        isAdmin = currentUser.role === 'admin';
-                        
-                        console.log('✅ Fallback login successful');
-                        
-                        // Save authentication
-                        saveAuthToStorage();
-                        
-                        // Load dashboard
-                        await loadDashboard();
-                    } else {
-                        showError('Invalid username or password');
-                    }
-                }
+                // Save authentication
+                saveAuthToStorage();
                 
-            } catch (error) {
-                console.error('❌ Login error:', error);
-                showError('Login failed. Please try again.');
+                // Load dashboard
+                loadDashboard();
+                
+            } else {
+                devLog(`❌ Login failed: Invalid credentials for ${username}`, 'error');
+                showError('Invalid username or password');
             }
         }
-        
+
+        function quickLogin(username, password) {
+            devLog(`Quick login: ${username}`);
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            login();
+        }
+
         function checkStoredAuth() {
             try {
                 const stored = localStorage.getItem('dashboard_auth');
-                if (!stored) return false;
+                if (!stored) {
+                    devLog('No stored authentication found');
+                    return false;
+                }
                 
                 const authData = JSON.parse(stored);
                 
@@ -1383,44 +1571,49 @@
                 const hoursSinceLogin = (Date.now() - authData.timestamp) / (1000 * 60 * 60);
                 if (hoursSinceLogin > 24) {
                     localStorage.removeItem('dashboard_auth');
+                    devLog('Stored authentication expired (24h)', 'error');
                     return false;
                 }
                 
                 currentUser = authData.user;
                 isAdmin = currentUser.role === 'admin';
                 
+                devLog(`Restored session for: ${currentUser.username}`);
                 return true;
+                
             } catch (error) {
+                devLog(`Error checking stored auth: ${error.message}`, 'error');
                 localStorage.removeItem('dashboard_auth');
                 return false;
             }
         }
-        
+
         function saveAuthToStorage() {
             const authData = {
                 user: currentUser,
                 timestamp: Date.now()
             };
             localStorage.setItem('dashboard_auth', JSON.stringify(authData));
+            devLog('Authentication saved to localStorage');
         }
-        
+
         function logout() {
+            devLog(`User logged out: ${currentUser?.username}`);
             localStorage.removeItem('dashboard_auth');
             currentUser = null;
             isAdmin = false;
             showLoginScreen();
         }
-        
+
         // ========== UI MANAGEMENT ==========
         function showLoginScreen() {
+            devLog('Showing login screen');
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('dashboardContainer').style.display = 'none';
-            document.getElementById('sidebarOverlay').classList.remove('active');
-            document.getElementById('sidebar').classList.remove('active');
         }
-        
+
         async function loadDashboard() {
-            console.log('🔄 Loading dashboard...');
+            devLog('Loading dashboard...');
             
             // Hide login, show dashboard
             document.getElementById('loginScreen').style.display = 'none';
@@ -1433,12 +1626,15 @@
             const adminBtn = document.getElementById('adminToggleBtn');
             if (adminBtn) {
                 adminBtn.style.display = isAdmin ? 'flex' : 'none';
+                devLog(`Admin button: ${isAdmin ? 'shown' : 'hidden'}`);
             }
             
             // Load dashboard data
             await loadDashboardData();
+            
+            devLog('Dashboard loaded successfully', 'success');
         }
-        
+
         function updateUserInfo() {
             if (!currentUser) return;
             
@@ -1448,37 +1644,39 @@
             // Set avatar initials
             const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('userAvatar').textContent = initials.substring(0, 2);
+            
+            devLog(`User info updated: ${currentUser.name} (${currentUser.role})`);
         }
-        
+
         function showError(message) {
             const errorDiv = document.getElementById('loginError');
             const errorText = document.getElementById('errorText');
             
             if (errorText) errorText.textContent = message;
             if (errorDiv) errorDiv.style.display = 'flex';
+            
+            devLog(`Error shown: ${message}`, 'error');
         }
-        
+
         function hideError() {
             const errorDiv = document.getElementById('loginError');
             if (errorDiv) errorDiv.style.display = 'none';
         }
-        
+
         // ========== DASHBOARD DATA ==========
         async function loadDashboardData() {
-            console.log('🔄 Loading dashboard data...');
+            devLog('Loading dashboard data...');
             
             try {
                 // Show loading states
                 showLoadingStates();
                 
-                // Load all data
-                const [projects, tools, updates] = await Promise.all([
-                    fetchProjects(),
-                    fetchTools(),
-                    fetchUpdates()
-                ]);
+                // Use sample data (development mode)
+                dashboardData.projects = SAMPLE_PROJECTS;
+                dashboardData.tools = SAMPLE_TOOLS;
+                dashboardData.updates = SAMPLE_UPDATES;
                 
-                dashboardData = { projects, tools, updates };
+                devLog(`Loaded: ${SAMPLE_PROJECTS.length} projects, ${SAMPLE_TOOLS.length} tools, ${SAMPLE_UPDATES.length} updates`, 'success');
                 
                 // Update UI
                 updateStats();
@@ -1486,85 +1684,12 @@
                 renderTools();
                 renderUpdates();
                 
-                console.log('✅ Dashboard data loaded successfully');
-                
             } catch (error) {
-                console.error('❌ Error loading dashboard data:', error);
+                devLog(`Error loading dashboard data: ${error.message}`, 'error');
                 showDataError();
             }
         }
-        
-        async function fetchProjects() {
-            try {
-                const { data, error } = await supabase
-                    .from('projects')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-                
-                // Return sample data for testing
-                return [
-                    {
-                        id: '1',
-                        name: 'ThoraxLab Platform',
-                        description: 'Medical imaging analysis tool for CT scans',
-                        status: 'production',
-                        progress: 100,
-                        github_url: 'https://github.com/baraka124/ThoraxLab',
-                        live_url: 'https://baraka124.github.io/ThoraxLab/',
-                        needs_feedback: true,
-                        last_updated: new Date().toISOString()
-                    },
-                    {
-                        id: '2',
-                        name: 'Patient Management System',
-                        description: 'Complete patient record management',
-                        status: 'development',
-                        progress: 75,
-                        github_url: 'https://github.com/example/patient-mgmt',
-                        live_url: 'https://staging-patient.example.com',
-                        needs_feedback: false,
-                        last_updated: new Date().toISOString()
-                    }
-                ];
-            }
-        }
-        
-        async function fetchTools() {
-            try {
-                const { data, error } = await supabase
-                    .from('tools')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching tools:', error);
-                return [];
-            }
-        }
-        
-        async function fetchUpdates() {
-            try {
-                const { data, error } = await supabase
-                    .from('updates')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-                
-                if (error) throw error;
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching updates:', error);
-                return [];
-            }
-        }
-        
+
         function updateStats() {
             const projects = dashboardData.projects;
             const tools = dashboardData.tools;
@@ -1585,8 +1710,10 @@
             // Update badges
             document.getElementById('projectsBadge').textContent = `${projectsCount} project${projectsCount !== 1 ? 's' : ''}`;
             document.getElementById('toolsBadge').textContent = `${toolsCount} tool${toolsCount !== 1 ? 's' : ''}`;
+            
+            devLog(`Stats updated: ${projectsCount} projects, ${toolsCount} tools, ${feedbackCount} feedback pending`);
         }
-        
+
         function renderProjects() {
             const container = document.getElementById('projectsList');
             const projects = dashboardData.projects;
@@ -1596,19 +1723,6 @@
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>
                         <p>No projects found</p>
-                        ${isAdmin ? `
-                            <button onclick="toggleAdminPanel()" style="
-                                margin-top: 16px;
-                                padding: 10px 20px;
-                                background: var(--primary);
-                                color: white;
-                                border: none;
-                                border-radius: var(--radius-md);
-                                cursor: pointer;
-                            ">
-                                <i class="fas fa-plus"></i> Add Projects
-                            </button>
-                        ` : ''}
                     </div>
                 `;
                 return;
@@ -1636,7 +1750,7 @@
                             <span class="project-status ${statusClass}">${statusText}</span>
                         </div>
                         
-                        <p class="project-description">${project.description || 'No description available'}</p>
+                        <p class="project-description">${project.description}</p>
                         
                         <div class="progress-container">
                             <div class="progress-bar">
@@ -1669,13 +1783,6 @@
                                     Needs Feedback
                                 </button>
                             ` : ''}
-                            
-                            ${isAdmin ? `
-                                <button class="action-btn" onclick="editProject('${project.id}')" style="background: var(--info); color: white;">
-                                    <i class="fas fa-edit"></i>
-                                    Edit
-                                </button>
-                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -1683,8 +1790,10 @@
             
             html += '</div>';
             container.innerHTML = html;
+            
+            devLog(`Rendered ${projects.length} projects`);
         }
-        
+
         function renderTools() {
             const container = document.getElementById('toolsList');
             const tools = dashboardData.tools;
@@ -1705,6 +1814,11 @@
                 const status = tool.status || 'operational';
                 const statusClass = status === 'operational' ? 'status-production' : 'status-staging';
                 const statusText = status === 'operational' ? 'Operational' : 'Maintenance';
+                const lastChecked = tool.last_checked ? 
+                    new Date(tool.last_checked).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    }) : 'Never';
                 
                 html += `
                     <div style="
@@ -1714,7 +1828,9 @@
                         display: flex;
                         align-items: center;
                         gap: 16px;
-                    ">
+                        transition: all 0.2s;
+                    " onmouseover="this.style.borderColor='var(--primary)'" 
+                     onmouseout="this.style.borderColor='var(--border)'">
                         <div style="
                             width: 48px;
                             height: 48px;
@@ -1735,6 +1851,8 @@
                                 justify-content: space-between;
                                 align-items: center;
                                 margin-bottom: 4px;
+                                flex-wrap: wrap;
+                                gap: 8px;
                             ">
                                 <h4 style="font-weight: 600; color: var(--dark);">${tool.name}</h4>
                                 <span class="project-status ${statusClass}" style="font-size: 11px;">
@@ -1744,18 +1862,23 @@
                             <p style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">
                                 ${tool.description || 'No description'}
                             </p>
-                            <a href="${tool.url}" target="_blank" style="
-                                color: var(--primary);
-                                text-decoration: none;
-                                font-size: 14px;
-                                font-weight: 500;
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 6px;
-                            ">
-                                <i class="fas fa-external-link-alt"></i>
-                                Access Tool
-                            </a>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <a href="${tool.url}" target="_blank" style="
+                                    color: var(--primary);
+                                    text-decoration: none;
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 6px;
+                                ">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Access Tool
+                                </a>
+                                <span style="font-size: 12px; color: var(--gray);">
+                                    Last checked: ${lastChecked}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1763,8 +1886,10 @@
             
             html += '</div>';
             container.innerHTML = html;
+            
+            devLog(`Rendered ${tools.length} tools`);
         }
-        
+
         function renderUpdates() {
             const container = document.getElementById('updatesList');
             const updates = dashboardData.updates;
@@ -1791,13 +1916,23 @@
                         minute: '2-digit'
                     }) : 'Recently';
                 
+                const typeIcon = {
+                    'deploy': 'fas fa-rocket',
+                    'feature': 'fas fa-star',
+                    'testing': 'fas fa-vial',
+                    'bug': 'fas fa-bug',
+                    'update': 'fas fa-sync'
+                }[update.type] || 'fas fa-info-circle';
+                
                 html += `
                     <div style="
                         padding: 16px;
                         border-left: 3px solid var(--primary);
                         background: var(--light);
                         border-radius: 0 var(--radius-md) var(--radius-md) 0;
-                    ">
+                        transition: all 0.2s;
+                    " onmouseover="this.style.transform='translateX(5px)'" 
+                     onmouseout="this.style.transform='translateX(0)'">
                         <div style="
                             display: flex;
                             justify-content: space-between;
@@ -1806,7 +1941,10 @@
                             flex-wrap: wrap;
                             gap: 8px;
                         ">
-                            <h4 style="font-weight: 600; color: var(--dark);">${update.title}</h4>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="${typeIcon}" style="color: var(--primary);"></i>
+                                <h4 style="font-weight: 600; color: var(--dark);">${update.title}</h4>
+                            </div>
                             <span style="color: var(--gray); font-size: 13px;">
                                 <i class="far fa-clock"></i> ${date}
                             </span>
@@ -1834,23 +1972,13 @@
             
             html += '</div>';
             container.innerHTML = html;
-        }
-        
-        // ========== UI INTERACTIONS ==========
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
             
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            devLog(`Rendered ${updates.length} updates`);
         }
-        
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('active');
-        }
-        
+
+        // ========== UI INTERACTIONS ==========
         function refreshDashboard() {
+            devLog('Manual refresh triggered');
             const btn = document.querySelector('.refresh-btn');
             const icon = btn.querySelector('i');
             const text = btn.querySelector('.refresh-text');
@@ -1867,59 +1995,50 @@
                     icon.className = 'fas fa-sync-alt';
                     text.textContent = 'Refresh';
                     btn.disabled = false;
+                    devLog('Refresh complete', 'success');
                 }, 1000);
             });
         }
-        
+
         function requestFeedback(projectId) {
             const project = dashboardData.projects.find(p => p.id === projectId);
             if (!project) return;
             
-            alert(`📋 Feedback Requested:\n\nProject: ${project.name}\n\nPlease provide feedback via:\n• WhatsApp message\n• Email response\n• Direct conversation\n\nClick "OK" to continue.`);
+            devLog(`Feedback requested for project: ${project.name}`);
+            
+            const message = `📋 Feedback Requested:\n\nProject: ${project.name}\nStatus: ${project.status}\nProgress: ${project.progress}%\n\nPlease provide feedback via:\n• WhatsApp message\n• Email response\n• Direct conversation`;
+            
+            alert(message);
         }
-        
-        function editProject(projectId) {
-            alert(`Edit project ${projectId} - Admin functionality coming soon!`);
-            // TODO: Implement project editing
+
+        function toggleAdminPanel() {
+            alert('Admin panel functionality coming soon!\n\nFor now, use the development console for debugging.');
+            devLog('Admin panel requested (not implemented yet)');
         }
-        
+
         // ========== HELPER FUNCTIONS ==========
         function showLoadingStates() {
-            // Projects
+            devLog('Showing loading states...');
+            
             const projectsList = document.getElementById('projectsList');
-            if (projectsList) {
-                projectsList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading projects...</p>
-                    </div>
-                `;
-            }
-            
-            // Tools
             const toolsList = document.getElementById('toolsList');
-            if (toolsList) {
-                toolsList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading tools...</p>
-                    </div>
-                `;
-            }
-            
-            // Updates
             const updatesList = document.getElementById('updatesList');
-            if (updatesList) {
-                updatesList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading updates...</p>
-                    </div>
-                `;
-            }
+            
+            const loadingHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+            `;
+            
+            if (projectsList) projectsList.innerHTML = loadingHTML;
+            if (toolsList) toolsList.innerHTML = loadingHTML;
+            if (updatesList) updatesList.innerHTML = loadingHTML;
         }
-        
+
         function showDataError() {
+            devLog('Showing data error state', 'error');
+            
             const container = document.getElementById('projectsList');
             if (container) {
                 container.innerHTML = `
@@ -1942,9 +2061,11 @@
                 `;
             }
         }
-        
+
         // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
+            devLog('Setting up event listeners...');
+            
             // Enter key login
             document.getElementById('password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') login();
@@ -1965,54 +2086,26 @@
                     const view = this.dataset.view;
                     const title = this.querySelector('span').textContent;
                     document.getElementById('pageTitle').textContent = title;
+                    
+                    devLog(`Navigation: ${view}`);
                 });
             });
             
-            // Admin tabs
-            document.querySelectorAll('.admin-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Update tab buttons
-                    document.querySelectorAll('.admin-tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    document.querySelectorAll('.admin-tab-content').forEach(content => {
-                        content.style.display = 'none';
-                    });
-                    
-                    const contentDiv = document.getElementById(`admin${tabId.charAt(0).toUpperCase() + tabId.slice(1)}Tab`);
-                    if (contentDiv) {
-                        contentDiv.style.display = 'block';
-                    }
-                });
-            });
-            
-            // Close sidebar when clicking outside on mobile
-            document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
-            
-            // Close admin panel with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    const panel = document.getElementById('adminPanel');
-                    if (panel.classList.contains('active')) {
-                        panel.classList.remove('active');
-                    }
-                }
-            });
+            devLog('Event listeners setup complete', 'success');
         }
-        
-        // ========== INITIAL DATA LOAD ==========
+
+        // ========== AUTO-REFRESH ==========
         // Auto-refresh data every 5 minutes
         setInterval(() => {
             if (currentUser) {
-                console.log('🔄 Auto-refreshing dashboard data...');
+                devLog('Auto-refreshing dashboard data...');
                 loadDashboardData();
             }
         }, 5 * 60 * 1000);
+
+        // Initial development log
+        devLog('Development Dashboard v1.0 - Hardcoded Credentials Mode', 'success');
+        devLog('Use: neumo/innovation (Viewer) or baraka/Baraka (Admin)', 'info');
     </script>
 </body>
-</html>
+    </html>
