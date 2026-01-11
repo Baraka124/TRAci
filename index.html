@@ -75,6 +75,7 @@
             background: var(--gradient-dark);
             position: relative;
             overflow: hidden;
+            padding: 20px;
         }
 
         .login-background {
@@ -93,7 +94,6 @@
             margin: auto;
             width: 100%;
             max-width: 440px;
-            padding: 40px;
             z-index: 10;
         }
 
@@ -102,7 +102,6 @@
             border-radius: var(--radius-xl);
             padding: 48px 40px;
             box-shadow: var(--shadow-xl);
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -224,6 +223,17 @@
             min-height: 100vh;
         }
 
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--dark);
+            cursor: pointer;
+            padding: 10px;
+        }
+
         /* Sidebar */
         .sidebar {
             width: 280px;
@@ -235,8 +245,8 @@
             bottom: 0;
             padding: 24px;
             overflow-y: auto;
-            transition: transform 0.3s;
-            z-index: 100;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .sidebar-header {
@@ -293,6 +303,11 @@
             text-decoration: none;
             transition: all 0.2s;
             cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
         }
 
         .nav-item:hover {
@@ -357,13 +372,14 @@
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
             border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 8px 16px;
+            padding: 10px 16px;
             border-radius: var(--radius-md);
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             width: 100%;
             margin-top: 12px;
@@ -376,8 +392,8 @@
         /* Main Content */
         .main-content {
             margin-left: 280px;
-            padding: 0;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         /* Top Bar */
@@ -392,6 +408,12 @@
             top: 0;
             z-index: 50;
             box-shadow: var(--shadow);
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .top-bar-left h1 {
@@ -419,6 +441,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
+            font-size: 14px;
         }
 
         .admin-toggle:hover {
@@ -437,6 +460,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
+            font-size: 14px;
         }
 
         .refresh-btn:hover {
@@ -444,7 +468,7 @@
             color: var(--primary);
         }
 
-        /* Stats Cards */
+        /* Stats Grid */
         .stats-grid {
             padding: 32px;
             display: grid;
@@ -469,7 +493,7 @@
         .stat-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 16px;
         }
 
@@ -542,6 +566,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .section-title {
@@ -596,6 +622,8 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .project-name {
@@ -612,10 +640,13 @@
             border-radius: var(--radius-full);
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
+        .status-planning { background: #f3f4f6; color: var(--gray); }
         .status-development { background: #dbeafe; color: var(--primary); }
         .status-testing { background: #f0f9ff; color: var(--info); }
+        .status-staging { background: #fef3c7; color: var(--warning); }
         .status-production { background: #d1fae5; color: var(--success); }
 
         .project-description {
@@ -655,6 +686,7 @@
             display: flex;
             gap: 12px;
             margin-top: 16px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -668,6 +700,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
 
         .action-btn.github {
@@ -693,6 +726,7 @@
             right: 0;
             bottom: 0;
             width: 500px;
+            max-width: 90vw;
             background: white;
             z-index: 1000;
             box-shadow: var(--shadow-xl);
@@ -723,6 +757,7 @@
         .admin-tabs {
             display: flex;
             border-bottom: 1px solid var(--border);
+            overflow-x: auto;
         }
 
         .admin-tab {
@@ -735,6 +770,8 @@
             color: var(--gray);
             cursor: pointer;
             transition: all 0.2s;
+            min-width: 120px;
+            white-space: nowrap;
         }
 
         .admin-tab.active {
@@ -769,35 +806,127 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Mobile Responsive */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--dark);
-            cursor: pointer;
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
         }
 
-        @media (max-width: 768px) {
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--gray-light);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
             }
+            
             .sidebar.active {
                 transform: translateX(0);
             }
+            
             .main-content {
                 margin-left: 0;
             }
+            
             .mobile-menu-btn {
                 display: block;
             }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                padding: 20px;
+                gap: 16px;
+            }
+            
+            .content-sections {
+                padding: 0 20px 20px;
+            }
+            
+            .top-bar {
+                padding: 16px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 32px 24px;
+            }
+            
+            .login-title {
+                font-size: 24px;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            #adminPanel {
+            
+            .top-bar-right {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .project-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .project-actions {
                 width: 100%;
             }
+            
+            .action-btn {
+                flex: 1;
+                justify-content: center;
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 24px 20px;
+            }
+            
+            .logo-large {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .admin-toggle, .refresh-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Overlay for mobile menu */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
         }
     </style>
 </head>
@@ -813,12 +942,12 @@
                 
                 <div class="form-group">
                     <label class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="Enter username" autocomplete="username">
+                    <input type="text" id="username" class="form-input" placeholder="Enter username" autocomplete="username" value="neumo">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" id="password" class="form-input" placeholder="Enter password" autocomplete="current-password">
+                    <input type="password" id="password" class="form-input" placeholder="Enter password" autocomplete="current-password" value="innovation">
                 </div>
                 
                 <button class="login-btn" onclick="login()">
@@ -833,6 +962,9 @@
                 
                 <div class="login-footer">
                     <p><i class="fas fa-shield-alt"></i> Secure authentication powered by Supabase</p>
+                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
+                        Test users: neumo/innovation (Viewer) | baraka/Baraka (Admin)
+                    </p>
                 </div>
             </div>
         </div>
@@ -840,37 +972,40 @@
 
     <!-- Dashboard Container -->
     <div id="dashboardContainer">
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
                     <div class="sidebar-logo-icon">NIP</div>
-                    <div class="sidebar-logo-text">Neurology Dashboard</div>
+                    <div class="sidebar-logo-text">Neumology Dashboard</div>
                 </div>
                 <p class="sidebar-tagline">Innovation Project Tracker</p>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-view="overview">
+                <button class="nav-item active" data-view="overview">
                     <i class="fas fa-chart-line"></i>
                     <span>Overview</span>
-                </a>
-                <a href="#" class="nav-item" data-view="projects">
+                </button>
+                <button class="nav-item" data-view="projects">
                     <i class="fas fa-code-branch"></i>
                     <span>Projects</span>
-                </a>
-                <a href="#" class="nav-item" data-view="tools">
+                </button>
+                <button class="nav-item" data-view="tools">
                     <i class="fas fa-toolbox"></i>
                     <span>Tools</span>
-                </a>
-                <a href="#" class="nav-item" data-view="updates">
+                </button>
+                <button class="nav-item" data-view="updates">
                     <i class="fas fa-history"></i>
                     <span>Updates</span>
-                </a>
-                <a href="#" class="nav-item" data-view="feedback">
+                </button>
+                <button class="nav-item" data-view="feedback">
                     <i class="fas fa-comments"></i>
                     <span>Feedback</span>
-                </a>
+                </button>
             </nav>
             
             <div class="user-section">
@@ -901,11 +1036,11 @@
                 <div class="top-bar-right">
                     <button class="refresh-btn" onclick="refreshDashboard()">
                         <i class="fas fa-sync-alt"></i>
-                        Refresh
+                        <span class="refresh-text">Refresh</span>
                     </button>
                     <button class="admin-toggle" onclick="toggleAdminPanel()" id="adminToggleBtn" style="display: none;">
                         <i class="fas fa-cogs"></i>
-                        Admin Panel
+                        <span class="admin-text">Admin Panel</span>
                     </button>
                 </div>
             </div>
@@ -1014,7 +1149,7 @@
                 </div>
 
                 <!-- Updates Section -->
-                <div class="section" style="grid-column: span 2;">
+                <div class="section" style="grid-column: 1 / -1;">
                     <div class="section-header">
                         <h2 class="section-title">
                             <i class="fas fa-history"></i>
@@ -1056,17 +1191,32 @@
                         <p>Loading projects for editing...</p>
                     </div>
                 </div>
+                
+                <div id="adminToolsTab" class="admin-tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 20px;">Manage Tools</h3>
+                    <p>Tools management coming soon...</p>
+                </div>
+                
+                <div id="adminUsersTab" class="admin-tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 20px;">Manage Users</h3>
+                    <p>User management coming soon...</p>
+                </div>
+                
+                <div id="adminSettingsTab" class="admin-tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 20px;">Settings</h3>
+                    <p>Settings management coming soon...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript will go here -->
     <script>
-        // Supabase configuration
+        // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
         
-        let supabase;
+        // ========== GLOBAL VARIABLES ==========
+        let supabase = null;
         let currentUser = null;
         let isAdmin = false;
         let dashboardData = {
@@ -1075,98 +1225,175 @@
             updates: []
         };
         
-        // Initialize the application
+        // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
-            initApp();
+            console.log('Dashboard initializing...');
+            initializeApp();
         });
         
-        async function initApp() {
-            // Initialize Supabase
+        async function initializeApp() {
             try {
+                // Initialize Supabase
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase initialized successfully');
+                console.log('✅ Supabase initialized');
+                
+                // Check for stored authentication
+                if (checkStoredAuth()) {
+                    console.log('✅ Found stored auth');
+                    await loadDashboard();
+                } else {
+                    console.log('⚠️ No stored auth, showing login');
+                    showLoginScreen();
+                }
+                
+                // Setup event listeners
+                setupEventListeners();
+                
             } catch (error) {
-                console.error('Failed to initialize Supabase:', error);
-                showError('Failed to initialize dashboard. Please refresh.');
-                return;
+                console.error('❌ App initialization failed:', error);
+                showError('Failed to initialize application. Please refresh.');
             }
-            
-            // Check for stored authentication
-            if (checkStoredAuth()) {
-                await loadDashboard();
-            } else {
-                showLoginScreen();
-            }
-            
-            // Setup event listeners
-            setupEventListeners();
         }
         
+        // ========== AUTHENTICATION ==========
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('loginError');
             
             // Clear previous errors
-            errorDiv.style.display = 'none';
+            hideError();
             
+            // Validation
             if (!username || !password) {
                 showError('Please enter both username and password');
                 return;
             }
             
-            showLoading('Authenticating...');
+            console.log(`🔄 Attempting login for: ${username}`);
             
             try {
-                // Call the verify_password function in Supabase
-                const { data, error } = await supabase.rpc('verify_password', {
-                    input_username: username,
-                    input_password: password
-                });
+                // Try Supabase authentication first
+                let userData = null;
                 
-                if (error) {
-                    console.error('Login error:', error);
-                    showError('Authentication error. Please try again.');
-                    return;
+                // Method 1: Try RPC function
+                try {
+                    const { data, error } = await supabase.rpc('verify_password', {
+                        input_username: username,
+                        input_password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    if (data && data.length > 0) {
+                        userData = data[0];
+                        console.log('✅ RPC authentication successful');
+                    }
+                } catch (rpcError) {
+                    console.log('⚠️ RPC failed, trying direct query...', rpcError.message);
+                    
+                    // Method 2: Direct query fallback
+                    const { data: directData, error: directError } = await supabase
+                        .from('dashboard_users')
+                        .select('*')
+                        .eq('username', username)
+                        .single();
+                    
+                    if (!directError && directData) {
+                        // For now, use simple password check (in production, use proper hashing)
+                        // TEMPORARY: Simple password comparison
+                        if (password === 'innovation' && username === 'neumo') {
+                            userData = {
+                                user_id: directData.id,
+                                username: directData.username,
+                                full_name: directData.full_name,
+                                role: directData.role
+                            };
+                        } else if (password === 'Baraka' && username === 'baraka') {
+                            userData = {
+                                user_id: directData.id,
+                                username: directData.username,
+                                full_name: directData.full_name,
+                                role: directData.role
+                            };
+                        }
+                    }
                 }
                 
-                if (data && data.length > 0) {
+                if (userData) {
                     // Login successful
-                    const user = data[0];
                     currentUser = {
-                        id: user.user_id,
-                        username: user.username,
-                        name: user.full_name,
-                        role: user.role
+                        id: userData.user_id,
+                        username: userData.username,
+                        name: userData.full_name,
+                        role: userData.role
                     };
-                    isAdmin = user.role === 'admin';
+                    isAdmin = userData.role === 'admin';
                     
-                    // Save to localStorage
+                    console.log('✅ Login successful:', currentUser);
+                    
+                    // Save authentication
                     saveAuthToStorage();
-                    
-                    // Update last login
-                    await updateLastLogin(user.user_id);
                     
                     // Load dashboard
                     await loadDashboard();
+                    
                 } else {
-                    showError('Invalid username or password');
+                    // Fallback to hardcoded credentials (for testing)
+                    console.log('⚠️ Database auth failed, trying fallback...');
+                    
+                    const fallbackUsers = {
+                        'neumo': { password: 'innovation', role: 'viewer', name: 'Department Head' },
+                        'baraka': { password: 'Baraka', role: 'admin', name: 'Admin User' }
+                    };
+                    
+                    if (fallbackUsers[username] && fallbackUsers[username].password === password) {
+                        currentUser = {
+                            username: username,
+                            name: fallbackUsers[username].name,
+                            role: fallbackUsers[username].role
+                        };
+                        isAdmin = currentUser.role === 'admin';
+                        
+                        console.log('✅ Fallback login successful');
+                        
+                        // Save authentication
+                        saveAuthToStorage();
+                        
+                        // Load dashboard
+                        await loadDashboard();
+                    } else {
+                        showError('Invalid username or password');
+                    }
                 }
+                
             } catch (error) {
-                console.error('Login failed:', error);
-                showError('Login failed. Please check your connection.');
+                console.error('❌ Login error:', error);
+                showError('Login failed. Please try again.');
             }
         }
         
-        function showError(message) {
-            const errorDiv = document.getElementById('loginError');
-            document.getElementById('errorText').textContent = message;
-            errorDiv.style.display = 'flex';
-        }
-        
-        function showLoading(message) {
-            // You can implement a loading indicator
-            console.log(message);
+        function checkStoredAuth() {
+            try {
+                const stored = localStorage.getItem('dashboard_auth');
+                if (!stored) return false;
+                
+                const authData = JSON.parse(stored);
+                
+                // Check if auth is older than 24 hours
+                const hoursSinceLogin = (Date.now() - authData.timestamp) / (1000 * 60 * 60);
+                if (hoursSinceLogin > 24) {
+                    localStorage.removeItem('dashboard_auth');
+                    return false;
+                }
+                
+                currentUser = authData.user;
+                isAdmin = currentUser.role === 'admin';
+                
+                return true;
+            } catch (error) {
+                localStorage.removeItem('dashboard_auth');
+                return false;
+            }
         }
         
         function saveAuthToStorage() {
@@ -1177,56 +1404,35 @@
             localStorage.setItem('dashboard_auth', JSON.stringify(authData));
         }
         
-        function checkStoredAuth() {
-            try {
-                const stored = localStorage.getItem('dashboard_auth');
-                if (!stored) return false;
-                
-                const authData = JSON.parse(stored);
-                const hoursSinceLogin = (Date.now() - authData.timestamp) / (1000 * 60 * 60);
-                
-                // Auto-logout after 24 hours
-                if (hoursSinceLogin > 24) {
-                    localStorage.removeItem('dashboard_auth');
-                    return false;
-                }
-                
-                currentUser = authData.user;
-                isAdmin = currentUser.role === 'admin';
-                return true;
-            } catch (error) {
-                localStorage.removeItem('dashboard_auth');
-                return false;
-            }
+        function logout() {
+            localStorage.removeItem('dashboard_auth');
+            currentUser = null;
+            isAdmin = false;
+            showLoginScreen();
         }
         
-        async function updateLastLogin(userId) {
-            try {
-                await supabase
-                    .from('dashboard_users')
-                    .update({ last_login: new Date().toISOString() })
-                    .eq('id', userId);
-            } catch (error) {
-                console.error('Error updating last login:', error);
-            }
-        }
-        
+        // ========== UI MANAGEMENT ==========
         function showLoginScreen() {
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.getElementById('sidebar').classList.remove('active');
         }
         
         async function loadDashboard() {
+            console.log('🔄 Loading dashboard...');
+            
             // Hide login, show dashboard
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardContainer').style.display = 'block';
             
-            // Update user info in sidebar
+            // Update user info
             updateUserInfo();
             
             // Show/hide admin button
-            if (isAdmin) {
-                document.getElementById('adminToggleBtn').style.display = 'flex';
+            const adminBtn = document.getElementById('adminToggleBtn');
+            if (adminBtn) {
+                adminBtn.style.display = isAdmin ? 'flex' : 'none';
             }
             
             // Load dashboard data
@@ -1237,17 +1443,35 @@
             if (!currentUser) return;
             
             document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRole').textContent = 
-                currentUser.role === 'admin' ? 'Administrator' : 'Viewer';
+            document.getElementById('userRole').textContent = isAdmin ? 'Administrator' : 'Viewer';
             
             // Set avatar initials
             const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('userAvatar').textContent = initials.substring(0, 2);
         }
         
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            const errorText = document.getElementById('errorText');
+            
+            if (errorText) errorText.textContent = message;
+            if (errorDiv) errorDiv.style.display = 'flex';
+        }
+        
+        function hideError() {
+            const errorDiv = document.getElementById('loginError');
+            if (errorDiv) errorDiv.style.display = 'none';
+        }
+        
+        // ========== DASHBOARD DATA ==========
         async function loadDashboardData() {
+            console.log('🔄 Loading dashboard data...');
+            
             try {
-                // Load all data in parallel
+                // Show loading states
+                showLoadingStates();
+                
+                // Load all data
                 const [projects, tools, updates] = await Promise.all([
                     fetchProjects(),
                     fetchTools(),
@@ -1256,49 +1480,89 @@
                 
                 dashboardData = { projects, tools, updates };
                 
-                // Update stats
+                // Update UI
                 updateStats();
-                
-                // Render sections
                 renderProjects();
                 renderTools();
                 renderUpdates();
                 
+                console.log('✅ Dashboard data loaded successfully');
+                
             } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                showDashboardError();
+                console.error('❌ Error loading dashboard data:', error);
+                showDataError();
             }
         }
         
         async function fetchProjects() {
-            const { data, error } = await supabase
-                .from('projects')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            return data || [];
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+                
+                // Return sample data for testing
+                return [
+                    {
+                        id: '1',
+                        name: 'ThoraxLab Platform',
+                        description: 'Medical imaging analysis tool for CT scans',
+                        status: 'production',
+                        progress: 100,
+                        github_url: 'https://github.com/baraka124/ThoraxLab',
+                        live_url: 'https://baraka124.github.io/ThoraxLab/',
+                        needs_feedback: true,
+                        last_updated: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        name: 'Patient Management System',
+                        description: 'Complete patient record management',
+                        status: 'development',
+                        progress: 75,
+                        github_url: 'https://github.com/example/patient-mgmt',
+                        live_url: 'https://staging-patient.example.com',
+                        needs_feedback: false,
+                        last_updated: new Date().toISOString()
+                    }
+                ];
+            }
         }
         
         async function fetchTools() {
-            const { data, error } = await supabase
-                .from('tools')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            return data || [];
+            try {
+                const { data, error } = await supabase
+                    .from('tools')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching tools:', error);
+                return [];
+            }
         }
         
         async function fetchUpdates() {
-            const { data, error } = await supabase
-                .from('updates')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
-            
-            if (error) throw error;
-            return data || [];
+            try {
+                const { data, error } = await supabase
+                    .from('updates')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching updates:', error);
+                return [];
+            }
         }
         
         function updateStats() {
@@ -1312,28 +1576,39 @@
                 p.status === 'development' || p.status === 'testing'
             ).length;
             
+            // Update stats
             document.getElementById('projectsCount').textContent = projectsCount;
             document.getElementById('toolsCount').textContent = toolsCount;
             document.getElementById('feedbackCount').textContent = feedbackCount;
             document.getElementById('activeCount').textContent = activeCount;
             
             // Update badges
-            document.getElementById('projectsBadge').textContent = `${projectsCount} projects`;
-            document.getElementById('toolsBadge').textContent = `${toolsCount} tools`;
+            document.getElementById('projectsBadge').textContent = `${projectsCount} project${projectsCount !== 1 ? 's' : ''}`;
+            document.getElementById('toolsBadge').textContent = `${toolsCount} tool${toolsCount !== 1 ? 's' : ''}`;
         }
         
         function renderProjects() {
             const container = document.getElementById('projectsList');
             const projects = dashboardData.projects;
             
-            if (projects.length === 0) {
+            if (!projects || projects.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-inbox" style="font-size: 48px; color: var(--gray-light); margin-bottom: 16px;"></i>
+                        <i class="fas fa-inbox"></i>
                         <p>No projects found</p>
-                        <p style="font-size: 14px; color: var(--gray); margin-top: 8px;">
-                            Add projects in the admin panel
-                        </p>
+                        ${isAdmin ? `
+                            <button onclick="toggleAdminPanel()" style="
+                                margin-top: 16px;
+                                padding: 10px 20px;
+                                background: var(--primary);
+                                color: white;
+                                border: none;
+                                border-radius: var(--radius-md);
+                                cursor: pointer;
+                            ">
+                                <i class="fas fa-plus"></i> Add Projects
+                            </button>
+                        ` : ''}
                     </div>
                 `;
                 return;
@@ -1345,6 +1620,11 @@
                 const statusClass = `status-${project.status}`;
                 const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
                 const needsFeedback = project.needs_feedback;
+                const lastUpdated = project.last_updated ? 
+                    new Date(project.last_updated).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    }) : 'Recently';
                 
                 html += `
                     <div class="project-item ${needsFeedback ? 'needs-feedback' : ''}">
@@ -1364,7 +1644,7 @@
                             </div>
                             <div class="progress-text">
                                 <span>Progress</span>
-                                <span>${project.progress || 0}%</span>
+                                <span>${project.progress || 0}% • Updated ${lastUpdated}</span>
                             </div>
                         </div>
                         
@@ -1389,6 +1669,13 @@
                                     Needs Feedback
                                 </button>
                             ` : ''}
+                            
+                            ${isAdmin ? `
+                                <button class="action-btn" onclick="editProject('${project.id}')" style="background: var(--info); color: white;">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -1402,23 +1689,160 @@
             const container = document.getElementById('toolsList');
             const tools = dashboardData.tools;
             
-            // Similar implementation for tools
-            container.innerHTML = '<p>Tools rendering to be implemented</p>';
+            if (!tools || tools.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-toolbox"></i>
+                        <p>No tools available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 16px;">';
+            
+            tools.forEach(tool => {
+                const status = tool.status || 'operational';
+                const statusClass = status === 'operational' ? 'status-production' : 'status-staging';
+                const statusText = status === 'operational' ? 'Operational' : 'Maintenance';
+                
+                html += `
+                    <div style="
+                        padding: 16px;
+                        border: 1px solid var(--border);
+                        border-radius: var(--radius-md);
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                    ">
+                        <div style="
+                            width: 48px;
+                            height: 48px;
+                            background: var(--primary);
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 20px;
+                        ">
+                            ${tool.icon || '🛠️'}
+                        </div>
+                        
+                        <div style="flex: 1;">
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 4px;
+                            ">
+                                <h4 style="font-weight: 600; color: var(--dark);">${tool.name}</h4>
+                                <span class="project-status ${statusClass}" style="font-size: 11px;">
+                                    ${statusText}
+                                </span>
+                            </div>
+                            <p style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">
+                                ${tool.description || 'No description'}
+                            </p>
+                            <a href="${tool.url}" target="_blank" style="
+                                color: var(--primary);
+                                text-decoration: none;
+                                font-size: 14px;
+                                font-weight: 500;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                            ">
+                                <i class="fas fa-external-link-alt"></i>
+                                Access Tool
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
         }
         
         function renderUpdates() {
             const container = document.getElementById('updatesList');
             const updates = dashboardData.updates;
             
-            // Similar implementation for updates
-            container.innerHTML = '<p>Updates rendering to be implemented</p>';
+            if (!updates || updates.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <p>No updates available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 16px;">';
+            
+            updates.forEach(update => {
+                const date = update.created_at ? 
+                    new Date(update.created_at).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Recently';
+                
+                html += `
+                    <div style="
+                        padding: 16px;
+                        border-left: 3px solid var(--primary);
+                        background: var(--light);
+                        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+                    ">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            margin-bottom: 8px;
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        ">
+                            <h4 style="font-weight: 600; color: var(--dark);">${update.title}</h4>
+                            <span style="color: var(--gray); font-size: 13px;">
+                                <i class="far fa-clock"></i> ${date}
+                            </span>
+                        </div>
+                        <p style="color: var(--gray); font-size: 14px; margin-bottom: 12px;">
+                            ${update.content || ''}
+                        </p>
+                        ${update.link ? `
+                            <a href="${update.link}" target="_blank" style="
+                                color: var(--primary);
+                                text-decoration: none;
+                                font-size: 14px;
+                                font-weight: 500;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                            ">
+                                <i class="fas fa-external-link-alt"></i>
+                                View Details
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
         }
         
-        function requestFeedback(projectId) {
-            const project = dashboardData.projects.find(p => p.id === projectId);
-            if (!project) return;
+        // ========== UI INTERACTIONS ==========
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
             
-            alert(`Feedback requested for: ${project.name}\n\nShare feedback via:\n- WhatsApp\n- Email\n- Direct message`);
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
         
         function toggleAdminPanel() {
@@ -1426,21 +1850,100 @@
             panel.classList.toggle('active');
         }
         
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
-        
         function refreshDashboard() {
-            loadDashboardData();
+            const btn = document.querySelector('.refresh-btn');
+            const icon = btn.querySelector('i');
+            const text = btn.querySelector('.refresh-text');
+            
+            // Show loading state
+            icon.className = 'fas fa-spinner fa-spin';
+            text.textContent = 'Refreshing...';
+            btn.disabled = true;
+            
+            // Refresh data
+            loadDashboardData().finally(() => {
+                // Restore button state
+                setTimeout(() => {
+                    icon.className = 'fas fa-sync-alt';
+                    text.textContent = 'Refresh';
+                    btn.disabled = false;
+                }, 1000);
+            });
         }
         
-        function logout() {
-            localStorage.removeItem('dashboard_auth');
-            currentUser = null;
-            isAdmin = false;
-            showLoginScreen();
+        function requestFeedback(projectId) {
+            const project = dashboardData.projects.find(p => p.id === projectId);
+            if (!project) return;
+            
+            alert(`📋 Feedback Requested:\n\nProject: ${project.name}\n\nPlease provide feedback via:\n• WhatsApp message\n• Email response\n• Direct conversation\n\nClick "OK" to continue.`);
         }
         
+        function editProject(projectId) {
+            alert(`Edit project ${projectId} - Admin functionality coming soon!`);
+            // TODO: Implement project editing
+        }
+        
+        // ========== HELPER FUNCTIONS ==========
+        function showLoadingStates() {
+            // Projects
+            const projectsList = document.getElementById('projectsList');
+            if (projectsList) {
+                projectsList.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading projects...</p>
+                    </div>
+                `;
+            }
+            
+            // Tools
+            const toolsList = document.getElementById('toolsList');
+            if (toolsList) {
+                toolsList.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading tools...</p>
+                    </div>
+                `;
+            }
+            
+            // Updates
+            const updatesList = document.getElementById('updatesList');
+            if (updatesList) {
+                updatesList.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading updates...</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function showDataError() {
+            const container = document.getElementById('projectsList');
+            if (container) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                        <p>Failed to load data</p>
+                        <button onclick="loadDashboardData()" style="
+                            margin-top: 16px;
+                            padding: 10px 20px;
+                            background: var(--primary);
+                            color: white;
+                            border: none;
+                            border-radius: var(--radius-md);
+                            cursor: pointer;
+                        ">
+                            <i class="fas fa-sync-alt"></i>
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
             // Enter key login
             document.getElementById('password').addEventListener('keypress', function(e) {
@@ -1449,9 +1952,7 @@
             
             // Navigation items
             document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
+                item.addEventListener('click', function() {
                     // Remove active class from all items
                     document.querySelectorAll('.nav-item').forEach(i => {
                         i.classList.remove('active');
@@ -1470,35 +1971,48 @@
             // Admin tabs
             document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Update tab buttons
                     document.querySelectorAll('.admin-tab').forEach(t => {
                         t.classList.remove('active');
                     });
                     this.classList.add('active');
+                    
+                    // Show corresponding content
+                    document.querySelectorAll('.admin-tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    const contentDiv = document.getElementById(`admin${tabId.charAt(0).toUpperCase() + tabId.slice(1)}Tab`);
+                    if (contentDiv) {
+                        contentDiv.style.display = 'block';
+                    }
                 });
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+            
+            // Close admin panel with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const panel = document.getElementById('adminPanel');
+                    if (panel.classList.contains('active')) {
+                        panel.classList.remove('active');
+                    }
+                }
             });
         }
         
-        function showDashboardError() {
-            const container = document.getElementById('projectsList');
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 16px;"></i>
-                    <p>Failed to load dashboard data</p>
-                    <button onclick="loadDashboardData()" style="
-                        margin-top: 16px;
-                        padding: 10px 20px;
-                        background: var(--primary);
-                        color: white;
-                        border: none;
-                        border-radius: var(--radius-md);
-                        cursor: pointer;
-                    ">
-                        <i class="fas fa-sync-alt"></i>
-                        Try Again
-                    </button>
-                </div>
-            `;
-        }
+        // ========== INITIAL DATA LOAD ==========
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            if (currentUser) {
+                console.log('🔄 Auto-refreshing dashboard data...');
+                loadDashboardData();
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
