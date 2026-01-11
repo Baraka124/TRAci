@@ -3,54 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neumology Innovation Dashboard</title>
-    <!-- Fonts & Icons -->
+    <title>Neumology Innovation Project Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase JS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Only ONE Supabase script -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            /* Modern Color Palette */
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
-            
-            /* Neutral Colors */
+            --light: #f8fafc;
             --dark: #1e293b;
-            --darker: #0f172a;
             --gray: #64748b;
             --gray-light: #e2e8f0;
-            --light: #f8fafc;
-            --lighter: #ffffff;
-            
-            /* UI Elements */
-            --border: #e2e8f0;
+            --border: #cbd5e1;
             --card-bg: #ffffff;
-            --sidebar-bg: #0f172a;
-            --sidebar-text: #cbd5e1;
-            
-            /* Effects */
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
-            --gradient-dark: linear-gradient(135deg, var(--darker), #1e293b);
-            
-            /* Border Radius */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-full: 9999px;
         }
 
         * {
@@ -61,573 +36,309 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--light);
+            background: var(--bg-gradient);
             color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
-        }
-
-        /* ===== LOGIN SCREEN ===== */
-        #loginScreen {
-            display: flex;
-            min-height: 100vh;
-            background: var(--gradient-dark);
-            position: relative;
-            overflow: hidden;
             padding: 20px;
         }
 
-        .login-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background: 
-                radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, var(--secondary) 0%, transparent 50%);
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .login-container {
-            margin: auto;
-            width: 100%;
-            max-width: 440px;
-            z-index: 10;
-        }
-
-        .login-card {
-            background: var(--lighter);
-            border-radius: var(--radius-xl);
-            padding: 48px 40px;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo-large {
-            width: 80px;
-            height: 80px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-lg);
-            margin: 0 auto 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 32px;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .login-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 8px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .login-subtitle {
-            text-align: center;
-            color: var(--gray);
-            margin-bottom: 40px;
-            font-size: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-            font-size: 14px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            transition: all 0.2s;
-            background: var(--light);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-            background: white;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        .error-message {
-            display: none;
-            align-items: center;
-            gap: 10px;
-            color: var(--danger);
-            background: #fee2e2;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .login-footer {
-            text-align: center;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        /* ===== DASHBOARD LAYOUT ===== */
-        #dashboardContainer {
-            display: none;
-            min-height: 100vh;
-        }
-
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--dark);
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            padding: 24px;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding-bottom: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 24px;
-        }
-
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .sidebar-logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-        }
-
-        .sidebar-logo-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .sidebar-tagline {
-            font-size: 12px;
-            color: var(--sidebar-text);
-            opacity: 0.7;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: var(--radius-md);
-            color: var(--sidebar-text);
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 15px;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .nav-item.active {
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: var(--shadow);
-        }
-
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .user-section {
-            margin-top: auto;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-name {
-            color: white;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .user-role {
-            font-size: 12px;
-            color: var(--sidebar-text);
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            margin-top: 12px;
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            background: white;
-            padding: 20px 32px;
-            border-bottom: 1px solid var(--border);
+        /* Header */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: var(--shadow);
-        }
-
-        .top-bar-left {
-            display: flex;
-            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
             gap: 20px;
         }
 
-        .top-bar-left h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .top-bar-right {
+        .logo-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .admin-toggle {
-            background: var(--gradient-primary);
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            font-size: 14px;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .admin-toggle:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(22px, 4vw, 28px);
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
         }
 
-        .refresh-btn {
-            background: none;
-            border: 2px solid var(--border);
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
+        .title p {
             color: var(--gray);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
             font-size: 14px;
         }
 
-        .refresh-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+        .last-updated {
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Stats Grid */
-        .stats-grid {
-            padding: 32px;
+        /* Stats Cards */
+        .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s;
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
+            transform: translateY(-5px);
         }
 
         .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-md);
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 22px;
             color: white;
         }
 
-        .stat-icon.tools { background: var(--primary); }
-        .stat-icon.projects { background: var(--secondary); }
-        .stat-icon.feedback { background: var(--warning); }
-        .stat-icon.active { background: var(--success); }
+        .stat-icon.tools { background: linear-gradient(135deg, var(--primary), #60a5fa); }
+        .stat-icon.projects { background: linear-gradient(135deg, var(--secondary), #a78bfa); }
+        .stat-icon.feedback { background: linear-gradient(135deg, var(--warning), #fbbf24); }
+        .stat-icon.active { background: linear-gradient(135deg, var(--success), #34d399); }
 
-        .stat-title {
-            font-size: 14px;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1;
-            margin: 8px 0 4px;
-        }
-
-        .stat-change {
-            font-size: 13px;
-            color: var(--success);
+        /* Filter Controls */
+        .filter-controls {
             display: flex;
-            align-items: center;
-            gap: 4px;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        /* Content Sections */
-        .content-sections {
-            padding: 0 32px 32px;
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            background: var(--gray-light);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Content Grid */
+        .content-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 32px;
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
-        @media (min-width: 1200px) {
-            .content-sections {
+        @media (min-width: 992px) {
+            .content-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
+        /* Sections */
         .section {
-            background: white;
-            border-radius: var(--radius-lg);
+            background: var(--card-bg);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
 
         .section-header {
-            padding: 20px 24px;
-            background: var(--light);
-            border-bottom: 1px solid var(--border);
+            padding: 20px 25px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
-        .section-title {
+        .section-header h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            color: var(--dark);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-badge {
+        .section-content {
+            padding: 25px;
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-card {
+            height: 150px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-text {
+            height: 12px;
+            margin-bottom: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .tool-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--dark);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             background: var(--primary);
             color: white;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .tool-status {
             font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-weight: 600;
         }
 
-        .section-content {
-            padding: 24px;
+        .status-operational {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: var(--warning);
         }
 
         /* Projects List */
         .projects-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .project-item {
-            padding: 20px;
+        .project-card {
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
         }
 
-        .project-item:hover {
+        .project-card:hover {
             border-color: var(--primary);
             box-shadow: var(--shadow);
         }
 
-        .project-item.needs-feedback {
-            border-left: 4px solid var(--warning);
-            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);
+        .project-card.needs-feedback {
+            border: 2px solid var(--warning);
+            background-color: #fffbeb;
         }
 
         .project-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .project-name {
+        .project-title {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 18px;
             color: var(--dark);
             display: flex;
             align-items: center;
@@ -635,904 +346,282 @@
         }
 
         .project-status {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
             font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
             font-weight: 600;
-            white-space: nowrap;
         }
 
-        .status-planning { background: #f3f4f6; color: var(--gray); }
-        .status-development { background: #dbeafe; color: var(--primary); }
-        .status-testing { background: #f0f9ff; color: var(--info); }
-        .status-staging { background: #fef3c7; color: var(--warning); }
-        .status-production { background: #d1fae5; color: var(--success); }
+        .status-development { background-color: #dbeafe; color: var(--primary); }
+        .status-testing { background-color: #f0f9ff; color: var(--info); }
+        .status-production { background-color: #d1fae5; color: var(--success); }
 
-        .project-description {
+        /* Recent Updates */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
             color: var(--gray);
             font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 16px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
         }
 
-        .progress-container {
-            margin-bottom: 16px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: var(--gray-light);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--gradient-primary);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: var(--gray);
-        }
-
-        .project-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-
-        .action-btn.github {
-            background: var(--dark);
-            color: white;
-        }
-
-        .action-btn.demo {
-            background: var(--primary);
-            color: white;
-        }
-
-        .action-btn.feedback {
-            background: var(--warning);
-            color: white;
-        }
-
-        /* Admin Panel */
-        #adminPanel {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 500px;
-            max-width: 90vw;
-            background: white;
-            z-index: 1000;
-            box-shadow: var(--shadow-xl);
-            border-left: 1px solid var(--border);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        #adminPanel.active {
-            transform: translateX(0);
-        }
-
-        .admin-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .admin-tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-        }
-
-        .admin-tab {
-            flex: 1;
-            padding: 16px;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-weight: 500;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 120px;
-            white-space: nowrap;
-        }
-
-        .admin-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .admin-content {
-            padding: 24px;
-            height: calc(100vh - 160px);
-            overflow-y: auto;
-        }
-
-        /* Loading States */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--gray-light);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            color: var(--gray-light);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                padding: 20px;
-                gap: 16px;
-            }
-            
-            .content-sections {
-                padding: 0 20px 20px;
-            }
-            
-            .top-bar {
-                padding: 16px 20px;
-            }
-        }
-
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .login-card {
-                padding: 32px 24px;
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
             }
             
-            .login-title {
-                font-size: 24px;
+            .last-updated {
+                width: 100%;
+                justify-content: center;
             }
             
-            .stats-grid {
+            .tools-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .top-bar-right {
-                flex-wrap: wrap;
-                justify-content: flex-end;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .project-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .project-actions {
-                width: 100%;
-            }
-            
-            .action-btn {
-                flex: 1;
-                justify-content: center;
-                min-width: 120px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 24px 20px;
-            }
-            
-            .logo-large {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
-            
-            .stat-value {
-                font-size: 28px;
-            }
-            
-            .admin-toggle, .refresh-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-        }
-
-        /* Overlay for mobile menu */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen">
-        <div class="login-background"></div>
-        <div class="login-container">
-            <div class="login-card">
-                <div class="logo-large">NIP</div>
-                <h1 class="login-title">Neumology Innovation Dashboard</h1>
-                <p class="login-subtitle">Track projects, provide feedback, and monitor progress</p>
-                
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="Enter username" autocomplete="username" value="neumo">
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">NIP</div>
+                <div class="title">
+                    <h1>Neumology Innovation Project Dashboard</h1>
+                    <p>Real-time status of all development projects & tools</p>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="password" class="form-input" placeholder="Enter password" autocomplete="current-password" value="innovation">
+            </div>
+            <div class="last-updated">
+                <i class="fas fa-sync-alt"></i>
+                <span>Last updated: <strong id="lastUpdatedTime">Loading...</strong></span>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon tools">
+                    <i class="fas fa-toolbox"></i>
                 </div>
-                
-                <button class="login-btn" onclick="login()">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Sign In to Dashboard
-                </button>
-                
-                <div id="loginError" class="error-message">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorText">Invalid credentials</span>
+                <div class="stat-info">
+                    <h3>Active Tools</h3>
+                    <div class="number" id="toolsCount">0</div>
                 </div>
-                
-                <div class="login-footer">
-                    <p><i class="fas fa-shield-alt"></i> Secure authentication powered by Supabase</p>
-                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
-                        Test users: neumo/innovation (Viewer) | baraka/Baraka (Admin)
-                    </p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon projects">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>GitHub Projects</h3>
+                    <div class="number" id="projectsCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon feedback">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Awaiting Feedback</h3>
+                    <div class="number" id="feedbackCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon active">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Development</h3>
+                    <div class="number" id="activeCount">0</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Dashboard Container -->
-    <div id="dashboardContainer">
-        <!-- Sidebar Overlay (Mobile) -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-        
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <div class="sidebar-logo-icon">NIP</div>
-                    <div class="sidebar-logo-text">Neumology Dashboard</div>
-                </div>
-                <p class="sidebar-tagline">Innovation Project Tracker</p>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-view="overview">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Overview</span>
-                </button>
-                <button class="nav-item" data-view="projects">
-                    <i class="fas fa-code-branch"></i>
-                    <span>Projects</span>
-                </button>
-                <button class="nav-item" data-view="tools">
-                    <i class="fas fa-toolbox"></i>
-                    <span>Tools</span>
-                </button>
-                <button class="nav-item" data-view="updates">
-                    <i class="fas fa-history"></i>
-                    <span>Updates</span>
-                </button>
-                <button class="nav-item" data-view="feedback">
-                    <i class="fas fa-comments"></i>
-                    <span>Feedback</span>
-                </button>
-            </nav>
-            
-            <div class="user-section">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="user-details">
-                        <div class="user-name" id="userName">Loading...</div>
-                        <div class="user-role" id="userRole">Role</div>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sign Out
-                </button>
-            </div>
+        <!-- Filter Controls -->
+        <div class="filter-controls" id="filterControls">
+            <button class="filter-btn active" data-filter="all">All Projects</button>
+            <button class="filter-btn" data-filter="needs_feedback">Needs Feedback</button>
+            <button class="filter-btn" data-filter="development">In Development</button>
+            <button class="filter-btn" data-filter="testing">Testing</button>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div class="top-bar-left">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 id="pageTitle">Dashboard Overview</h1>
+        <div class="content-grid">
+            <!-- Tools Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-toolbox"></i> Live Tools & Resources</h2>
+                    <span class="tool-status status-operational" id="toolsStatus">Loading...</span>
                 </div>
-                <div class="top-bar-right">
-                    <button class="refresh-btn" onclick="refreshDashboard()">
-                        <i class="fas fa-sync-alt"></i>
-                        <span class="refresh-text">Refresh</span>
-                    </button>
-                    <button class="admin-toggle" onclick="toggleAdminPanel()" id="adminToggleBtn" style="display: none;">
-                        <i class="fas fa-cogs"></i>
-                        <span class="admin-text">Admin Panel</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Section -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Active Projects</div>
-                            <div class="stat-value" id="projectsCount">0</div>
-                        </div>
-                        <div class="stat-icon projects">
-                            <i class="fas fa-code-branch"></i>
-                        </div>
-                    </div>
-                    <div class="stat-change">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>Updated just now</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Live Tools</div>
-                            <div class="stat-value" id="toolsCount">0</div>
-                        </div>
-                        <div class="stat-icon tools">
-                            <i class="fas fa-toolbox"></i>
-                        </div>
-                    </div>
-                    <div class="stat-change">
-                        <i class="fas fa-check-circle"></i>
-                        <span>All operational</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Awaiting Feedback</div>
-                            <div class="stat-value" id="feedbackCount">0</div>
-                        </div>
-                        <div class="stat-icon feedback">
-                            <i class="fas fa-comment-dots"></i>
-                        </div>
-                    </div>
-                    <div class="stat-change">
-                        <i class="fas fa-clock"></i>
-                        <span>Needs attention</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Active Development</div>
-                            <div class="stat-value" id="activeCount">0</div>
-                        </div>
-                        <div class="stat-icon active">
-                            <i class="fas fa-rocket"></i>
-                        </div>
-                    </div>
-                    <div class="stat-change">
-                        <i class="fas fa-fire"></i>
-                        <span>In progress</span>
+                <div class="section-content">
+                    <div class="tools-grid" id="toolsGrid">
+                        <!-- Skeleton Loading -->
+                        <div class="tool-card skeleton skeleton-card"></div>
+                        <div class="tool-card skeleton skeleton-card"></div>
+                        <div class="tool-card skeleton skeleton-card"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Content Sections -->
-            <div class="content-sections">
-                <!-- Projects Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-code-branch"></i>
-                            Active Development
-                        </h2>
-                        <div class="section-badge" id="projectsBadge">0 projects</div>
-                    </div>
-                    <div class="section-content">
-                        <div id="projectsList" class="loading">
-                            <div class="loading-spinner"></div>
-                            <p>Loading projects...</p>
-                        </div>
-                    </div>
+            <!-- Projects Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-code-branch"></i> Active Development</h2>
+                    <div class="tool-status status-warning" id="feedbackBadge" style="display: none;">0 need feedback</div>
                 </div>
-
-                <!-- Tools Section -->
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-toolbox"></i>
-                            Live Tools & Resources
-                        </h2>
-                        <div class="section-badge" id="toolsBadge">0 tools</div>
-                    </div>
-                    <div class="section-content">
-                        <div id="toolsList" class="loading">
-                            <div class="loading-spinner"></div>
-                            <p>Loading tools...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Updates Section -->
-                <div class="section" style="grid-column: 1 / -1;">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-history"></i>
-                            Recent Updates
-                        </h2>
-                    </div>
-                    <div class="section-content">
-                        <div id="updatesList" class="loading">
-                            <div class="loading-spinner"></div>
-                            <p>Loading updates...</p>
-                        </div>
+                <div class="section-content">
+                    <div class="projects-list" id="projectsList">
+                        <!-- Skeleton Loading -->
+                        <div class="project-card skeleton skeleton-card"></div>
+                        <div class="project-card skeleton skeleton-card"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Admin Panel -->
-        <div id="adminPanel">
-            <div class="admin-header">
-                <h2 class="admin-title">Admin Dashboard</h2>
-                <button class="logout-btn" onclick="toggleAdminPanel()">
-                    <i class="fas fa-times"></i>
-                    Close
+        <!-- Recent Updates Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Recent Updates</h2>
+            </div>
+            <div class="section-content">
+                <div class="timeline" id="timeline">
+                    <div class="timeline-item">
+                        <div class="skeleton skeleton-text" style="width: 100px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 100%; height: 60px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Neumology Innovation Project Dashboard • Powered by Supabase</p>
+            <p style="margin-top: 10px;">
+                <button id="refreshBtn" class="filter-btn">
+                    <i class="fas fa-redo"></i> Refresh Data
                 </button>
-            </div>
-            
-            <div class="admin-tabs">
-                <button class="admin-tab active" data-tab="projects">Projects</button>
-                <button class="admin-tab" data-tab="tools">Tools</button>
-                <button class="admin-tab" data-tab="users">Users</button>
-                <button class="admin-tab" data-tab="settings">Settings</button>
-            </div>
-            
-            <div class="admin-content">
-                <div id="adminProjectsTab" class="admin-tab-content active">
-                    <h3 style="margin-bottom: 20px;">Manage Projects</h3>
-                    <div id="adminProjectsList" class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading projects for editing...</p>
-                    </div>
-                </div>
-                
-                <div id="adminToolsTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Manage Tools</h3>
-                    <p>Tools management coming soon...</p>
-                </div>
-                
-                <div id="adminUsersTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Manage Users</h3>
-                    <p>User management coming soon...</p>
-                </div>
-                
-                <div id="adminSettingsTab" class="admin-tab-content" style="display: none;">
-                    <h3 style="margin-bottom: 20px;">Settings</h3>
-                    <p>Settings management coming soon...</p>
-                </div>
-            </div>
-        </div>
+                <span style="margin: 0 10px;">•</span>
+                <a href="#" id="githubLink" class="filter-btn" style="text-decoration: none;">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </p>
+        </footer>
     </div>
 
     <script>
-        // ========== CONFIGURATION ==========
+        // ========== SUPABASE CONFIGURATION ==========
+        // IMPORTANT: Replace these with your actual Supabase credentials
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
         
-        // ========== GLOBAL VARIABLES ==========
-        let supabase = null;
-        let currentUser = null;
-        let isAdmin = false;
+        // Initialize Supabase client - ONLY ONCE
+        let supabase;
+        
+        // ========== DASHBOARD STATE ==========
         let dashboardData = {
             projects: [],
             tools: [],
-            updates: []
+            updates: [],
+            filteredProjects: []
         };
-        
+
         // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard initializing...');
-            initializeApp();
-        });
-        
-        async function initializeApp() {
+        document.addEventListener('DOMContentLoaded', async function() {
             try {
                 // Initialize Supabase
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase initialized');
-                
-                // Check for stored authentication
-                if (checkStoredAuth()) {
-                    console.log('✅ Found stored auth');
-                    await loadDashboard();
-                } else {
-                    console.log('⚠️ No stored auth, showing login');
-                    showLoginScreen();
-                }
+                console.log('Supabase client initialized');
                 
                 // Setup event listeners
                 setupEventListeners();
                 
-            } catch (error) {
-                console.error('❌ App initialization failed:', error);
-                showError('Failed to initialize application. Please refresh.');
-            }
-        }
-        
-        // ========== AUTHENTICATION ==========
-        async function login() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            
-            // Clear previous errors
-            hideError();
-            
-            // Validation
-            if (!username || !password) {
-                showError('Please enter both username and password');
-                return;
-            }
-            
-            console.log(`🔄 Attempting login for: ${username}`);
-            
-            try {
-                // Try Supabase authentication first
-                let userData = null;
+                // Load initial data
+                await loadDashboardData();
                 
-                // Method 1: Try RPC function
-                try {
-                    const { data, error } = await supabase.rpc('verify_password', {
-                        input_username: username,
-                        input_password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    if (data && data.length > 0) {
-                        userData = data[0];
-                        console.log('✅ RPC authentication successful');
-                    }
-                } catch (rpcError) {
-                    console.log('⚠️ RPC failed, trying direct query...', rpcError.message);
-                    
-                    // Method 2: Direct query fallback
-                    const { data: directData, error: directError } = await supabase
-                        .from('dashboard_users')
-                        .select('*')
-                        .eq('username', username)
-                        .single();
-                    
-                    if (!directError && directData) {
-                        // For now, use simple password check (in production, use proper hashing)
-                        // TEMPORARY: Simple password comparison
-                        if (password === 'innovation' && username === 'neumo') {
-                            userData = {
-                                user_id: directData.id,
-                                username: directData.username,
-                                full_name: directData.full_name,
-                                role: directData.role
-                            };
-                        } else if (password === 'Baraka' && username === 'baraka') {
-                            userData = {
-                                user_id: directData.id,
-                                username: directData.username,
-                                full_name: directData.full_name,
-                                role: directData.role
-                            };
-                        }
-                    }
-                }
-                
-                if (userData) {
-                    // Login successful
-                    currentUser = {
-                        id: userData.user_id,
-                        username: userData.username,
-                        name: userData.full_name,
-                        role: userData.role
-                    };
-                    isAdmin = userData.role === 'admin';
-                    
-                    console.log('✅ Login successful:', currentUser);
-                    
-                    // Save authentication
-                    saveAuthToStorage();
-                    
-                    // Load dashboard
-                    await loadDashboard();
-                    
-                } else {
-                    // Fallback to hardcoded credentials (for testing)
-                    console.log('⚠️ Database auth failed, trying fallback...');
-                    
-                    const fallbackUsers = {
-                        'neumo': { password: 'innovation', role: 'viewer', name: 'Department Head' },
-                        'baraka': { password: 'Baraka', role: 'admin', name: 'Admin User' }
-                    };
-                    
-                    if (fallbackUsers[username] && fallbackUsers[username].password === password) {
-                        currentUser = {
-                            username: username,
-                            name: fallbackUsers[username].name,
-                            role: fallbackUsers[username].role
-                        };
-                        isAdmin = currentUser.role === 'admin';
-                        
-                        console.log('✅ Fallback login successful');
-                        
-                        // Save authentication
-                        saveAuthToStorage();
-                        
-                        // Load dashboard
-                        await loadDashboard();
-                    } else {
-                        showError('Invalid username or password');
-                    }
-                }
+                // Setup auto-refresh (every 5 minutes)
+                setInterval(loadDashboardData, 5 * 60 * 1000);
                 
             } catch (error) {
-                console.error('❌ Login error:', error);
-                showError('Login failed. Please try again.');
+                console.error('Failed to initialize dashboard:', error);
+                showError('Failed to initialize. Please check your Supabase configuration.');
             }
-        }
-        
-        function checkStoredAuth() {
-            try {
-                const stored = localStorage.getItem('dashboard_auth');
-                if (!stored) return false;
-                
-                const authData = JSON.parse(stored);
-                
-                // Check if auth is older than 24 hours
-                const hoursSinceLogin = (Date.now() - authData.timestamp) / (1000 * 60 * 60);
-                if (hoursSinceLogin > 24) {
-                    localStorage.removeItem('dashboard_auth');
-                    return false;
-                }
-                
-                currentUser = authData.user;
-                isAdmin = currentUser.role === 'admin';
-                
-                return true;
-            } catch (error) {
-                localStorage.removeItem('dashboard_auth');
-                return false;
-            }
-        }
-        
-        function saveAuthToStorage() {
-            const authData = {
-                user: currentUser,
-                timestamp: Date.now()
-            };
-            localStorage.setItem('dashboard_auth', JSON.stringify(authData));
-        }
-        
-        function logout() {
-            localStorage.removeItem('dashboard_auth');
-            currentUser = null;
-            isAdmin = false;
-            showLoginScreen();
-        }
-        
-        // ========== UI MANAGEMENT ==========
-        function showLoginScreen() {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('dashboardContainer').style.display = 'none';
-            document.getElementById('sidebarOverlay').classList.remove('active');
-            document.getElementById('sidebar').classList.remove('active');
-        }
-        
-        async function loadDashboard() {
-            console.log('🔄 Loading dashboard...');
-            
-            // Hide login, show dashboard
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardContainer').style.display = 'block';
-            
-            // Update user info
-            updateUserInfo();
-            
-            // Show/hide admin button
-            const adminBtn = document.getElementById('adminToggleBtn');
-            if (adminBtn) {
-                adminBtn.style.display = isAdmin ? 'flex' : 'none';
-            }
-            
-            // Load dashboard data
-            await loadDashboardData();
-        }
-        
-        function updateUserInfo() {
-            if (!currentUser) return;
-            
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRole').textContent = isAdmin ? 'Administrator' : 'Viewer';
-            
-            // Set avatar initials
-            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('userAvatar').textContent = initials.substring(0, 2);
-        }
-        
-        function showError(message) {
-            const errorDiv = document.getElementById('loginError');
-            const errorText = document.getElementById('errorText');
-            
-            if (errorText) errorText.textContent = message;
-            if (errorDiv) errorDiv.style.display = 'flex';
-        }
-        
-        function hideError() {
-            const errorDiv = document.getElementById('loginError');
-            if (errorDiv) errorDiv.style.display = 'none';
-        }
-        
-        // ========== DASHBOARD DATA ==========
+        });
+
+        // ========== DATA FETCHING ==========
         async function loadDashboardData() {
-            console.log('🔄 Loading dashboard data...');
+            showLoadingState();
             
             try {
-                // Show loading states
-                showLoadingStates();
-                
-                // Load all data
-                const [projects, tools, updates] = await Promise.all([
+                // Fetch all data in parallel
+                await Promise.all([
                     fetchProjects(),
                     fetchTools(),
                     fetchUpdates()
                 ]);
                 
-                dashboardData = { projects, tools, updates };
-                
                 // Update UI
                 updateStats();
-                renderProjects();
                 renderTools();
+                renderProjects();
                 renderUpdates();
+                updateTimestamp();
                 
-                console.log('✅ Dashboard data loaded successfully');
+                console.log('Dashboard data loaded successfully');
                 
             } catch (error) {
-                console.error('❌ Error loading dashboard data:', error);
-                showDataError();
+                console.error('Error loading dashboard data:', error);
+                showError('Failed to load data from Supabase. Check your connection.');
             }
         }
-        
+
         async function fetchProjects() {
             try {
                 const { data, error } = await supabase
                     .from('projects')
-                    .select('*')
+                    .select(`
+                        *,
+                        feedback_channels (*)
+                    `)
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
-                return data || [];
+                
+                dashboardData.projects = data || [];
+                dashboardData.filteredProjects = [...dashboardData.projects];
+                
             } catch (error) {
                 console.error('Error fetching projects:', error);
-                
-                // Return sample data for testing
-                return [
-                    {
-                        id: '1',
-                        name: 'ThoraxLab Platform',
-                        description: 'Medical imaging analysis tool for CT scans',
-                        status: 'production',
-                        progress: 100,
-                        github_url: 'https://github.com/baraka124/ThoraxLab',
-                        live_url: 'https://baraka124.github.io/ThoraxLab/',
-                        needs_feedback: true,
-                        last_updated: new Date().toISOString()
-                    },
-                    {
-                        id: '2',
-                        name: 'Patient Management System',
-                        description: 'Complete patient record management',
-                        status: 'development',
-                        progress: 75,
-                        github_url: 'https://github.com/example/patient-mgmt',
-                        live_url: 'https://staging-patient.example.com',
-                        needs_feedback: false,
-                        last_updated: new Date().toISOString()
-                    }
-                ];
+                dashboardData.projects = [];
+                dashboardData.filteredProjects = [];
             }
         }
-        
+
         async function fetchTools() {
             try {
                 const { data, error } = await supabase
@@ -1541,477 +630,364 @@
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
-                return data || [];
+                dashboardData.tools = data || [];
+                
             } catch (error) {
                 console.error('Error fetching tools:', error);
-                return [];
+                dashboardData.tools = [];
             }
         }
-        
+
         async function fetchUpdates() {
             try {
                 const { data, error } = await supabase
                     .from('updates')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(5);
+                    .limit(10);
                 
                 if (error) throw error;
-                return data || [];
+                dashboardData.updates = data || [];
+                
             } catch (error) {
                 console.error('Error fetching updates:', error);
-                return [];
+                dashboardData.updates = [];
             }
         }
-        
+
+        // ========== UI RENDERING ==========
         function updateStats() {
-            const projects = dashboardData.projects;
-            const tools = dashboardData.tools;
-            
-            const projectsCount = projects.length;
-            const toolsCount = tools.length;
-            const feedbackCount = projects.filter(p => p.needs_feedback).length;
-            const activeCount = projects.filter(p => 
+            const toolsCount = dashboardData.tools.length;
+            const projectsCount = dashboardData.projects.length;
+            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+            const activeCount = dashboardData.projects.filter(p => 
                 p.status === 'development' || p.status === 'testing'
             ).length;
-            
-            // Update stats
-            document.getElementById('projectsCount').textContent = projectsCount;
+
             document.getElementById('toolsCount').textContent = toolsCount;
+            document.getElementById('projectsCount').textContent = projectsCount;
             document.getElementById('feedbackCount').textContent = feedbackCount;
             document.getElementById('activeCount').textContent = activeCount;
-            
-            // Update badges
-            document.getElementById('projectsBadge').textContent = `${projectsCount} project${projectsCount !== 1 ? 's' : ''}`;
-            document.getElementById('toolsBadge').textContent = `${toolsCount} tool${toolsCount !== 1 ? 's' : ''}`;
+
+            // Update feedback badge
+            const feedbackBadge = document.getElementById('feedbackBadge');
+            if (feedbackCount > 0) {
+                feedbackBadge.textContent = `${feedbackCount} need${feedbackCount > 1 ? '' : 's'} feedback`;
+                feedbackBadge.style.display = 'inline-block';
+            } else {
+                feedbackBadge.style.display = 'none';
+            }
+
+            // Update tools status
+            const toolsStatus = document.getElementById('toolsStatus');
+            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+            if (hasWarning) {
+                toolsStatus.textContent = 'Needs Attention';
+                toolsStatus.className = 'tool-status status-warning';
+            } else {
+                toolsStatus.textContent = 'All Operational';
+                toolsStatus.className = 'tool-status status-operational';
+            }
         }
-        
-        function renderProjects() {
-            const container = document.getElementById('projectsList');
-            const projects = dashboardData.projects;
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
             
-            if (!projects || projects.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No projects found</p>
-                        ${isAdmin ? `
-                            <button onclick="toggleAdminPanel()" style="
-                                margin-top: 16px;
-                                padding: 10px 20px;
-                                background: var(--primary);
-                                color: white;
-                                border: none;
-                                border-radius: var(--radius-md);
-                                cursor: pointer;
-                            ">
-                                <i class="fas fa-plus"></i> Add Projects
-                            </button>
-                        ` : ''}
+            if (dashboardData.tools.length === 0) {
+                toolsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-toolbox" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <p>No tools found. Add some in your Supabase database.</p>
                     </div>
                 `;
                 return;
             }
             
-            let html = '<div class="projects-list">';
+            const toolsHTML = dashboardData.tools.map(tool => {
+                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+                
+                return `
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-name">
+                                <div class="tool-icon">
+                                    <i class="${tool.icon || 'fas fa-tools'}"></i>
+                                </div>
+                                <span>${tool.name}</span>
+                            </div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p style="color: var(--gray); font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
+                            ${tool.description || 'No description available'}
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                            <span style="color: var(--gray);">
+                                ${tool.last_checked ? `Last checked: ${new Date(tool.last_checked).toLocaleDateString()}` : ''}
+                            </span>
+                            ${tool.url ? `
+                                <a href="${tool.url}" target="_blank" style="
+                                    color: var(--primary);
+                                    text-decoration: none;
+                                    font-weight: 600;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 5px;
+                                ">
+                                    Access <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
             
-            projects.forEach(project => {
+            toolsGrid.innerHTML = toolsHTML;
+        }
+
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            const projectsToRender = dashboardData.filteredProjects.length > 0 
+                ? dashboardData.filteredProjects 
+                : dashboardData.projects;
+            
+            if (projectsToRender.length === 0) {
+                projectsList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-code-branch" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <p>No projects found. Add some in your Supabase database.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const projectsHTML = projectsToRender.map(project => {
                 const statusClass = `status-${project.status}`;
                 const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-                const needsFeedback = project.needs_feedback;
-                const lastUpdated = project.last_updated ? 
-                    new Date(project.last_updated).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                    }) : 'Recently';
+                const needsFeedbackClass = project.needs_feedback ? 'needs-feedback' : '';
                 
-                html += `
-                    <div class="project-item ${needsFeedback ? 'needs-feedback' : ''}">
+                // Build feedback channels
+                let feedbackChannels = '';
+                if (project.needs_feedback && project.feedback_channels) {
+                    project.feedback_channels.forEach(channel => {
+                        let icon = 'fas fa-comment';
+                        let className = 'email';
+                        
+                        if (channel.channel === 'whatsapp') icon = 'fab fa-whatsapp';
+                        else if (channel.channel === 'github') icon = 'fab fa-github';
+                        else if (channel.channel === 'slack') icon = 'fab fa-slack';
+                        
+                        feedbackChannels += `
+                            <a href="${channel.action_url || '#'}" target="_blank" 
+                               style="margin-left: 5px; color: var(--primary); font-size: 14px;">
+                                <i class="${icon}"></i>
+                            </a>
+                        `;
+                    });
+                }
+                
+                return `
+                    <div class="project-card ${needsFeedbackClass}">
                         <div class="project-header">
-                            <div class="project-name">
+                            <div class="project-title">
                                 <i class="fas fa-code"></i>
                                 ${project.name}
                             </div>
                             <span class="project-status ${statusClass}">${statusText}</span>
                         </div>
                         
-                        <p class="project-description">${project.description || 'No description available'}</p>
+                        <p style="color: var(--gray); font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
+                            ${project.description || 'No description available'}
+                        </p>
                         
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                            </div>
-                            <div class="progress-text">
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px;">
                                 <span>Progress</span>
-                                <span>${project.progress || 0}% • Updated ${lastUpdated}</span>
+                                <span>${project.progress || 0}%</span>
+                            </div>
+                            <div style="height: 8px; background-color: var(--gray-light); border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${project.progress || 0}%; height: 100%; 
+                                     background: linear-gradient(90deg, var(--primary), var(--secondary));
+                                     border-radius: 4px;"></div>
                             </div>
                         </div>
                         
-                        <div class="project-actions">
+                        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                             ${project.github_url ? `
-                                <a href="${project.github_url}" target="_blank" class="action-btn github">
-                                    <i class="fab fa-github"></i>
-                                    GitHub
+                                <a href="${project.github_url}" target="_blank" 
+                                   style="display: flex; align-items: center; gap: 8px; color: var(--primary); 
+                                          text-decoration: none; font-size: 14px; font-weight: 500;">
+                                    <i class="fab fa-github"></i> GitHub
                                 </a>
                             ` : ''}
                             
                             ${project.live_url ? `
-                                <a href="${project.live_url}" target="_blank" class="action-btn demo">
-                                    <i class="fas fa-external-link-alt"></i>
-                                    Live Demo
+                                <a href="${project.live_url}" target="_blank" 
+                                   style="display: flex; align-items: center; gap: 8px; color: var(--primary); 
+                                          text-decoration: none; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
                                 </a>
                             ` : ''}
-                            
-                            ${needsFeedback ? `
-                                <button class="action-btn feedback" onclick="requestFeedback('${project.id}')">
-                                    <i class="fas fa-comment"></i>
-                                    Needs Feedback
-                                </button>
-                            ` : ''}
-                            
-                            ${isAdmin ? `
-                                <button class="action-btn" onclick="editProject('${project.id}')" style="background: var(--info); color: white;">
-                                    <i class="fas fa-edit"></i>
-                                    Edit
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function renderTools() {
-            const container = document.getElementById('toolsList');
-            const tools = dashboardData.tools;
-            
-            if (!tools || tools.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-toolbox"></i>
-                        <p>No tools available</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '<div style="display: grid; gap: 16px;">';
-            
-            tools.forEach(tool => {
-                const status = tool.status || 'operational';
-                const statusClass = status === 'operational' ? 'status-production' : 'status-staging';
-                const statusText = status === 'operational' ? 'Operational' : 'Maintenance';
-                
-                html += `
-                    <div style="
-                        padding: 16px;
-                        border: 1px solid var(--border);
-                        border-radius: var(--radius-md);
-                        display: flex;
-                        align-items: center;
-                        gap: 16px;
-                    ">
-                        <div style="
-                            width: 48px;
-                            height: 48px;
-                            background: var(--primary);
-                            border-radius: var(--radius-md);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            color: white;
-                            font-size: 20px;
-                        ">
-                            ${tool.icon || '🛠️'}
                         </div>
                         
-                        <div style="flex: 1;">
-                            <div style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                margin-bottom: 4px;
-                            ">
-                                <h4 style="font-weight: 600; color: var(--dark);">${tool.name}</h4>
-                                <span class="project-status ${statusClass}" style="font-size: 11px;">
-                                    ${statusText}
-                                </span>
-                            </div>
-                            <p style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">
-                                ${tool.description || 'No description'}
-                            </p>
-                            <a href="${tool.url}" target="_blank" style="
-                                color: var(--primary);
-                                text-decoration: none;
-                                font-size: 14px;
-                                font-weight: 500;
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 6px;
-                            ">
-                                <i class="fas fa-external-link-alt"></i>
-                                Access Tool
-                            </a>
+                        <div style="display: flex; justify-content: space-between; align-items: center; 
+                                    font-size: 13px; color: var(--gray);">
+                            <span>
+                                <i class="fas fa-calendar"></i>
+                                Last updated: ${project.updated_at ? new Date(project.updated_at).toLocaleDateString() : 'Never'}
+                            </span>
+                            
+                            ${project.needs_feedback ? `
+                                <div style="display: flex; align-items: center;">
+                                    <span style="background: var(--warning); color: white; padding: 4px 10px; 
+                                          border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                        Needs Feedback
+                                    </span>
+                                    ${feedbackChannels}
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
-            });
+            }).join('');
             
-            html += '</div>';
-            container.innerHTML = html;
+            projectsList.innerHTML = projectsHTML;
         }
-        
+
         function renderUpdates() {
-            const container = document.getElementById('updatesList');
-            const updates = dashboardData.updates;
+            const timeline = document.getElementById('timeline');
             
-            if (!updates || updates.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <p>No updates available</p>
+            if (dashboardData.updates.length === 0) {
+                timeline.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray);">
+                        <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No updates yet.</p>
                     </div>
                 `;
                 return;
             }
             
-            let html = '<div style="display: grid; gap: 16px;">';
-            
-            updates.forEach(update => {
-                const date = update.created_at ? 
-                    new Date(update.created_at).toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Recently';
-                
-                html += `
-                    <div style="
-                        padding: 16px;
-                        border-left: 3px solid var(--primary);
-                        background: var(--light);
-                        border-radius: 0 var(--radius-md) var(--radius-md) 0;
-                    ">
-                        <div style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: flex-start;
-                            margin-bottom: 8px;
-                            flex-wrap: wrap;
-                            gap: 8px;
-                        ">
-                            <h4 style="font-weight: 600; color: var(--dark);">${update.title}</h4>
-                            <span style="color: var(--gray); font-size: 13px;">
-                                <i class="far fa-clock"></i> ${date}
-                            </span>
-                        </div>
-                        <p style="color: var(--gray); font-size: 14px; margin-bottom: 12px;">
+            const updatesHTML = dashboardData.updates.map(update => `
+                <div class="timeline-item">
+                    <div style="font-size: 13px; color: var(--gray); margin-bottom: 5px;">
+                        <i class="far fa-clock"></i> 
+                        ${update.created_at ? new Date(update.created_at).toLocaleDateString() : 'Recently'}
+                    </div>
+                    <div style="background-color: var(--light); border-radius: 10px; padding: 15px; 
+                                border-left: 4px solid var(--primary);">
+                        <h4 style="font-size: 16px; margin-bottom: 8px; color: var(--dark);">
+                            ${update.title}
+                        </h4>
+                        <p style="font-size: 14px; color: var(--gray); margin-bottom: 10px;">
                             ${update.content || ''}
                         </p>
                         ${update.link ? `
-                            <a href="${update.link}" target="_blank" style="
-                                color: var(--primary);
-                                text-decoration: none;
-                                font-size: 14px;
-                                font-weight: 500;
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 6px;
-                            ">
-                                <i class="fas fa-external-link-alt"></i>
-                                View Details
+                            <a href="${update.link}" target="_blank" 
+                               style="display: inline-flex; align-items: center; gap: 5px; 
+                                      font-size: 14px; color: var(--primary); text-decoration: none; font-weight: 500;">
+                                <i class="fas fa-external-link-alt"></i> View Details
                             </a>
                         ` : ''}
                     </div>
-                `;
+                </div>
+            `).join('');
+            
+            timeline.innerHTML = updatesHTML;
+        }
+
+        // ========== FILTERING ==========
+        function filterProjects(filterType) {
+            // Update active button
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filterType);
             });
             
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        // ========== UI INTERACTIONS ==========
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-        
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('active');
-        }
-        
-        function refreshDashboard() {
-            const btn = document.querySelector('.refresh-btn');
-            const icon = btn.querySelector('i');
-            const text = btn.querySelector('.refresh-text');
-            
-            // Show loading state
-            icon.className = 'fas fa-spinner fa-spin';
-            text.textContent = 'Refreshing...';
-            btn.disabled = true;
-            
-            // Refresh data
-            loadDashboardData().finally(() => {
-                // Restore button state
-                setTimeout(() => {
-                    icon.className = 'fas fa-sync-alt';
-                    text.textContent = 'Refresh';
-                    btn.disabled = false;
-                }, 1000);
-            });
-        }
-        
-        function requestFeedback(projectId) {
-            const project = dashboardData.projects.find(p => p.id === projectId);
-            if (!project) return;
-            
-            alert(`📋 Feedback Requested:\n\nProject: ${project.name}\n\nPlease provide feedback via:\n• WhatsApp message\n• Email response\n• Direct conversation\n\nClick "OK" to continue.`);
-        }
-        
-        function editProject(projectId) {
-            alert(`Edit project ${projectId} - Admin functionality coming soon!`);
-            // TODO: Implement project editing
-        }
-        
-        // ========== HELPER FUNCTIONS ==========
-        function showLoadingStates() {
-            // Projects
-            const projectsList = document.getElementById('projectsList');
-            if (projectsList) {
-                projectsList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading projects...</p>
-                    </div>
-                `;
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else {
+                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+                    if (filterType === 'needs_feedback') return project.needs_feedback;
+                    return project.status === filterType;
+                });
             }
             
-            // Tools
-            const toolsList = document.getElementById('toolsList');
-            if (toolsList) {
-                toolsList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading tools...</p>
-                    </div>
-                `;
-            }
-            
-            // Updates
-            const updatesList = document.getElementById('updatesList');
-            if (updatesList) {
-                updatesList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading updates...</p>
-                    </div>
-                `;
-            }
+            renderProjects();
         }
-        
-        function showDataError() {
-            const container = document.getElementById('projectsList');
-            if (container) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
-                        <p>Failed to load data</p>
-                        <button onclick="loadDashboardData()" style="
-                            margin-top: 16px;
-                            padding: 10px 20px;
-                            background: var(--primary);
-                            color: white;
-                            border: none;
-                            border-radius: var(--radius-md);
-                            cursor: pointer;
-                        ">
-                            <i class="fas fa-sync-alt"></i>
-                            Try Again
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        // ========== EVENT LISTENERS ==========
+
+        // ========== EVENT HANDLERS ==========
         function setupEventListeners() {
-            // Enter key login
-            document.getElementById('password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
+            // Filter buttons
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
             });
             
-            // Navigation items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove active class from all items
-                    document.querySelectorAll('.nav-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Update page title
-                    const view = this.dataset.view;
-                    const title = this.querySelector('span').textContent;
-                    document.getElementById('pageTitle').textContent = title;
-                });
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                const btn = document.getElementById('refreshBtn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                btn.disabled = true;
+                
+                await loadDashboardData();
+                
+                btn.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }, 2000);
             });
             
-            // Admin tabs
-            document.querySelectorAll('.admin-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Update tab buttons
-                    document.querySelectorAll('.admin-tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    document.querySelectorAll('.admin-tab-content').forEach(content => {
-                        content.style.display = 'none';
-                    });
-                    
-                    const contentDiv = document.getElementById(`admin${tabId.charAt(0).toUpperCase() + tabId.slice(1)}Tab`);
-                    if (contentDiv) {
-                        contentDiv.style.display = 'block';
-                    }
-                });
-            });
-            
-            // Close sidebar when clicking outside on mobile
-            document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
-            
-            // Close admin panel with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    const panel = document.getElementById('adminPanel');
-                    if (panel.classList.contains('active')) {
-                        panel.classList.remove('active');
-                    }
-                }
+            // GitHub link
+            document.getElementById('githubLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://github.com', '_blank');
             });
         }
-        
-        // ========== INITIAL DATA LOAD ==========
-        // Auto-refresh data every 5 minutes
-        setInterval(() => {
-            if (currentUser) {
-                console.log('🔄 Auto-refreshing dashboard data...');
-                loadDashboardData();
-            }
-        }, 5 * 60 * 1000);
+
+        // ========== UTILITY FUNCTIONS ==========
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+        }
+
+        function showLoadingState() {
+            // Loading is handled by skeleton screens
+        }
+
+        function showError(message) {
+            // Clear skeleton screens
+            document.getElementById('toolsGrid').innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                    <p>${message}</p>
+                    <button onclick="loadDashboardData()" style="
+                        margin-top: 15px;
+                        padding: 10px 20px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">
+                        Retry Loading
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
+        }
     </script>
 </body>
 </html>
