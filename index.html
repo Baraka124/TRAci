@@ -1329,786 +1329,715 @@
     </div>
 
     <!-- The COMPLETE JavaScript Code -->
-    <script>
-        // ========== CONFIGURATION ==========
-        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+   <script>
+    // ========== CONFIGURATION ==========
+    const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-        // ========== SINGLE SUPABASE INITIALIZATION ==========
-        var supabase;
-        if (!window._supabaseInitialized) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            window._supabaseInitialized = true;
-        } else {
-            supabase = window.supabase;
+    // ========== SUPABASE INITIALIZATION ==========
+    var supabase;
+    if (!window._supabaseInitialized) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window._supabaseInitialized = true;
+    } else {
+        supabase = window.supabase;
+    }
+
+    // ========== APPLICATION STATE ==========
+    let currentUser = null;
+    let userRole = 'user';
+    let dashboardData = {
+        projects: [],
+        tools: [],
+        updates: [],
+        filteredProjects: []
+    };
+
+    // ========== FIXED AUTHENTICATION ==========
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const errorEl = document.getElementById('loginError');
+        
+        errorEl.style.display = 'none';
+        
+        if (!username || !password) {
+            errorEl.textContent = 'Please enter username and password';
+            errorEl.style.display = 'block';
+            return;
         }
-
-        // ========== APPLICATION STATE ==========
-        let currentUser = null;
-        let userRole = 'user'; // 'admin' or 'user'
-        let dashboardData = {
-            projects: [],
-            tools: [],
-            updates: [],
-            filteredProjects: []
-        };
-
-        // ========== AUTHENTICATION ==========
-        async function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const errorEl = document.getElementById('loginError');
+        
+        try {
+            console.log('Login attempt for:', username);
             
-            errorEl.style.display = 'none';
+            // FIXED: Use correct Supabase query syntax
+            const { data, error } = await supabase
+                .from('dashboard_users')
+                .select('*')
+                .eq('username', username);
             
-            if (!username || !password) {
-                errorEl.textContent = 'Please enter username and password';
+            console.log('Query result:', { data, error });
+            
+            if (error) {
+                console.error('Query error:', error);
+                errorEl.textContent = 'Database error. Check console for details.';
                 errorEl.style.display = 'block';
                 return;
             }
             
-            try {
-                // Query the dashboard_users table
-                const { data, error } = await supabase
-                    .from('dashboard_users')
-                    .select('*')
-                    .eq('username', username)
-                    .single();
+            if (!data || data.length === 0) {
+                errorEl.textContent = 'User not found';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            const user = data[0];
+            console.log('Found user:', user);
+            
+            // IMPORTANT: In production, use proper password hashing!
+            // This demo uses plain text comparison
+            if (user.password_hash === password) {
+                console.log('Login successful!');
+                currentUser = user;
+                userRole = user.role || 'user';
                 
-                if (error || !data) {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return;
-                }
-                
-                // IMPORTANT: In production, use proper password hashing!
-                // This demo uses plain text for simplicity
-                if (data.password_hash === password) {
-                    currentUser = data;
-                    userRole = data.role || 'user';
-                    
-                    // Update last login
+                // Update last login
+                try {
                     await supabase
                         .from('dashboard_users')
                         .update({ 
                             last_login: new Date().toISOString(),
                             updated_at: new Date().toISOString()
                         })
-                        .eq('id', data.id);
-                    
-                    // Save to localStorage
-                    localStorage.setItem('dashboard_user', JSON.stringify({
-                        id: data.id,
-                        username: data.username,
-                        full_name: data.full_name,
-                        role: data.role,
-                        avatar: data.avatar
-                    }));
-                    
-                    showDashboard();
-                } else {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
+                        .eq('id', user.id);
+                } catch (updateError) {
+                    console.warn('Could not update last login:', updateError);
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                errorEl.textContent = 'Login failed. Please try again.';
+                
+                // Save to localStorage
+                localStorage.setItem('dashboard_user', JSON.stringify({
+                    id: user.id,
+                    username: user.username,
+                    full_name: user.full_name,
+                    role: user.role,
+                    avatar: user.avatar
+                }));
+                
+                showDashboard();
+            } else {
+                errorEl.textContent = 'Invalid password';
                 errorEl.style.display = 'block';
             }
+        } catch (error) {
+            console.error('Login error:', error);
+            errorEl.textContent = 'Login failed. Please try again.';
+            errorEl.style.display = 'block';
         }
+    }
 
-        function showDashboard() {
-            // Hide login, show dashboard
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('dashboardContent').style.display = 'block';
-            
-            // Update user info
-            document.getElementById('userBar').style.display = 'flex';
-            document.getElementById('userName').textContent = currentUser.full_name;
-            document.getElementById('userAvatar').textContent = currentUser.full_name.charAt(0).toUpperCase();
-            document.getElementById('userRole').textContent = userRole === 'admin' ? 'Administrator' : 'User';
-            document.getElementById('currentUserDisplay').textContent = `${currentUser.full_name} (${userRole})`;
-            
-            // Show admin controls if admin
-            if (userRole === 'admin') {
-                document.getElementById('adminControls').style.display = 'block';
-            }
-            
-            // Load initial data
-            loadDashboardData();
-            
-            // Setup auto-refresh (every 2 minutes)
-            setInterval(loadDashboardData, 2 * 60 * 1000);
-        }
-
-        function logout() {
-            currentUser = null;
-            userRole = 'user';
-            localStorage.removeItem('dashboard_user');
-            
-            // Reset UI
-            document.getElementById('dashboardContent').style.display = 'none';
-            document.getElementById('userBar').style.display = 'none';
+    function showDashboard() {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+        
+        // Update user info
+        document.getElementById('userBar').style.display = 'flex';
+        document.getElementById('userName').textContent = currentUser.full_name;
+        document.getElementById('userAvatar').textContent = currentUser.full_name.charAt(0).toUpperCase();
+        document.getElementById('userRole').textContent = userRole === 'admin' ? 'Administrator' : 'User';
+        document.getElementById('currentUserDisplay').textContent = `${currentUser.full_name} (${userRole})`;
+        
+        // Show admin controls if admin
+        if (userRole === 'admin') {
+            document.getElementById('adminControls').style.display = 'block';
+        } else {
             document.getElementById('adminControls').style.display = 'none';
-            document.getElementById('loginModal').style.display = 'flex';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginError').style.display = 'none';
         }
+        
+        // Load dashboard data
+        loadDashboardData();
+    }
 
-        // ========== DASHBOARD DATA FUNCTIONS ==========
-        async function loadDashboardData() {
-            try {
-                await Promise.all([
-                    fetchProjects(),
-                    fetchTools(),
-                    fetchUpdates()
-                ]);
-                updateStats();
-                renderTools();
-                renderProjects();
-                renderUpdates();
-                updateTimestamp();
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-            }
+    function logout() {
+        currentUser = null;
+        userRole = 'user';
+        localStorage.removeItem('dashboard_user');
+        
+        document.getElementById('dashboardContent').style.display = 'none';
+        document.getElementById('userBar').style.display = 'none';
+        document.getElementById('adminControls').style.display = 'none';
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+    }
+
+    // ========== DASHBOARD FUNCTIONS ==========
+    async function loadDashboardData() {
+        try {
+            await Promise.all([
+                fetchProjects(),
+                fetchTools(),
+                fetchUpdates()
+            ]);
+            updateStats();
+            renderTools();
+            renderProjects();
+            renderUpdates();
+            updateTimestamp();
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
         }
+    }
 
-        async function fetchProjects() {
-            try {
-                const { data, error } = await supabase
-                    .from('projects')
-                    .select('*, feedback_channels(*)')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                dashboardData.projects = data || [];
-                dashboardData.filteredProjects = [...dashboardData.projects];
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-                dashboardData.projects = [];
-                dashboardData.filteredProjects = [];
-            }
-        }
-
-        async function fetchTools() {
-            try {
-                const { data, error } = await supabase
-                    .from('tools')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                dashboardData.tools = data || [];
-            } catch (error) {
-                console.error('Error fetching tools:', error);
-                dashboardData.tools = [];
-            }
-        }
-
-        async function fetchUpdates() {
-            try {
-                const { data, error } = await supabase
-                    .from('updates')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-                
-                if (error) throw error;
-                dashboardData.updates = data || [];
-            } catch (error) {
-                console.error('Error fetching updates:', error);
-                dashboardData.updates = [];
-            }
-        }
-
-        function updateStats() {
-            const toolsCount = dashboardData.tools.length;
-            const projectsCount = dashboardData.projects.length;
-            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-            const activeCount = dashboardData.projects.filter(p => 
-                p.status === 'development' || p.status === 'testing'
-            ).length;
-
-            document.getElementById('toolsCount').textContent = toolsCount;
-            document.getElementById('projectsCount').textContent = projectsCount;
-            document.getElementById('feedbackCount').textContent = feedbackCount;
-            document.getElementById('activeCount').textContent = activeCount;
-
-            // Update feedback badge
-            const feedbackBadge = document.getElementById('feedbackBadge');
-            if (feedbackCount > 0) {
-                feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
-                feedbackBadge.style.display = 'block';
-            } else {
-                feedbackBadge.style.display = 'none';
-            }
-
-            // Update tools status
-            const toolsStatus = document.getElementById('toolsStatus');
-            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
-            if (hasWarning) {
-                toolsStatus.textContent = 'Needs Attention';
-                toolsStatus.className = 'tool-status status-warning';
-            } else {
-                toolsStatus.textContent = 'All Systems Operational';
-                toolsStatus.className = 'tool-status status-operational';
-            }
-        }
-
-        function renderTools() {
-            const toolsGrid = document.getElementById('toolsGrid');
+    async function fetchProjects() {
+        try {
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*, feedback_channels(*)')
+                .order('created_at', { ascending: false });
             
-            if (dashboardData.tools.length === 0) {
-                toolsGrid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
-                        <i class="fas fa-toolbox" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
-                        <p>No tools found.</p>
-                        ${userRole === 'admin' ? '<p>Click "Add Tool" above to add your first tool.</p>' : ''}
+            if (error) throw error;
+            dashboardData.projects = data || [];
+            dashboardData.filteredProjects = [...dashboardData.projects];
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+            dashboardData.projects = [];
+            dashboardData.filteredProjects = [];
+        }
+    }
+
+    async function fetchTools() {
+        try {
+            const { data, error } = await supabase
+                .from('tools')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            dashboardData.tools = data || [];
+        } catch (error) {
+            console.error('Error fetching tools:', error);
+            dashboardData.tools = [];
+        }
+    }
+
+    async function fetchUpdates() {
+        try {
+            const { data, error } = await supabase
+                .from('updates')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            if (error) throw error;
+            dashboardData.updates = data || [];
+        } catch (error) {
+            console.error('Error fetching updates:', error);
+            dashboardData.updates = [];
+        }
+    }
+
+    function updateStats() {
+        const toolsCount = dashboardData.tools.length;
+        const projectsCount = dashboardData.projects.length;
+        const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+        const activeCount = dashboardData.projects.filter(p => 
+            p.status === 'development' || p.status === 'testing'
+        ).length;
+
+        document.getElementById('toolsCount').textContent = toolsCount;
+        document.getElementById('projectsCount').textContent = projectsCount;
+        document.getElementById('feedbackCount').textContent = feedbackCount;
+        document.getElementById('activeCount').textContent = activeCount;
+
+        // Update feedback badge
+        const feedbackBadge = document.getElementById('feedbackBadge');
+        if (feedbackCount > 0) {
+            feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
+            feedbackBadge.style.display = 'block';
+        } else {
+            feedbackBadge.style.display = 'none';
+        }
+
+        // Update tools status
+        const toolsStatus = document.getElementById('toolsStatus');
+        const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+        if (hasWarning) {
+            toolsStatus.textContent = 'Needs Attention';
+            toolsStatus.className = 'tool-status status-warning';
+        } else {
+            toolsStatus.textContent = 'All Systems Operational';
+            toolsStatus.className = 'tool-status status-operational';
+        }
+    }
+
+    function renderTools() {
+        const toolsGrid = document.getElementById('toolsGrid');
+        
+        if (dashboardData.tools.length === 0) {
+            toolsGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-toolbox" style="font-size: 48px; margin-bottom: 15px;"></i>
+                    <p>No tools found.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const toolsHTML = dashboardData.tools.map(tool => {
+            const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+            const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+            const lastChecked = tool.last_checked ? 
+                new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                }) : 'Never';
+            
+            return `
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-name">
+                            <div class="tool-icon">
+                                <i class="${tool.icon || 'fas fa-tools'}"></i>
+                            </div>
+                            <span>${tool.name}</span>
+                        </div>
+                        <span class="tool-status ${statusClass}">${statusText}</span>
                     </div>
-                `;
-                return;
-            }
-            
-            const toolsHTML = dashboardData.tools.map(tool => {
-                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
-                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
-                const lastChecked = tool.last_checked ? 
-                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Never';
-                
-                return `
-                    <div class="tool-card">
-                        <div class="tool-header">
-                            <div class="tool-name">
-                                <div class="tool-icon">
-                                    <i class="${tool.icon || 'fas fa-tools'}"></i>
-                                </div>
-                                <span>${tool.name}</span>
-                            </div>
-                            <span class="tool-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="tool-description">${tool.description || 'No description available'}</p>
-                        <div class="tool-footer">
-                            <span class="tool-updated">Last checked: ${lastChecked}</span>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                ${tool.url ? `
-                                    <a href="${tool.url}" target="_blank" class="tool-link">
-                                        Access <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                ` : ''}
-                                ${userRole === 'admin' ? `
-                                    <button class="admin-action-btn edit-btn" onclick="editTool('${tool.id}')" title="Edit Tool">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="admin-action-btn delete-btn" onclick="deleteTool('${tool.id}')" title="Delete Tool">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            toolsGrid.innerHTML = toolsHTML;
-        }
-
-        function renderProjects() {
-            const projectsList = document.getElementById('projectsList');
-            const projectsToRender = dashboardData.filteredProjects.length > 0 
-                ? dashboardData.filteredProjects 
-                : dashboardData.projects;
-            
-            if (projectsToRender.length === 0) {
-                projectsList.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--gray);">
-                        <i class="fas fa-code-branch" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
-                        <p>No projects found.</p>
-                        ${userRole === 'admin' ? '<p>Click "Add Project" above to add your first project.</p>' : ''}
-                    </div>
-                `;
-                return;
-            }
-            
-            const projectsHTML = projectsToRender.map(project => {
-                const statusClass = `status-${project.status}`;
-                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-                const lastUpdated = project.updated_at ? 
-                    new Date(project.updated_at).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric'
-                    }) : 'Never';
-                
-                // Build feedback channels
-                let feedbackChannelsHTML = '';
-                if (project.needs_feedback && project.feedback_channels) {
-                    project.feedback_channels.forEach(channel => {
-                        let icon = 'fas fa-comment';
-                        let className = 'email';
-                        
-                        if (channel.channel === 'whatsapp') icon = 'fab fa-whatsapp';
-                        else if (channel.channel === 'github') icon = 'fab fa-github';
-                        else if (channel.channel === 'slack') icon = 'fab fa-slack';
-                        
-                        feedbackChannelsHTML += `
-                            <a href="${channel.action_url || '#'}" target="_blank" class="channel-btn ${className}" 
-                               title="${channel.label || `Send ${channel.channel} feedback`}">
-                                <i class="${icon}"></i>
-                            </a>
-                        `;
-                    });
-                }
-                
-                // Build feedback section
-                let feedbackSection = '';
-                if (project.needs_feedback) {
-                    feedbackSection = `
-                        <div class="feedback-section">
-                            <span class="feedback-badge">Ready for review</span>
-                            <div class="feedback-channels">
-                                ${feedbackChannelsHTML}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                // Build project links
-                let projectLinks = '';
-                if (project.github_url) {
-                    projectLinks += `
-                        <a href="${project.github_url}" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i> GitHub
-                        </a>
-                    `;
-                }
-                if (project.live_url) {
-                    projectLinks += `
-                        <a href="${project.live_url}" target="_blank" class="project-link">
-                            <i class="fas fa-external-link-alt"></i> Live Demo
-                        </a>
-                    `;
-                }
-                
-                // Admin actions
-                let adminActions = '';
-                if (userRole === 'admin') {
-                    adminActions = `
-                        <button class="admin-action-btn edit-btn" onclick="editProject('${project.id}')" title="Edit Project">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="admin-action-btn delete-btn" onclick="deleteProject('${project.id}')" title="Delete Project">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
-                }
-                
-                return `
-                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
-                        <div class="project-header">
-                            <div class="project-title">
-                                <i class="fas fa-code"></i>
-                                ${project.name}
-                                ${adminActions}
-                            </div>
-                            <span class="project-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="project-description">${project.description || 'No description available'}</p>
-                        
-                        <div class="project-progress">
-                            <div class="progress-label">
-                                <span>Progress</span>
-                                <span>${project.progress || 0}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                            </div>
-                        </div>
-                        
-                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
-                        
-                        <div class="project-footer">
-                            <div class="last-commit">
-                                <i class="fas fa-calendar"></i>
-                                <span>Last updated: ${lastUpdated}</span>
-                            </div>
-                            ${feedbackSection}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            projectsList.innerHTML = projectsHTML;
-        }
-
-        function renderUpdates() {
-            const timeline = document.getElementById('timeline');
-            
-            if (dashboardData.updates.length === 0) {
-                timeline.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--gray);">
-                        <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
-                        <p>No updates yet.</p>
-                        ${userRole === 'admin' ? '<p>Click "Add Update" above to add your first update.</p>' : ''}
-                    </div>
-                `;
-                return;
-            }
-            
-            const updatesHTML = dashboardData.updates.map(update => {
-                const date = update.created_at ? 
-                    new Date(update.created_at).toLocaleDateString('en-US', { 
-                        weekday: 'short',
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Recently';
-                
-                // Admin actions
-                let adminActions = '';
-                if (userRole === 'admin') {
-                    adminActions = `
-                        <button class="admin-action-btn delete-btn" onclick="deleteUpdate('${update.id}')" 
-                                style="margin-left: 10px; font-size: 12px;" title="Delete Update">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
-                }
-                
-                return `
-                    <div class="timeline-item">
-                        <div class="timeline-date">
-                            <i class="far fa-clock"></i> ${date}
-                            ${adminActions}
-                        </div>
-                        <div class="timeline-content">
-                            <h4>${update.title}</h4>
-                            <p>${update.content || ''}</p>
-                            ${update.link ? `
-                                <a href="${update.link}" target="_blank" class="timeline-link">
-                                    <i class="fas fa-external-link-alt"></i> View Details
+                    <p class="tool-description">${tool.description || 'No description'}</p>
+                    <div class="tool-footer">
+                        <span class="tool-updated">Last checked: ${lastChecked}</span>
+                        <div style="display: flex; gap: 10px;">
+                            ${tool.url ? `
+                                <a href="${tool.url}" target="_blank" class="tool-link">
+                                    Access <i class="fas fa-external-link-alt"></i>
                                 </a>
+                            ` : ''}
+                            ${userRole === 'admin' ? `
+                                <button onclick="deleteTool('${tool.id}')" style="
+                                    background: var(--danger);
+                                    color: white;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    font-size: 12px;
+                                ">Delete</button>
                             ` : ''}
                         </div>
                     </div>
+                </div>
+            `;
+        }).join('');
+        
+        toolsGrid.innerHTML = toolsHTML;
+    }
+
+    function renderProjects() {
+        const projectsList = document.getElementById('projectsList');
+        const projectsToRender = dashboardData.filteredProjects.length > 0 
+            ? dashboardData.filteredProjects 
+            : dashboardData.projects;
+        
+        if (projectsToRender.length === 0) {
+            projectsList.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-code-branch" style="font-size: 48px; margin-bottom: 15px;"></i>
+                    <p>No projects found.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const projectsHTML = projectsToRender.map(project => {
+            const statusClass = `status-${project.status}`;
+            const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+            const lastUpdated = project.updated_at ? 
+                new Date(project.updated_at).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                }) : 'Never';
+            
+            let projectLinks = '';
+            if (project.github_url) {
+                projectLinks += `
+                    <a href="${project.github_url}" target="_blank" class="project-link">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
                 `;
-            }).join('');
+            }
+            if (project.live_url) {
+                projectLinks += `
+                    <a href="${project.live_url}" target="_blank" class="project-link">
+                        <i class="fas fa-external-link-alt"></i> Live Demo
+                    </a>
+                `;
+            }
             
-            timeline.innerHTML = updatesHTML;
-        }
+            return `
+                <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                    <div class="project-header">
+                        <div class="project-title">
+                            <i class="fas fa-code"></i>
+                            ${project.name}
+                        </div>
+                        <span class="project-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <p class="project-description">${project.description || 'No description'}</p>
+                    
+                    <div class="project-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>${project.progress || 0}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                        </div>
+                    </div>
+                    
+                    ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                    
+                    <div class="project-footer">
+                        <div class="last-commit">
+                            <i class="fas fa-calendar"></i>
+                            <span>Updated: ${lastUpdated}</span>
+                        </div>
+                        ${userRole === 'admin' ? `
+                            <button onclick="deleteProject('${project.id}')" style="
+                                background: var(--danger);
+                                color: white;
+                                border: none;
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 12px;
+                            ">Delete</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        projectsList.innerHTML = projectsHTML;
+    }
 
-        function updateTimestamp() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
+    function renderUpdates() {
+        const timeline = document.getElementById('timeline');
+        
+        if (dashboardData.updates.length === 0) {
+            timeline.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--gray);">
+                    <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>No updates yet.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const updatesHTML = dashboardData.updates.map(update => {
+            const date = update.created_at ? 
+                new Date(update.created_at).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                }) : 'Recently';
+            
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-date">
+                        <i class="far fa-clock"></i> ${date}
+                        ${userRole === 'admin' ? `
+                            <button onclick="deleteUpdate('${update.id}')" style="
+                                background: var(--danger);
+                                color: white;
+                                border: none;
+                                padding: 2px 8px;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 11px;
+                                margin-left: 10px;
+                            ">Delete</button>
+                        ` : ''}
+                    </div>
+                    <div class="timeline-content">
+                        <h4>${update.title}</h4>
+                        <p>${update.content || ''}</p>
+                        ${update.link ? `
+                            <a href="${update.link}" target="_blank" class="timeline-link">
+                                <i class="fas fa-external-link-alt"></i> View Details
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        timeline.innerHTML = updatesHTML;
+    }
+
+    function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit'
+        });
+        const dateString = now.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+        
+        document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+    }
+
+    // ========== FILTERING ==========
+    function filterProjects(filterType) {
+        document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.filter === filterType);
+        });
+        
+        if (filterType === 'all') {
+            dashboardData.filteredProjects = [...dashboardData.projects];
+        } else {
+            dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+                if (filterType === 'needs_feedback') return project.needs_feedback;
+                return project.status === filterType;
             });
-            const dateString = now.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
-            });
-            
-            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
-            document.getElementById('syncTime').textContent = timeString;
         }
+        
+        renderProjects();
+    }
 
-        // ========== FILTERING ==========
-        function filterProjects(filterType) {
-            // Update active button
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filterType);
-            });
-            
-            if (filterType === 'all') {
-                dashboardData.filteredProjects = [...dashboardData.projects];
-            } else {
-                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
-                    if (filterType === 'needs_feedback') return project.needs_feedback;
-                    return project.status === filterType;
-                });
-            }
-            
-            renderProjects();
+    // ========== ADMIN CRUD OPERATIONS ==========
+    function showAddProjectModal() {
+        if (userRole !== 'admin') return;
+        document.getElementById('addProjectModal').style.display = 'flex';
+    }
+
+    function showAddToolModal() {
+        if (userRole !== 'admin') return;
+        document.getElementById('addToolModal').style.display = 'flex';
+    }
+
+    function showAddUpdateModal() {
+        if (userRole !== 'admin') return;
+        document.getElementById('addUpdateModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    async function saveProject() {
+        if (userRole !== 'admin') {
+            alert('Admin access required');
+            return;
         }
-
-        // ========== ADMIN CRUD OPERATIONS ==========
-        function showAddProjectModal() {
-            if (userRole !== 'admin') return;
-            document.getElementById('addProjectModal').style.display = 'flex';
+        
+        const projectData = {
+            name: document.getElementById('projectName').value.trim(),
+            description: document.getElementById('projectDescription').value.trim(),
+            status: document.getElementById('projectStatus').value,
+            progress: parseInt(document.getElementById('projectProgress').value) || 0,
+            github_url: document.getElementById('projectGithubUrl').value.trim() || null,
+            live_url: document.getElementById('projectLiveUrl').value.trim() || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        if (!projectData.name) {
+            alert('Please enter a project name');
+            return;
         }
-
-        function showAddToolModal() {
-            if (userRole !== 'admin') return;
-            document.getElementById('addToolModal').style.display = 'flex';
-        }
-
-        function showAddUpdateModal() {
-            if (userRole !== 'admin') return;
-            document.getElementById('addUpdateModal').style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            // Clear form fields
-            if (modalId === 'addProjectModal') {
-                document.getElementById('projectName').value = '';
-                document.getElementById('projectDescription').value = '';
-                document.getElementById('projectStatus').value = 'development';
-                document.getElementById('projectProgress').value = '0';
-                document.getElementById('projectGithubUrl').value = '';
-                document.getElementById('projectLiveUrl').value = '';
-            } else if (modalId === 'addToolModal') {
-                document.getElementById('toolName').value = '';
-                document.getElementById('toolDescription').value = '';
-                document.getElementById('toolStatus').value = 'operational';
-                document.getElementById('toolUrl').value = '';
-                document.getElementById('toolIcon').value = 'fas fa-tools';
-            } else if (modalId === 'addUpdateModal') {
-                document.getElementById('updateTitle').value = '';
-                document.getElementById('updateContent').value = '';
-                document.getElementById('updateLink').value = '';
-            }
-        }
-
-        async function saveProject() {
-            if (userRole !== 'admin') {
-                alert('Admin access required');
-                return;
-            }
+        
+        try {
+            const { error } = await supabase
+                .from('projects')
+                .insert([projectData]);
             
-            const projectData = {
-                name: document.getElementById('projectName').value.trim(),
-                description: document.getElementById('projectDescription').value.trim(),
-                status: document.getElementById('projectStatus').value,
-                progress: parseInt(document.getElementById('projectProgress').value) || 0,
-                github_url: document.getElementById('projectGithubUrl').value.trim() || null,
-                live_url: document.getElementById('projectLiveUrl').value.trim() || null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
+            if (error) throw error;
             
-            if (!projectData.name) {
-                alert('Please enter a project name');
-                return;
-            }
+            alert('Project added!');
+            closeModal('addProjectModal');
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error saving project:', error);
+            alert('Failed to save project');
+        }
+    }
+
+    async function saveTool() {
+        if (userRole !== 'admin') {
+            alert('Admin access required');
+            return;
+        }
+        
+        const toolData = {
+            name: document.getElementById('toolName').value.trim(),
+            description: document.getElementById('toolDescription').value.trim(),
+            status: document.getElementById('toolStatus').value,
+            url: document.getElementById('toolUrl').value.trim(),
+            icon: document.getElementById('toolIcon').value.trim(),
+            last_checked: new Date().toISOString(),
+            created_at: new Date().toISOString()
+        };
+        
+        if (!toolData.name) {
+            alert('Please enter a tool name');
+            return;
+        }
+        
+        try {
+            const { error } = await supabase
+                .from('tools')
+                .insert([toolData]);
             
+            if (error) throw error;
+            
+            alert('Tool added!');
+            closeModal('addToolModal');
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error saving tool:', error);
+            alert('Failed to save tool');
+        }
+    }
+
+    async function saveUpdate() {
+        if (userRole !== 'admin') {
+            alert('Admin access required');
+            return;
+        }
+        
+        const updateData = {
+            title: document.getElementById('updateTitle').value.trim(),
+            content: document.getElementById('updateContent').value.trim(),
+            link: document.getElementById('updateLink').value.trim() || null,
+            created_at: new Date().toISOString()
+        };
+        
+        if (!updateData.title) {
+            alert('Please enter an update title');
+            return;
+        }
+        
+        try {
+            const { error } = await supabase
+                .from('updates')
+                .insert([updateData]);
+            
+            if (error) throw error;
+            
+            alert('Update added!');
+            closeModal('addUpdateModal');
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error saving update:', error);
+            alert('Failed to save update');
+        }
+    }
+
+    async function deleteProject(projectId) {
+        if (userRole !== 'admin') return;
+        
+        if (!confirm('Delete this project?')) return;
+        
+        try {
+            const { error } = await supabase
+                .from('projects')
+                .delete()
+                .eq('id', projectId);
+            
+            if (error) throw error;
+            
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error deleting project:', error);
+            alert('Failed to delete project');
+        }
+    }
+
+    async function deleteTool(toolId) {
+        if (userRole !== 'admin') return;
+        
+        if (!confirm('Delete this tool?')) return;
+        
+        try {
+            const { error } = await supabase
+                .from('tools')
+                .delete()
+                .eq('id', toolId);
+            
+            if (error) throw error;
+            
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error deleting tool:', error);
+            alert('Failed to delete tool');
+        }
+    }
+
+    async function deleteUpdate(updateId) {
+        if (userRole !== 'admin') return;
+        
+        if (!confirm('Delete this update?')) return;
+        
+        try {
+            const { error } = await supabase
+                .from('updates')
+                .delete()
+                .eq('id', updateId);
+            
+            if (error) throw error;
+            
+            await loadDashboardData();
+        } catch (error) {
+            console.error('Error deleting update:', error);
+            alert('Failed to delete update');
+        }
+    }
+
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for saved login
+        const savedUser = localStorage.getItem('dashboard_user');
+        if (savedUser) {
             try {
-                const { error } = await supabase
-                    .from('projects')
-                    .insert([projectData]);
-                
-                if (error) throw error;
-                
-                alert('Project added successfully!');
-                closeModal('addProjectModal');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error saving project:', error);
-                alert('Failed to save project: ' + error.message);
+                currentUser = JSON.parse(savedUser);
+                userRole = currentUser.role || 'user';
+                showDashboard();
+            } catch (e) {
+                localStorage.removeItem('dashboard_user');
             }
         }
-
-        async function saveTool() {
-            if (userRole !== 'admin') {
-                alert('Admin access required');
-                return;
-            }
-            
-            const toolData = {
-                name: document.getElementById('toolName').value.trim(),
-                description: document.getElementById('toolDescription').value.trim(),
-                status: document.getElementById('toolStatus').value,
-                url: document.getElementById('toolUrl').value.trim(),
-                icon: document.getElementById('toolIcon').value.trim(),
-                last_checked: new Date().toISOString(),
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
-            
-            if (!toolData.name) {
-                alert('Please enter a tool name');
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('tools')
-                    .insert([toolData]);
-                
-                if (error) throw error;
-                
-                alert('Tool added successfully!');
-                closeModal('addToolModal');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error saving tool:', error);
-                alert('Failed to save tool: ' + error.message);
-            }
-        }
-
-        async function saveUpdate() {
-            if (userRole !== 'admin') {
-                alert('Admin access required');
-                return;
-            }
-            
-            const updateData = {
-                title: document.getElementById('updateTitle').value.trim(),
-                content: document.getElementById('updateContent').value.trim(),
-                link: document.getElementById('updateLink').value.trim() || null,
-                created_at: new Date().toISOString()
-            };
-            
-            if (!updateData.title) {
-                alert('Please enter an update title');
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('updates')
-                    .insert([updateData]);
-                
-                if (error) throw error;
-                
-                alert('Update added successfully!');
-                closeModal('addUpdateModal');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error saving update:', error);
-                alert('Failed to save update: ' + error.message);
-            }
-        }
-
-        async function editProject(projectId) {
-            if (userRole !== 'admin') return;
-            alert('Edit project ' + projectId + ' - To be implemented');
-            // Implementation for editing projects
-        }
-
-        async function editTool(toolId) {
-            if (userRole !== 'admin') return;
-            alert('Edit tool ' + toolId + ' - To be implemented');
-            // Implementation for editing tools
-        }
-
-        async function deleteProject(projectId) {
-            if (userRole !== 'admin') return;
-            
-            if (!confirm('Are you sure you want to delete this project?')) {
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('projects')
-                    .delete()
-                    .eq('id', projectId);
-                
-                if (error) throw error;
-                
-                alert('Project deleted successfully!');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error deleting project:', error);
-                alert('Failed to delete project: ' + error.message);
-            }
-        }
-
-        async function deleteTool(toolId) {
-            if (userRole !== 'admin') return;
-            
-            if (!confirm('Are you sure you want to delete this tool?')) {
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('tools')
-                    .delete()
-                    .eq('id', toolId);
-                
-                if (error) throw error;
-                
-                alert('Tool deleted successfully!');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error deleting tool:', error);
-                alert('Failed to delete tool: ' + error.message);
-            }
-        }
-
-        async function deleteUpdate(updateId) {
-            if (userRole !== 'admin') return;
-            
-            if (!confirm('Are you sure you want to delete this update?')) {
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('updates')
-                    .delete()
-                    .eq('id', updateId);
-                
-                if (error) throw error;
-                
-                alert('Update deleted successfully!');
-                await loadDashboardData();
-            } catch (error) {
-                console.error('Error deleting update:', error);
-                alert('Failed to delete update: ' + error.message);
-            }
-        }
-
-        // ========== EVENT LISTENERS ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check for saved user session
-            const savedUser = localStorage.getItem('dashboard_user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    userRole = currentUser.role || 'user';
-                    showDashboard();
-                } catch (e) {
-                    localStorage.removeItem('dashboard_user');
+        
+        // Setup filters
+        document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
+        });
+        
+        // Refresh button
+        document.getElementById('refreshLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await loadDashboardData();
+        });
+        
+        // Enter key login
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+        
+        // Close modals on outside click
+        document.querySelectorAll('.crud-modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
                 }
-            }
-            
-            // Setup filter buttons
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-            });
-            
-            // Setup refresh button
-            document.getElementById('refreshLink').addEventListener('click', async (e) => {
-                e.preventDefault();
-                await loadDashboardData();
-                document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
-                setTimeout(updateTimestamp, 2000);
-            });
-            
-            // Enter key in login
-            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-            
-            // Close modals on outside click
-            document.querySelectorAll('.crud-modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                });
             });
         });
-    </script>
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadDashboardData, 5 * 60 * 1000);
+    });
+</script>
 </body>
 </html>
