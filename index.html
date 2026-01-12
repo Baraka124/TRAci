@@ -851,17 +851,25 @@
     </div>
 
     <!-- ==== ONLY ONE SCRIPT TAG - NO DUPLICATES ==== -->
-   <script>
+  
+<script>
     // ========== CONFIGURATION ==========
     const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
     // ========== SINGLE SUPABASE INITIALIZATION ==========
-    // Check if already exists to avoid duplicate declaration
-    if (!window.supabaseClient) {
-        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // IMPORTANT: Use var instead of const to allow re-declaration
+    var supabase;
+    
+    // Initialize only if not already initialized
+    if (!window._supabaseInitialized) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window._supabaseInitialized = true;
+        console.log('Supabase client initialized');
+    } else {
+        // If somehow we get here again, just use the global
+        supabase = window.supabase;
     }
-    const supabase = window.supabaseClient;
 
     // ========== STATE MANAGEMENT ==========
     let dashboardData = {
