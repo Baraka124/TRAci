@@ -2234,42 +2234,50 @@
         }
 
         // ========== AUTHENTICATION FUNCTIONS ==========
-        async function loginUser(username, password) {
-            showLoginError('');
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('dashboard_users')
-                    .select('username, role, password_hash')
-                    .eq('username', username)
-                    .single();
-                
-                if (error || !data) {
-                    showLoginError('Invalid username or password');
-                    return false;
-                }
-                
-                if (data.password_hash !== password) {
-                    showLoginError('Invalid username or password');
-                    return false;
-                }
-                
-                currentUser = {
-                    username: data.username,
-                    role: data.role
-                };
-                
-                authToken = btoa(JSON.stringify(currentUser));
-                localStorage.setItem('traci_auth_token', authToken);
-                
-                return true;
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showLoginError('Login failed. Please try again.');
-                return false;
-            }
+        // ========== PASSWORD HASHING ==========
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ========== AUTHENTICATION FUNCTIONS ==========
+async function loginUser(username, password) {
+    showLoginError('');
+    
+    try {
+        const hashedPassword = await hashPassword(password);
+        
+        const { data, error } = await supabaseClient
+            .from('dashboard_users')
+            .select('username, role, password')
+            .eq('username', username)
+            .eq('password', hashedPassword)
+            .single();
+        
+        if (error || !data) {
+            showLoginError('Invalid username or password');
+            return false;
         }
+        
+        currentUser = {
+            username: data.username,
+            role: data.role
+        };
+        
+        authToken = btoa(JSON.stringify(currentUser));
+        localStorage.setItem('traci_auth_token', authToken);
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        showLoginError('Login failed. Please try again.');
+        return false;
+    }
+}
 
         function logoutUser() {
             currentUser = null;
