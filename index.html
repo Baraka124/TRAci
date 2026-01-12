@@ -991,457 +991,454 @@
     <!-- ==== YOUR EXACT SAME JAVASCRIPT ==== -->
     <script>
         // ========== CONFIGURATION ==========
-        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-        // ========== SINGLE SUPABASE INITIALIZATION ==========
-        // Check if supabase already exists globally
-if (!window.supabaseClient) {
-    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ========== SUPABASE INITIALIZATION ==========
+// Create client with unique name
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ========== STATE MANAGEMENT ==========
+let dashboardData = {
+    projects: [],
+    tools: [],
+    updates: [],
+    lastUpdated: new Date(),
+    filteredProjects: []
+};
+
+// ========== ADD LOGIN FUNCTION ==========
+async function login() {
+    console.log('Login function called');
+    alert('Login functionality to be implemented');
 }
-const supabase = window.supabaseClient;
 
-        // ========== STATE MANAGEMENT ==========
-        let dashboardData = {
-            projects: [],
-            tools: [],
-            updates: [],
-            lastUpdated: new Date(),
-            filteredProjects: []
-        };
+// ========== MAIN FUNCTIONS ==========
+async function initDashboard() {
+    showLoadingState();
+    
+    try {
+        await Promise.all([
+            fetchProjects(),
+            fetchTools(),
+            fetchUpdates()
+        ]);
+        
+        updateStats();
+        renderDashboard();
+        updateTimestamp();
+        
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showErrorState();
+    }
+}
 
-        // ========== ADD LOGIN FUNCTION ==========
-        async function login() {
-            console.log('Login function called');
-            alert('Login functionality to be implemented');
-        }
+async function fetchProjects() {
+    const { data, error } = await supabaseClient
+        .from('projects')
+        .select(`
+            *,
+            feedback_channels (*)
+        `)
+        .order('needs_feedback', { ascending: false })
+        .order('status', { ascending: true });
+    
+    if (error) {
+        console.error('Error fetching projects:', error);
+        dashboardData.projects = [];
+        return;
+    }
+    
+    dashboardData.projects = data || [];
+    dashboardData.filteredProjects = [...dashboardData.projects];
+}
 
-        // ========== MAIN FUNCTIONS ==========
-        async function initDashboard() {
-            showLoadingState();
-            
-            try {
-                await Promise.all([
-                    fetchProjects(),
-                    fetchTools(),
-                    fetchUpdates()
-                ]);
-                
-                updateStats();
-                renderDashboard();
-                updateTimestamp();
-                
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                showErrorState();
-            }
-        }
+async function fetchTools() {
+    const { data, error } = await supabaseClient
+        .from('tools')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error('Error fetching tools:', error);
+        dashboardData.tools = [];
+        return;
+    }
+    
+    dashboardData.tools = data || [];
+}
 
-        async function fetchProjects() {
-            const { data, error } = await supabase
-                .from('projects')
-                .select(`
-                    *,
-                    feedback_channels (*)
-                `)
-                .order('needs_feedback', { ascending: false })
-                .order('status', { ascending: true });
-            
-            if (error) {
-                console.error('Error fetching projects:', error);
-                dashboardData.projects = [];
-                return;
-            }
-            
-            dashboardData.projects = data || [];
-            dashboardData.filteredProjects = [...dashboardData.projects];
-        }
+async function fetchUpdates() {
+    const { data, error } = await supabaseClient
+        .from('updates')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+    
+    if (error) {
+        console.error('Error fetching updates:', error);
+        dashboardData.updates = [];
+        return;
+    }
+    
+    dashboardData.updates = data || [];
+}
 
-        async function fetchTools() {
-            const { data, error } = await supabase
-                .from('tools')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Error fetching tools:', error);
-                dashboardData.tools = [];
-                return;
-            }
-            
-            dashboardData.tools = data || [];
-        }
-
-        async function fetchUpdates() {
-            const { data, error } = await supabase
-                .from('updates')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(10);
-            
-            if (error) {
-                console.error('Error fetching updates:', error);
-                dashboardData.updates = [];
-                return;
-            }
-            
-            dashboardData.updates = data || [];
-        }
-
-        // ========== FILTERING FUNCTION ==========
-        function filterProjects(filterType) {
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filterType);
-            });
-            
-            if (filterType === 'all') {
-                dashboardData.filteredProjects = [...dashboardData.projects];
-            } else {
-                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
-                    if (filterType === 'needs_feedback') return project.needs_feedback;
-                    return project.status === filterType;
-                });
-            }
-            
-            renderProjects();
-        }
-
-        function updateStats() {
-            const toolsCount = dashboardData.tools.length;
-            const projectsCount = dashboardData.projects.length;
-            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-            const activeCount = dashboardData.projects.filter(p => 
-                p.status === 'development' || p.status === 'testing'
-            ).length;
-
-            document.getElementById('toolsCount').textContent = toolsCount;
-            document.getElementById('projectsCount').textContent = projectsCount;
-            document.getElementById('feedbackCount').textContent = feedbackCount;
-            document.getElementById('activeCount').textContent = activeCount;
-
-            const feedbackBadge = document.getElementById('feedbackBadge');
-            if (feedbackCount > 0) {
-                feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
-                feedbackBadge.style.display = 'block';
-            } else {
-                feedbackBadge.style.display = 'none';
-            }
-
-            const toolsStatus = document.getElementById('toolsStatus');
-            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
-            if (hasWarning) {
-                toolsStatus.textContent = 'Needs Attention';
-                toolsStatus.className = 'tool-status status-warning';
-            } else {
-                toolsStatus.textContent = 'All Systems Operational';
-                toolsStatus.className = 'tool-status status-operational';
-            }
-        }
-
-        function renderDashboard() {
-            renderTools();
-            renderProjects();
-            renderUpdates();
-        }
-
-        function renderTools() {
-            const toolsGrid = document.getElementById('toolsGrid');
-            
-            if (dashboardData.tools.length === 0) {
-                toolsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-toolbox"></i>
-                        <p>No tools found. Add some in Supabase.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let toolsHTML = '';
-            
-            dashboardData.tools.forEach(tool => {
-                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
-                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
-                
-                const lastChecked = tool.last_checked ? 
-                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Never';
-                
-                toolsHTML += `
-                    <div class="tool-card ${tool.status}">
-                        <div class="tool-header">
-                            <div class="tool-name">
-                                <div class="tool-icon">${tool.icon || '🛠️'}</div>
-                                <span>${tool.name}</span>
-                            </div>
-                            <span class="tool-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="tool-description">${tool.description || 'No description available'}</p>
-                        <div class="tool-footer">
-                            <span class="tool-updated">Last checked: ${lastChecked}</span>
-                            <a href="${tool.url}" target="_blank" class="tool-link">
-                                Access <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            toolsGrid.innerHTML = toolsHTML;
-        }
-
-        function renderProjects() {
-            const projectsList = document.getElementById('projectsList');
-            const projectsToRender = dashboardData.filteredProjects.length > 0 
-                ? dashboardData.filteredProjects 
-                : dashboardData.projects;
-            
-            if (projectsToRender.length === 0) {
-                projectsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-code-branch"></i>
-                        <p>No projects found. Add some in Supabase.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let projectsHTML = '';
-            
-            projectsToRender.forEach(project => {
-                const statusClass = `status-${project.status}`;
-                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-                
-                const lastUpdated = project.last_updated ? 
-                    new Date(project.last_updated).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric'
-                    }) : 'Never';
-                
-                let feedbackChannelsHTML = '';
-                if (project.needs_feedback && project.feedback_channels) {
-                    project.feedback_channels.forEach(channel => {
-                        let icon = 'fas fa-comment';
-                        let className = 'message';
-                        let link = channel.action_url || '#';
-                        
-                        if (channel.channel === 'whatsapp') {
-                            icon = 'fab fa-whatsapp';
-                            className = 'whatsapp';
-                            link = `${link}${encodeURIComponent(project.name)}`;
-                        } else if (channel.channel === 'email') {
-                            icon = 'fas fa-envelope';
-                            className = 'email';
-                        } else if (channel.channel === 'github') {
-                            icon = 'fab fa-github';
-                            className = 'github';
-                        } else if (channel.channel === 'slack') {
-                            icon = 'fab fa-slack';
-                            className = 'slack';
-                        }
-                        
-                        feedbackChannelsHTML += `
-                            <a href="${link}" target="_blank" class="channel-btn ${className}" 
-                               title="${channel.label || `Send ${channel.channel} feedback`}">
-                                <i class="${icon}"></i>
-                            </a>
-                        `;
-                    });
-                }
-                
-                let feedbackSection = '';
-                if (project.needs_feedback) {
-                    feedbackSection = `
-                        <div class="feedback-section">
-                            <span class="feedback-badge">Ready for review</span>
-                            <div class="feedback-channels">
-                                ${feedbackChannelsHTML}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                let projectLinks = '';
-                if (project.github_url) {
-                    projectLinks += `
-                        <a href="${project.github_url}" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i> GitHub
-                        </a>
-                    `;
-                }
-                if (project.live_url) {
-                    projectLinks += `
-                        <a href="${project.live_url}" target="_blank" class="project-link">
-                            <i class="fas fa-external-link-alt"></i> Live Demo
-                        </a>
-                    `;
-                }
-                
-                projectsHTML += `
-                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
-                        <div class="project-header">
-                            <div class="project-title">
-                                <i class="fas fa-code"></i>
-                                ${project.name}
-                            </div>
-                            <span class="project-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="project-description">${project.description || 'No description available'}</p>
-                        
-                        <div class="project-progress">
-                            <div class="progress-label">
-                                <span>Progress</span>
-                                <span>${project.progress || 0}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                            </div>
-                        </div>
-                        
-                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
-                        
-                        <div class="project-footer">
-                            <div class="last-commit">
-                                <i class="fas fa-calendar"></i>
-                                <span>Last updated: ${lastUpdated}</span>
-                            </div>
-                            ${feedbackSection}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            projectsList.innerHTML = projectsHTML;
-        }
-
-        function renderUpdates() {
-            const timeline = document.getElementById('timeline');
-            
-            if (dashboardData.updates.length === 0) {
-                timeline.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <p>No updates yet. Add some in Supabase.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let updatesHTML = '';
-            
-            dashboardData.updates.forEach(update => {
-                const date = update.created_at ? 
-                    new Date(update.created_at).toLocaleDateString('en-US', { 
-                        weekday: 'short',
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Recently';
-                
-                updatesHTML += `
-                    <div class="timeline-item">
-                        <div class="timeline-date">
-                            <i class="far fa-clock"></i> ${date}
-                        </div>
-                        <div class="timeline-content">
-                            <h4>${update.title}</h4>
-                            <p>${update.content || ''}</p>
-                            ${update.link ? `
-                                <a href="${update.link}" target="_blank" class="timeline-link">
-                                    <i class="fas fa-external-link-alt"></i> View Details
-                                </a>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            timeline.innerHTML = updatesHTML;
-        }
-
-        function updateTimestamp() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            const dateString = now.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
-            });
-            
-            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
-            document.getElementById('syncTime').textContent = timeString;
-            
-            dashboardData.lastUpdated = now;
-        }
-
-        // ========== UI STATE FUNCTIONS ==========
-        function showLoadingState() {
-            document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-        }
-
-        function showErrorState() {
-            document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
-            
-            const sections = ['toolsGrid', 'projectsList', 'timeline'];
-            sections.forEach(sectionId => {
-                const element = document.getElementById(sectionId);
-                if (element) {
-                    element.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
-                            <p>Failed to load data. Check Supabase connection.</p>
-                            <button onclick="initDashboard()" style="
-                                margin-top: 10px;
-                                padding: 8px 16px;
-                                background: var(--primary);
-                                color: white;
-                                border: none;
-                                border-radius: 6px;
-                                cursor: pointer;
-                            ">Retry</button>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        // ========== EVENT LISTENERS ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initDashboard, 100);
-            
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-            });
-            
-            document.getElementById('refreshLink').addEventListener('click', async function(e) {
-                e.preventDefault();
-                
-                const lastUpdated = document.getElementById('lastUpdatedTime');
-                lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-                
-                await initDashboard();
-                
-                lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
-                setTimeout(() => updateTimestamp(), 2000);
-            });
-
-            setInterval(async () => {
-                console.log('Auto-refreshing dashboard...');
-                await initDashboard();
-            }, 5 * 60 * 1000);
+// ========== FILTERING FUNCTION ==========
+function filterProjects(filterType) {
+    document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filterType);
+    });
+    
+    if (filterType === 'all') {
+        dashboardData.filteredProjects = [...dashboardData.projects];
+    } else {
+        dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+            if (filterType === 'needs_feedback') return project.needs_feedback;
+            return project.status === filterType;
         });
+    }
+    
+    renderProjects();
+}
 
-        // Make login function globally available
-        window.login = login;
+function updateStats() {
+    const toolsCount = dashboardData.tools.length;
+    const projectsCount = dashboardData.projects.length;
+    const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+    const activeCount = dashboardData.projects.filter(p => 
+        p.status === 'development' || p.status === 'testing'
+    ).length;
+
+    document.getElementById('toolsCount').textContent = toolsCount;
+    document.getElementById('projectsCount').textContent = projectsCount;
+    document.getElementById('feedbackCount').textContent = feedbackCount;
+    document.getElementById('activeCount').textContent = activeCount;
+
+    const feedbackBadge = document.getElementById('feedbackBadge');
+    if (feedbackCount > 0) {
+        feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
+        feedbackBadge.style.display = 'block';
+    } else {
+        feedbackBadge.style.display = 'none';
+    }
+
+    const toolsStatus = document.getElementById('toolsStatus');
+    const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+    if (hasWarning) {
+        toolsStatus.textContent = 'Needs Attention';
+        toolsStatus.className = 'tool-status status-warning';
+    } else {
+        toolsStatus.textContent = 'All Systems Operational';
+        toolsStatus.className = 'tool-status status-operational';
+    }
+}
+
+function renderDashboard() {
+    renderTools();
+    renderProjects();
+    renderUpdates();
+}
+
+function renderTools() {
+    const toolsGrid = document.getElementById('toolsGrid');
+    
+    if (dashboardData.tools.length === 0) {
+        toolsGrid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-toolbox"></i>
+                <p>No tools found. Add some in Supabase.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let toolsHTML = '';
+    
+    dashboardData.tools.forEach(tool => {
+        const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+        const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+        
+        const lastChecked = tool.last_checked ? 
+            new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'Never';
+        
+        toolsHTML += `
+            <div class="tool-card ${tool.status}">
+                <div class="tool-header">
+                    <div class="tool-name">
+                        <div class="tool-icon">${tool.icon || '🛠️'}</div>
+                        <span>${tool.name}</span>
+                    </div>
+                    <span class="tool-status ${statusClass}">${statusText}</span>
+                </div>
+                <p class="tool-description">${tool.description || 'No description available'}</p>
+                <div class="tool-footer">
+                    <span class="tool-updated">Last checked: ${lastChecked}</span>
+                    <a href="${tool.url}" target="_blank" class="tool-link">
+                        Access <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+    });
+    
+    toolsGrid.innerHTML = toolsHTML;
+}
+
+function renderProjects() {
+    const projectsList = document.getElementById('projectsList');
+    const projectsToRender = dashboardData.filteredProjects.length > 0 
+        ? dashboardData.filteredProjects 
+        : dashboardData.projects;
+    
+    if (projectsToRender.length === 0) {
+        projectsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-code-branch"></i>
+                <p>No projects found. Add some in Supabase.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let projectsHTML = '';
+    
+    projectsToRender.forEach(project => {
+        const statusClass = `status-${project.status}`;
+        const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+        
+        const lastUpdated = project.last_updated ? 
+            new Date(project.last_updated).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric'
+            }) : 'Never';
+        
+        let feedbackChannelsHTML = '';
+        if (project.needs_feedback && project.feedback_channels) {
+            project.feedback_channels.forEach(channel => {
+                let icon = 'fas fa-comment';
+                let className = 'message';
+                let link = channel.action_url || '#';
+                
+                if (channel.channel === 'whatsapp') {
+                    icon = 'fab fa-whatsapp';
+                    className = 'whatsapp';
+                    link = `${link}${encodeURIComponent(project.name)}`;
+                } else if (channel.channel === 'email') {
+                    icon = 'fas fa-envelope';
+                    className = 'email';
+                } else if (channel.channel === 'github') {
+                    icon = 'fab fa-github';
+                    className = 'github';
+                } else if (channel.channel === 'slack') {
+                    icon = 'fab fa-slack';
+                    className = 'slack';
+                }
+                
+                feedbackChannelsHTML += `
+                    <a href="${link}" target="_blank" class="channel-btn ${className}" 
+                       title="${channel.label || `Send ${channel.channel} feedback`}">
+                        <i class="${icon}"></i>
+                    </a>
+                `;
+            });
+        }
+        
+        let feedbackSection = '';
+        if (project.needs_feedback) {
+            feedbackSection = `
+                <div class="feedback-section">
+                    <span class="feedback-badge">Ready for review</span>
+                    <div class="feedback-channels">
+                        ${feedbackChannelsHTML}
+                    </div>
+                </div>
+            `;
+        }
+        
+        let projectLinks = '';
+        if (project.github_url) {
+            projectLinks += `
+                <a href="${project.github_url}" target="_blank" class="project-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            `;
+        }
+        if (project.live_url) {
+            projectLinks += `
+                <a href="${project.live_url}" target="_blank" class="project-link">
+                    <i class="fas fa-external-link-alt"></i> Live Demo
+                </a>
+            `;
+        }
+        
+        projectsHTML += `
+            <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                <div class="project-header">
+                    <div class="project-title">
+                        <i class="fas fa-code"></i>
+                        ${project.name}
+                    </div>
+                    <span class="project-status ${statusClass}">${statusText}</span>
+                </div>
+                <p class="project-description">${project.description || 'No description available'}</p>
+                
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span>Progress</span>
+                        <span>${project.progress || 0}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                    </div>
+                </div>
+                
+                ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                
+                <div class="project-footer">
+                    <div class="last-commit">
+                        <i class="fas fa-calendar"></i>
+                        <span>Last updated: ${lastUpdated}</span>
+                    </div>
+                    ${feedbackSection}
+                </div>
+            </div>
+        `;
+    });
+    
+    projectsList.innerHTML = projectsHTML;
+}
+
+function renderUpdates() {
+    const timeline = document.getElementById('timeline');
+    
+    if (dashboardData.updates.length === 0) {
+        timeline.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-history"></i>
+                <p>No updates yet. Add some in Supabase.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let updatesHTML = '';
+    
+    dashboardData.updates.forEach(update => {
+        const date = update.created_at ? 
+            new Date(update.created_at).toLocaleDateString('en-US', { 
+                weekday: 'short',
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'Recently';
+        
+        updatesHTML += `
+            <div class="timeline-item">
+                <div class="timeline-date">
+                    <i class="far fa-clock"></i> ${date}
+                </div>
+                <div class="timeline-content">
+                    <h4>${update.title}</h4>
+                    <p>${update.content || ''}</p>
+                    ${update.link ? `
+                        <a href="${update.link}" target="_blank" class="timeline-link">
+                            <i class="fas fa-external-link-alt"></i> View Details
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    timeline.innerHTML = updatesHTML;
+}
+
+function updateTimestamp() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+    });
+    
+    document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+    document.getElementById('syncTime').textContent = timeString;
+    
+    dashboardData.lastUpdated = now;
+}
+
+// ========== UI STATE FUNCTIONS ==========
+function showLoadingState() {
+    document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+}
+
+function showErrorState() {
+    document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
+    
+    const sections = ['toolsGrid', 'projectsList', 'timeline'];
+    sections.forEach(sectionId => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    <p>Failed to load data. Check Supabase connection.</p>
+                    <button onclick="initDashboard()" style="
+                        margin-top: 10px;
+                        padding: 8px 16px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">Retry</button>
+                </div>
+            `;
+        }
+    });
+}
+
+// ========== EVENT LISTENERS ==========
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initDashboard, 100);
+    
+    document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
+    });
+    
+    document.getElementById('refreshLink').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const lastUpdated = document.getElementById('lastUpdatedTime');
+        lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        
+        await initDashboard();
+        
+        lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
+        setTimeout(() => updateTimestamp(), 2000);
+    });
+
+    setInterval(async () => {
+        console.log('Auto-refreshing dashboard...');
+        await initDashboard();
+    }, 5 * 60 * 1000);
+});
+
+// Make login function globally available
+window.login = login;
     </script>
 </body>
 </html>
