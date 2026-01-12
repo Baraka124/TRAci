@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>TRAci | Pneumology Innovation Dashboard</title>
+    
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     
     <!-- Professional Medical Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -95,6 +98,7 @@
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
             
             /* Transitions */
             --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -111,8 +115,28 @@
                 --gray-100: #334155;
                 --gray-200: #475569;
                 --gray-300: #64748b;
+                --gray-400: #94a3b8;
+                --gray-500: #cbd5e1;
                 --border-light: #334155;
                 --border: #475569;
+            }
+            
+            /* Fix text visibility in dark mode */
+            .form-control, input, textarea, select {
+                background-color: var(--gray-900);
+                color: var(--white);
+                border-color: var(--gray-700);
+            }
+            
+            .form-control:focus {
+                background-color: var(--gray-800);
+                color: var(--white);
+            }
+            
+            /* Fix login input text */
+            #loginUsername, #loginPassword {
+                color: var(--white) !important;
+                background-color: var(--gray-800) !important;
             }
         }
 
@@ -121,11 +145,13 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html {
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
@@ -135,6 +161,7 @@
             line-height: 1.6;
             padding: var(--space-4);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
@@ -155,12 +182,16 @@
             padding: var(--space-6) 0;
             margin-bottom: var(--space-8);
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: var(--space-4);
         }
 
         .logo-section {
             display: flex;
             align-items: center;
             gap: var(--space-4);
+            min-width: 0;
+            flex: 1;
         }
 
         .logo {
@@ -176,12 +207,15 @@
             font-weight: 700;
             font-family: var(--font-heading);
             box-shadow: var(--shadow-md);
+            flex-shrink: 0;
         }
 
         .platform-info {
             display: flex;
             flex-direction: column;
             gap: var(--space-1);
+            min-width: 0;
+            overflow: hidden;
         }
 
         .platform-name {
@@ -189,6 +223,9 @@
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--primary-700);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .department-name {
@@ -197,12 +234,16 @@
             font-weight: 500;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .header-right {
             display: flex;
             align-items: center;
             gap: var(--space-6);
+            flex-shrink: 0;
         }
 
         /* Status Panel */
@@ -215,6 +256,7 @@
             border-radius: var(--radius-full);
             padding: var(--space-2) var(--space-4);
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
         .live-indicator {
@@ -258,6 +300,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-2);
+            white-space: nowrap;
         }
 
         .auth-btn:hover {
@@ -281,6 +324,7 @@
             border-radius: var(--radius-full);
             padding: var(--space-2) var(--space-3);
             box-shadow: var(--shadow-sm);
+            max-width: 300px;
         }
 
         .user-avatar {
@@ -294,18 +338,23 @@
             justify-content: center;
             font-weight: 600;
             font-size: 0.875rem;
+            flex-shrink: 0;
         }
 
         .user-info {
             display: flex;
             flex-direction: column;
             gap: 2px;
+            min-width: 0;
         }
 
         .user-name {
             font-weight: 600;
             font-size: 0.875rem;
             color: var(--gray-800);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .user-role {
@@ -339,6 +388,7 @@
             padding: var(--space-2);
             border-radius: var(--radius);
             transition: var(--transition);
+            flex-shrink: 0;
         }
 
         .logout-btn:hover {
@@ -367,6 +417,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-2);
+            white-space: nowrap;
         }
 
         .admin-btn:hover {
@@ -393,6 +444,7 @@
             align-items: center;
             gap: var(--space-5);
             transition: var(--transition);
+            min-height: 120px;
         }
 
         .stat-card:hover {
@@ -411,6 +463,7 @@
             font-size: 1.5rem;
             color: var(--white);
             box-shadow: var(--shadow-md);
+            flex-shrink: 0;
         }
 
         .stat-icon.tools {
@@ -435,6 +488,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: var(--space-1);
+            white-space: nowrap;
         }
 
         .stat-number {
@@ -442,6 +496,7 @@
             font-weight: 700;
             color: var(--gray-900);
             font-family: var(--font-heading);
+            line-height: 1;
         }
 
         /* ===== FILTER CONTROLS ===== */
@@ -466,6 +521,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
+            white-space: nowrap;
         }
 
         .filter-btn:hover {
@@ -516,6 +572,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-3);
         }
 
         .section-header h2 {
@@ -526,6 +584,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-3);
+            white-space: nowrap;
         }
 
         .section-content {
@@ -544,6 +603,9 @@
             border-radius: var(--radius-lg);
             padding: var(--space-5);
             transition: var(--transition);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
         }
 
         .tool-card:hover {
@@ -565,6 +627,8 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: var(--space-3);
+            flex-wrap: wrap;
+            gap: var(--space-2);
         }
 
         .tool-name {
@@ -574,6 +638,7 @@
             font-weight: 600;
             font-size: 1rem;
             color: var(--gray-900);
+            min-width: 0;
         }
 
         .tool-icon {
@@ -586,6 +651,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.125rem;
+            flex-shrink: 0;
         }
 
         .tool-status {
@@ -593,6 +659,7 @@
             padding: 3px 8px;
             border-radius: var(--radius-full);
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .status-operational {
@@ -610,6 +677,7 @@
             font-size: 0.875rem;
             margin-bottom: var(--space-4);
             line-height: 1.5;
+            flex-grow: 1;
         }
 
         .tool-footer {
@@ -617,10 +685,13 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.8125rem;
+            flex-wrap: wrap;
+            gap: var(--space-2);
         }
 
         .tool-updated {
             color: var(--gray-500);
+            white-space: nowrap;
         }
 
         .tool-link {
@@ -631,6 +702,7 @@
             align-items: center;
             gap: var(--space-1);
             transition: var(--transition);
+            white-space: nowrap;
         }
 
         .tool-link:hover {
@@ -672,6 +744,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            white-space: nowrap;
         }
 
         .visibility-badge.private {
@@ -698,6 +771,7 @@
             font-size: 0.75rem;
             font-weight: 600;
             margin-bottom: var(--space-3);
+            white-space: nowrap;
         }
 
         .project-header {
@@ -705,6 +779,8 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: var(--space-3);
+            flex-wrap: wrap;
+            gap: var(--space-2);
         }
 
         .project-title {
@@ -714,6 +790,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-2);
+            min-width: 0;
         }
 
         .project-status {
@@ -723,6 +800,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
+            white-space: nowrap;
         }
 
         .status-planning {
@@ -763,6 +841,8 @@
             margin-bottom: var(--space-1);
             font-size: 0.875rem;
             color: var(--gray-600);
+            flex-wrap: wrap;
+            gap: var(--space-2);
         }
 
         .progress-bar {
@@ -770,6 +850,7 @@
             background-color: var(--gray-200);
             border-radius: var(--radius-full);
             overflow: hidden;
+            width: 100%;
         }
 
         .progress-fill {
@@ -784,6 +865,7 @@
             display: flex;
             gap: var(--space-3);
             margin-bottom: var(--space-4);
+            flex-wrap: wrap;
         }
 
         .project-link {
@@ -798,6 +880,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             transition: var(--transition);
+            white-space: nowrap;
         }
 
         .project-link:hover {
@@ -814,6 +897,7 @@
             margin-top: var(--space-4);
             padding-top: var(--space-4);
             border-top: 1px solid var(--border);
+            flex-wrap: wrap;
         }
 
         .feedback-badge {
@@ -825,11 +909,13 @@
             font-weight: 700;
             letter-spacing: 0.3px;
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
         .feedback-channels {
             display: flex;
             gap: var(--space-2);
+            flex-wrap: wrap;
         }
 
         .channel-btn {
@@ -844,6 +930,7 @@
             font-size: 0.875rem;
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
         }
 
         .channel-btn:hover {
@@ -861,6 +948,7 @@
             display: flex;
             gap: var(--space-2);
             margin-top: var(--space-4);
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -875,6 +963,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            white-space: nowrap;
         }
 
         .edit-btn {
@@ -935,6 +1024,7 @@
             justify-content: center;
             z-index: 1000;
             padding: var(--space-4);
+            overflow-y: auto;
         }
 
         .modal-content {
@@ -945,6 +1035,7 @@
             box-shadow: var(--shadow-xl);
             max-height: 90vh;
             overflow-y: auto;
+            margin: auto;
         }
 
         .modal-header {
@@ -967,6 +1058,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-3);
+            white-space: nowrap;
         }
 
         .modal-close {
@@ -983,6 +1075,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .modal-close:hover {
@@ -994,7 +1087,7 @@
             padding: var(--space-6);
         }
 
-        /* Form Styles */
+        /* Form Styles - FIXED TEXT VISIBILITY */
         .form-group {
             margin-bottom: var(--space-5);
         }
@@ -1012,20 +1105,43 @@
 
         .form-control {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
+            padding: 12px 14px;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
-            font-size: 0.9375rem;
+            font-size: 1rem;
             transition: var(--transition);
             font-family: var(--font-sans);
-            background: var(--bg-card);
-            color: var(--gray-800);
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* FIX: Ensure text is visible in inputs */
+        .form-control::placeholder {
+            color: var(--gray-400);
+            opacity: 1;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary-500);
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: var(--white);
+            color: var(--gray-900);
+        }
+
+        /* Specific fix for login inputs */
+        #loginUsername, #loginPassword {
+            background: var(--white) !important;
+            color: var(--gray-900) !important;
+            border: 2px solid var(--border) !important;
+        }
+
+        #loginUsername:focus, #loginPassword:focus {
+            background: var(--white) !important;
+            color: var(--gray-900) !important;
         }
 
         textarea.form-control {
@@ -1034,11 +1150,10 @@
         }
 
         select.form-control {
-            appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
+            background-position: right 0.75rem center;
             background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
+            background-size: 1.25em 1.25em;
             padding-right: 2.5rem;
         }
 
@@ -1072,19 +1187,41 @@
             text-align: center;
             padding: 12px;
             font-weight: 600;
+            color: var(--gray-900) !important;
+            background: var(--white) !important;
+        }
+
+        /* QR Code Container */
+        .qr-container {
+            text-align: center;
+            padding: var(--space-4);
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            margin: var(--space-4) 0;
+            border: 1px solid var(--border);
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto var(--space-3);
+            padding: var(--space-3);
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
         /* Buttons */
         .btn-primary {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
             color: var(--white);
             border: none;
             border-radius: var(--radius);
             font-family: var(--font-sans);
             font-weight: 600;
-            font-size: 0.9375rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -1140,7 +1277,6 @@
             display: none;
             border-left: 4px solid var(--danger);
         }
-
         .success-message {
             background: var(--success-light);
             color: var(--success);
@@ -1187,6 +1323,53 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ===== CODE MANAGEMENT TABLE ===== */
+        .codes-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: var(--space-4);
+        }
+
+        .codes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .codes-table th {
+            background: var(--gray-50);
+            position: sticky;
+            top: 0;
+            padding: var(--space-3);
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .codes-table td {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .codes-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .code-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            background: var(--primary-50);
+            padding: 6px 10px;
+            border-radius: var(--radius);
+            display: inline-block;
+        }
+
         /* ===== FOOTER ===== */
         .footer {
             text-align: center;
@@ -1209,10 +1392,23 @@
             text-decoration: underline;
         }
 
-        /* ===== RESPONSIVE DESIGN ===== */
-        @media (max-width: 768px) {
-            body {
-                padding: var(--space-3);
+        /* ===== MOBILE RESPONSIVE DESIGN ===== */
+        
+        /* Large tablets and small desktops */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 0 var(--space-4);
+            }
+            
+            .platform-name {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Tablets */
+        @media (max-width: 992px) {
+            html {
+                font-size: 15px;
             }
             
             .header {
@@ -1222,32 +1418,130 @@
             }
             
             .header-right {
-                flex-direction: column;
-                gap: var(--space-4);
+                width: 100%;
+                justify-content: space-between;
             }
             
             .status-panel {
-                justify-content: center;
+                order: 1;
             }
             
-            .user-profile {
-                justify-content: center;
+            .auth-section {
+                order: 2;
             }
             
             .stats-container {
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        /* Mobile phones (landscape) */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-2);
+            }
+            
+            .container {
+                padding: 0 var(--space-2);
+            }
+            
+            .header {
+                padding: var(--space-4) 0;
+                margin-bottom: var(--space-6);
+            }
+            
+            .logo {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .platform-name {
+                font-size: 1.25rem;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+            
+            .status-panel {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .user-profile {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-3);
+            }
+            
             .stat-card {
                 padding: var(--space-4);
+                min-height: auto;
+            }
+            
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .stat-number {
+                font-size: 1.75rem;
             }
             
             .admin-controls {
                 justify-content: center;
+                gap: var(--space-2);
+                margin-bottom: var(--space-6);
+            }
+            
+            .admin-btn {
+                padding: var(--space-2) var(--space-3);
+                font-size: 0.8125rem;
+            }
+            
+            .filter-controls {
+                padding: var(--space-3);
+                gap: var(--space-2);
+            }
+            
+            .filter-btn {
+                padding: var(--space-1) var(--space-3);
+                font-size: 0.75rem;
+            }
+            
+            .section-header {
+                padding: var(--space-4);
+            }
+            
+            .section-content {
+                padding: var(--space-4);
             }
             
             .tools-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .tool-card {
+                padding: var(--space-4);
+            }
+            
+            .project-card {
+                padding: var(--space-4);
+            }
+            
+            .project-title {
+                font-size: 1rem;
             }
             
             .form-row {
@@ -1258,34 +1552,255 @@
                 flex-direction: column;
             }
             
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
             .feedback-section {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: var(--space-3);
             }
+            
+            .modal-content {
+                max-width: 95%;
+                margin: var(--space-2);
+            }
+            
+            .modal-header {
+                padding: var(--space-4);
+            }
+            
+            .modal-body {
+                padding: var(--space-4);
+            }
+            
+            .codes-table {
+                font-size: 0.875rem;
+            }
+            
+            .codes-table th,
+            .codes-table td {
+                padding: var(--space-2);
+            }
+            
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
         }
 
+        /* Small mobile phones (portrait) */
         @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
+            html {
+                font-size: 14px;
+            }
+            
+            body {
+                padding: var(--space-1);
+            }
+            
+            .logo-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: var(--space-2);
+            }
+            
+            .logo {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .platform-name {
+                font-size: 1.125rem;
+            }
+            
+            .department-name {
+                font-size: 0.75rem;
+            }
+            
+            .auth-btn {
+                padding: var(--space-2) var(--space-4);
+                font-size: 0.8125rem;
+                width: 100%;
+                justify-content: center;
             }
             
             .user-profile {
                 flex-direction: column;
                 text-align: center;
-                gap: var(--space-3);
+                gap: var(--space-2);
+                padding: var(--space-3);
             }
             
             .user-info {
                 align-items: center;
             }
             
-            .platform-name {
-                font-size: 1.5rem;
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-3);
             }
             
-            .filter-controls {
-                justify-content: center;
+            .stat-info h3 {
+                margin-bottom: var(--space-2);
+            }
+            
+            .tool-name {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-2);
+            }
+            
+            .project-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-2);
+            }
+            
+            .project-status {
+                align-self: flex-start;
+            }
+            
+            .form-control {
+                padding: 10px 12px;
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+            
+            .edit-code-input {
+                font-size: 1.125rem;
+                letter-spacing: 6px;
+                padding: 10px;
+            }
+            
+            .qr-code {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .footer {
+                padding: var(--space-6) 0;
+                font-size: 0.8125rem;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 360px) {
+            .platform-name {
+                font-size: 1rem;
+            }
+            
+            .department-name {
+                font-size: 0.6875rem;
+            }
+            
+            .stats-container {
+                gap: var(--space-2);
+            }
+            
+            .stat-card {
+                padding: var(--space-3);
+            }
+            
+            .admin-controls {
+                gap: var(--space-1);
+            }
+            
+            .admin-btn {
+                padding: var(--space-1) var(--space-2);
+                font-size: 0.75rem;
+            }
+            
+            .tool-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-2);
+            }
+        }
+
+        /* Fix for iOS Safari input styling */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="url"],
+        textarea,
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border-radius: var(--radius);
+        }
+
+        /* Prevent text size adjustment on mobile */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* Improve touch targets */
+        button,
+        .btn-primary,
+        .admin-btn,
+        .filter-btn,
+        .action-btn,
+        .channel-btn {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .logout-btn {
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Better focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--primary-500);
+            outline-offset: 2px;
+        }
+
+        /* Improve readability on mobile */
+        p, li, td, th {
+            line-height: 1.6;
+        }
+
+        /* Modal scroll improvements */
+        .modal-content {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Fix for sticky hover states on mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .auth-btn:hover,
+            .admin-btn:hover,
+            .filter-btn:hover,
+            .action-btn:hover,
+            .channel-btn:hover,
+            .logout-btn:hover,
+            .tool-card:hover,
+            .project-card:hover,
+            .stat-card:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+            
+            .auth-btn:active,
+            .admin-btn:active,
+            .filter-btn:active,
+            .action-btn:active,
+            .channel-btn:active,
+            .logout-btn:active {
+                transform: scale(0.98);
             }
         }
     </style>
@@ -1296,7 +1811,7 @@
         <header class="header">
             <div class="logo-section">
                 <div class="logo">
-                    <i class="mdi mdi-heart-pulse"></i>
+                    <i class="mdi mdi-flask"></i>
                 </div>
                 <div class="platform-info">
                     <h1 class="platform-name">TRAci Innovation Dashboard</h1>
@@ -1318,7 +1833,7 @@
                     <div id="guestView">
                         <button id="loginBtn" class="auth-btn">
                             <i class="mdi mdi-login"></i>
-                            <span>Login to Dashboard</span>
+                            <span>Login</span>
                         </button>
                     </div>
                     
@@ -1330,7 +1845,7 @@
                                 <span class="user-name" id="currentUsername"></span>
                                 <span class="user-role" id="currentUserRole"></span>
                             </div>
-                            <button class="logout-btn" id="logoutBtn" title="Logout">
+                            <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout">
                                 <i class="mdi mdi-logout"></i>
                             </button>
                         </div>
@@ -1348,6 +1863,14 @@
             <button class="admin-btn" id="addToolBtn">
                 <i class="mdi mdi-toolbox"></i>
                 <span>Add Tool</span>
+            </button>
+            <button class="admin-btn" id="viewCodesBtn">
+                <i class="mdi mdi-key-chain"></i>
+                <span>View Codes</span>
+            </button>
+            <button class="admin-btn" id="resetCodeBtn">
+                <i class="mdi mdi-key-change"></i>
+                <span>Reset Code</span>
             </button>
         </div>
 
@@ -1496,7 +2019,7 @@
                     <i class="mdi mdi-shield-lock-outline"></i>
                     <span>Secure Login</span>
                 </h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" aria-label="Close login modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1505,7 +2028,7 @@
                         <span>Username</span>
                     </label>
                     <input type="text" id="loginUsername" class="form-control" 
-                           placeholder="Enter username" autocomplete="username">
+                           placeholder="Enter username" autocomplete="username" aria-label="Username">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">
@@ -1513,7 +2036,7 @@
                         <span>Password</span>
                     </label>
                     <input type="password" id="loginPassword" class="form-control" 
-                           placeholder="Enter password" autocomplete="current-password">
+                           placeholder="Enter password" autocomplete="current-password" aria-label="Password">
                 </div>
                 <button id="submitLogin" class="btn-primary">
                     <i class="mdi mdi-login"></i>
@@ -1538,7 +2061,7 @@
                     <i class="mdi mdi-plus-circle"></i>
                     <span>Add New Project</span>
                 </h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" aria-label="Close add project modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1547,7 +2070,7 @@
                         <span>Project Name *</span>
                     </label>
                     <input type="text" id="projectName" class="form-control" 
-                           placeholder="Enter project name">
+                           placeholder="Enter project name" aria-label="Project name">
                 </div>
                 <div class="form-group">
                     <label for="projectDescription">
@@ -1555,7 +2078,7 @@
                         <span>Description</span>
                     </label>
                     <textarea id="projectDescription" class="form-control" 
-                              placeholder="Project description" rows="3"></textarea>
+                              placeholder="Project description" rows="3" aria-label="Project description"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1563,7 +2086,7 @@
                             <i class="mdi mdi-state-machine"></i>
                             <span>Status</span>
                         </label>
-                        <select id="projectStatus" class="form-control">
+                        <select id="projectStatus" class="form-control" aria-label="Project status">
                             <option value="planning">Planning</option>
                             <option value="development" selected>Development</option>
                             <option value="testing">Testing</option>
@@ -1576,11 +2099,11 @@
                             <span>Progress (%)</span>
                         </label>
                         <input type="number" id="projectProgress" class="form-control" 
-                               min="0" max="100" value="0">
+                               min="0" max="100" value="0" aria-label="Project progress percentage">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label">
+                    <label class="checkbox-label" for="projectNeedsFeedback">
                         <input type="checkbox" id="projectNeedsFeedback">
                         <i class="mdi mdi-alert-circle"></i>
                         <span>Needs Feedback/Review</span>
@@ -1604,7 +2127,7 @@
                     <i class="mdi mdi-pencil"></i>
                     <span>Edit Project</span>
                 </h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" aria-label="Close edit project modal">&times;</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editProjectId">
@@ -1619,7 +2142,7 @@
                         <input type="password" id="editCodeVerification" 
                                class="form-control edit-code-input" 
                                placeholder="Enter 5-digit code" maxlength="5" 
-                               pattern="\d{5}" inputmode="numeric">
+                               pattern="\d{5}" inputmode="numeric" aria-label="5-digit edit code">
                         <small class="text-muted">5-digit code required for doctor edits</small>
                     </div>
                 </div>
@@ -1630,7 +2153,7 @@
                         <span>Project Name *</span>
                     </label>
                     <input type="text" id="editProjectName" class="form-control" 
-                           placeholder="Enter project name">
+                           placeholder="Enter project name" aria-label="Edit project name">
                 </div>
                 <div class="form-group">
                     <label for="editProjectDescription">
@@ -1638,7 +2161,7 @@
                         <span>Description</span>
                     </label>
                     <textarea id="editProjectDescription" class="form-control" 
-                              placeholder="Project description" rows="3"></textarea>
+                              placeholder="Project description" rows="3" aria-label="Edit project description"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1646,7 +2169,7 @@
                             <i class="mdi mdi-state-machine"></i>
                             <span>Status</span>
                         </label>
-                        <select id="editProjectStatus" class="form-control">
+                        <select id="editProjectStatus" class="form-control" aria-label="Edit project status">
                             <option value="planning">Planning</option>
                             <option value="development">Development</option>
                             <option value="testing">Testing</option>
@@ -1659,11 +2182,11 @@
                             <span>Progress (%)</span>
                         </label>
                         <input type="number" id="editProjectProgress" class="form-control" 
-                               min="0" max="100" value="0">
+                               min="0" max="100" value="0" aria-label="Edit project progress">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label">
+                    <label class="checkbox-label" for="editProjectNeedsFeedback">
                         <input type="checkbox" id="editProjectNeedsFeedback">
                         <i class="mdi mdi-alert-circle"></i>
                         <span>Needs Feedback/Review</span>
@@ -1677,7 +2200,7 @@
                             <i class="mdi mdi-eye"></i>
                             <span>Visibility</span>
                         </label>
-                        <select id="editProjectVisibility" class="form-control">
+                        <select id="editProjectVisibility" class="form-control" aria-label="Project visibility">
                             <option value="public">🌍 Public (All users)</option>
                             <option value="private">🔒 Private (Doctors & Admin only)</option>
                         </select>
@@ -1708,7 +2231,7 @@
                     <i class="mdi mdi-toolbox"></i>
                     <span>Add New Tool</span>
                 </h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" aria-label="Close add tool modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1717,7 +2240,7 @@
                         <span>Tool Name *</span>
                     </label>
                     <input type="text" id="toolName" class="form-control" 
-                           placeholder="Enter tool name">
+                           placeholder="Enter tool name" aria-label="Tool name">
                 </div>
                 <div class="form-group">
                     <label for="toolDescription">
@@ -1725,7 +2248,7 @@
                         <span>Description</span>
                     </label>
                     <textarea id="toolDescription" class="form-control" 
-                              placeholder="Tool description" rows="3"></textarea>
+                              placeholder="Tool description" rows="3" aria-label="Tool description"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="toolUrl">
@@ -1733,7 +2256,7 @@
                         <span>URL *</span>
                     </label>
                     <input type="url" id="toolUrl" class="form-control" 
-                           placeholder="https://tool.example.com">
+                           placeholder="https://tool.example.com" aria-label="Tool URL">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1741,7 +2264,7 @@
                             <i class="mdi mdi-state-machine"></i>
                             <span>Status</span>
                         </label>
-                        <select id="toolStatus" class="form-control">
+                        <select id="toolStatus" class="form-control" aria-label="Tool status">
                             <option value="operational" selected>Operational</option>
                             <option value="warning">Needs Attention</option>
                         </select>
@@ -1752,7 +2275,7 @@
                             <span>Icon Class</span>
                         </label>
                         <input type="text" id="toolIcon" class="form-control" 
-                               placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox">
+                               placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox" aria-label="Tool icon class">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1761,7 +2284,7 @@
                         <span>Category</span>
                     </label>
                     <input type="text" id="toolCategory" class="form-control" 
-                           placeholder="Development, Analysis, Research">
+                           placeholder="Development, Analysis, Research" aria-label="Tool category">
                 </div>
                 <button id="saveToolBtn" class="btn-primary">
                     <i class="mdi mdi-content-save"></i>
@@ -1769,6 +2292,142 @@
                 </button>
                 <div id="toolError" class="error-message"></div>
                 <div id="toolSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Edit Codes Modal -->
+    <div id="viewCodesModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-key-chain"></i>
+                    <span>Project Edit Codes</span>
+                </h3>
+                <button class="modal-close" aria-label="Close codes modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="codeSearch" class="form-control" 
+                           placeholder="Search projects by name..." 
+                           style="width: 100%;" aria-label="Search projects">
+                </div>
+                
+                <div class="codes-table-container">
+                    <table class="codes-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Edit Code</th>
+                                <th>Visibility</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="codesTableBody">
+                            <!-- Codes loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-footer">
+                    <p class="hint">
+                        <i class="mdi mdi-information"></i>
+                        <span>Doctors need these 5-digit codes to edit projects</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Code Modal with QR -->
+    <div id="resetCodeModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-key-change"></i>
+                    <span>Reset Project Code</span>
+                </h3>
+                <button class="modal-close" aria-label="Close reset code modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="resetProjectSelect">
+                        <i class="mdi mdi-flask"></i>
+                        <span>Select Project</span>
+                    </label>
+                    <select id="resetProjectSelect" class="form-control" aria-label="Select project to reset code">
+                        <option value="">-- Choose a project --</option>
+                        <!-- Projects loaded dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <i class="mdi mdi-key"></i>
+                        <span>Current Code</span>
+                    </label>
+                    <div id="currentCodeDisplay" class="form-control code-display" style="text-align: center; padding: 15px;">
+                        -----
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newCodeOption">
+                        <i class="mdi mdi-cog"></i>
+                        <span>New Code Options</span>
+                    </label>
+                    <select id="newCodeOption" class="form-control" aria-label="New code options">
+                        <option value="random">Generate Random Code</option>
+                        <option value="custom">Enter Custom Code</option>
+                    </select>
+                </div>
+                
+                <div id="customCodeSection" class="form-group hidden">
+                    <label for="customCode">
+                        <i class="mdi mdi-keyboard"></i>
+                        <span>Custom 5-digit Code</span>
+                    </label>
+                    <input type="text" id="customCode" class="form-control edit-code-input" 
+                           maxlength="5" pattern="\d{5}" placeholder="12345" aria-label="Custom 5-digit code">
+                    <small class="text-muted">Must be exactly 5 digits (0-9)</small>
+                </div>
+                
+                <button id="generateCodeBtn" class="btn-primary">
+                    <i class="mdi mdi-refresh"></i>
+                    <span>Generate New Code</span>
+                </button>
+                
+                <!-- QR Code Section -->
+                <div id="qrCodeSection" class="hidden">
+                    <div class="qr-container">
+                        <h4 style="margin-bottom: var(--space-3); color: var(--gray-700);">
+                            <i class="mdi mdi-qrcode"></i>
+                            Scan to Share
+                        </h4>
+                        <div id="qrCode" class="qr-code"></div>
+                        <p class="text-muted" style="font-size: 0.875rem;">
+                            Doctor can scan this QR code to get the edit code
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="form-row" style="margin-top: 20px;">
+                    <button id="copyCodeBtn" class="btn-primary" style="background: var(--medical-teal);">
+                        <i class="mdi mdi-content-copy"></i>
+                        <span>Copy Code</span>
+                    </button>
+                    <button id="showQRBtn" class="btn-primary" style="background: var(--medical-purple);">
+                        <i class="mdi mdi-qrcode"></i>
+                        <span>Show QR Code</span>
+                    </button>
+                    <button id="notifyDoctorBtn" class="btn-primary" style="background: var(--primary-600);">
+                        <i class="mdi mdi-email-send"></i>
+                        <span>Email Doctor</span>
+                    </button>
+                </div>
+                
+                <div id="resetCodeError" class="error-message"></div>
+                <div id="resetCodeSuccess" class="success-message"></div>
             </div>
         </div>
     </div>
@@ -1921,6 +2580,7 @@
                 const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 avatar.textContent = initials;
+                avatar.setAttribute('aria-label', `Avatar for ${name}`);
                 
                 // Set username
                 document.getElementById('currentUsername').textContent = 
@@ -1970,7 +2630,9 @@
             login: document.getElementById('loginModal'),
             addProject: document.getElementById('addProjectModal'),
             editProject: document.getElementById('editProjectModal'),
-            addTool: document.getElementById('addToolModal')
+            addTool: document.getElementById('addToolModal'),
+            viewCodes: document.getElementById('viewCodesModal'),
+            resetCode: document.getElementById('resetCodeModal')
         };
 
         function showModal(modalName) {
@@ -1980,6 +2642,12 @@
             if (modals[modalName]) {
                 modals[modalName].style.display = 'flex';
                 document.body.style.overflow = 'hidden';
+                
+                // Focus on first input if available
+                setTimeout(() => {
+                    const firstInput = modals[modalName].querySelector('input, select, textarea');
+                    if (firstInput) firstInput.focus();
+                }, 100);
             }
         }
 
@@ -2060,6 +2728,240 @@
             dashboardData.tools = data || [];
         }
 
+        // ========== EDIT CODE MANAGEMENT FUNCTIONS ==========
+        
+        // Load and display edit codes in table
+        async function loadEditCodes() {
+            try {
+                const { data: projects, error } = await supabaseClient
+                    .from('projects')
+                    .select('id, name, edit_code, visibility, created_at')
+                    .order('name');
+                
+                if (error) throw error;
+                
+                const tbody = document.getElementById('codesTableBody');
+                tbody.innerHTML = '';
+                
+                if (projects.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                                <i class="mdi mdi-information" style="font-size: 2rem; margin-bottom: var(--space-2);"></i>
+                                <p>No projects found</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                projects.forEach(project => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const createdDate = new Date(project.created_at);
+                    const dateStr = createdDate.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div style="font-weight: 600;">${project.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--gray-500);">
+                                Created: ${dateStr}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="code-display">${project.edit_code || 'Not set'}</span>
+                        </td>
+                        <td>
+                            ${project.visibility === 'private' 
+                                ? '<span class="visibility-badge private"><i class="mdi mdi-lock"></i> Private</span>' 
+                                : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
+                        </td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="font-size: 0.75rem;">
+                                <i class="mdi mdi-refresh"></i>
+                                Reset
+                            </button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                // Setup search functionality
+                setupCodeSearch();
+                
+            } catch (error) {
+                console.error('Error loading edit codes:', error);
+                showMessage('Failed to load edit codes', 'error');
+            }
+        }
+
+        // Setup search for codes table
+        function setupCodeSearch() {
+            const searchInput = document.getElementById('codeSearch');
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const rows = document.querySelectorAll('#codesTableBody tr');
+                
+                rows.forEach(row => {
+                    const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
+                    row.style.display = projectName.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        // Reset a single project's edit code
+        async function resetSingleCode(projectId, projectName) {
+            if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) {
+                return;
+            }
+            
+            try {
+                const newCode = Math.floor(10000 + Math.random() * 90000).toString();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({ 
+                        edit_code: newCode,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
+                loadEditCodes(); // Refresh table
+                
+            } catch (error) {
+                console.error('Error resetting code:', error);
+                alert('Failed to reset code: ' + error.message);
+            }
+        }
+
+        // Load projects for reset code modal
+        async function loadProjectsForReset() {
+            try {
+                const { data: projects, error } = await supabaseClient
+                    .from('projects')
+                    .select('id, name')
+                    .order('name');
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('resetProjectSelect');
+                select.innerHTML = '<option value="">-- Choose a project --</option>';
+                
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    select.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Get current code for a project
+        async function getProjectCode(projectId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select('edit_code, name')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (error) throw error;
+                
+                return { success: true, code: data.edit_code, name: data.name };
+                
+            } catch (error) {
+                console.error('Error getting project code:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Reset project edit code
+        async function resetProjectCode(projectId, newCode = null) {
+            try {
+                // Generate new code if not provided
+                const editCode = newCode || Math.floor(10000 + Math.random() * 90000).toString();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({ 
+                        edit_code: editCode,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                return { success: true, code: editCode };
+                
+            } catch (error) {
+                console.error('Error resetting code:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Generate QR code for sharing edit code
+        function generateQRCode(projectName, editCode) {
+            const qrContainer = document.getElementById('qrCode');
+            if (!qrContainer) return;
+            
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+            
+            // Create QR code data
+            const qrData = `TRAci Edit Code\n\nProject: ${projectName}\nCode: ${editCode}\n\nScan this code or enter manually`;
+            
+            // Generate QR code
+            QRCode.toCanvas(qrContainer, qrData, {
+                width: 200,
+                height: 200,
+                margin: 1,
+                color: {
+                    dark: '#0c4a6e',
+                    light: '#ffffff'
+                }
+            }, function(error) {
+                if (error) {
+                    console.error('QR Code generation error:', error);
+                    qrContainer.innerHTML = '<p style="color: var(--danger);">Failed to generate QR code</p>';
+                }
+            });
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('Code copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showMessage('Failed to copy code', 'error');
+            });
+        }
+
+        // Notify doctor via email
+        function notifyDoctor(projectName, editCode) {
+            const subject = `TRAci Edit Code for ${projectName}`;
+            const body = `Hello Doctor,\n\nYour edit code for project "${projectName}" is:\n\n🔐 **${editCode}**\n\nUse this code to edit the project in the TRAci Innovation Dashboard.\n\nYou can also scan the QR code attached to this email for quick access.\n\nBest regards,\nPneumology Innovation Department`;
+            
+            // Open email client
+            window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+            
+            return true;
+        }
+
         // ========== PROJECT CRUD OPERATIONS ==========
         async function addProject(projectData) {
             try {
@@ -2084,13 +2986,16 @@
                     await autoCreateFeedbackChannels(data.id, projectData.name);
                 }
                 
+                // SHOW THE CODE TO THE ADMIN!
+                alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
+                
                 showSuccess('projectSuccess', 'Project added successfully!');
                 setTimeout(() => {
                     hideAllModals();
                     initDashboard();
                 }, 1500);
                 
-                return { success: true, data };
+                return { success: true, data, code: editCode };
                 
             } catch (error) {
                 console.error('Error adding project:', error);
@@ -2382,7 +3287,7 @@
                         
                         feedbackChannelsHTML += `
                             <a href="${channel.action_url}" target="_blank" class="channel-btn ${className}" 
-                               title="${channel.label || `Send ${channel.channel} feedback`}">
+                               title="${channel.label || `Send ${channel.channel} feedback`}" aria-label="${channel.channel} feedback">
                                 <i class="${icon}"></i>
                             </a>
                         `;
@@ -2414,11 +3319,11 @@
                     if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
-                                <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}" aria-label="Edit project">
                                     <i class="mdi mdi-pencil"></i>
                                     Edit
                                 </button>
-                                <button class="action-btn delete-btn" data-project-id="${project.id}">
+                                <button class="action-btn delete-btn" data-project-id="${project.id}" aria-label="Delete project">
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
@@ -2429,11 +3334,11 @@
                         actionButtons = `
                             <div class="project-actions">
                                 <button class="action-btn recommend-btn ${isRecommended ? 'recommended' : ''}" 
-                                        data-project-id="${project.id}">
+                                        data-project-id="${project.id}" aria-label="Recommend project">
                                     <i class="mdi mdi-star${isRecommended ? '' : '-outline'}"></i>
                                     ${isRecommended ? 'Recommended' : 'Recommend'}
                                 </button>
-                                <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}" aria-label="Edit project with code">
                                     <i class="mdi mdi-pencil"></i>
                                     Edit (with code)
                                 </button>
@@ -2632,6 +3537,10 @@
             }
         }
 
+        function showMessage(message, type = 'info') {
+            alert(message); // For now, use alert. You could create a toast notification system.
+        }
+
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredUser();
@@ -2707,6 +3616,18 @@
                 document.getElementById('toolIcon').value = 'mdi mdi-toolbox';
                 document.getElementById('toolCategory').value = '';
                 showModal('addTool');
+            });
+            
+            // Edit Code Management buttons
+            document.getElementById('viewCodesBtn').addEventListener('click', () => {
+                loadEditCodes();
+                showModal('viewCodes');
+            });
+            
+            document.getElementById('resetCodeBtn').addEventListener('click', () => {
+                loadProjectsForReset();
+                document.getElementById('qrCodeSection').classList.add('hidden');
+                showModal('resetCode');
             });
             
             // Save project
@@ -2818,6 +3739,103 @@
                 btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
             });
 
+            // Reset Code Modal Events
+            document.getElementById('resetProjectSelect').addEventListener('change', async function() {
+                const projectId = this.value;
+                if (!projectId) {
+                    document.getElementById('currentCodeDisplay').textContent = '-----';
+                    return;
+                }
+                
+                const result = await getProjectCode(projectId);
+                if (result.success) {
+                    document.getElementById('currentCodeDisplay').textContent = result.code || 'Not set';
+                }
+            });
+            
+            document.getElementById('newCodeOption').addEventListener('change', function() {
+                const customSection = document.getElementById('customCodeSection');
+                customSection.classList.toggle('hidden', this.value !== 'custom');
+            });
+            
+            document.getElementById('generateCodeBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const option = document.getElementById('newCodeOption').value;
+                
+                if (!projectId) {
+                    showError('resetCodeError', 'Please select a project first');
+                    return;
+                }
+                
+                let newCode;
+                if (option === 'custom') {
+                    newCode = document.getElementById('customCode').value;
+                    if (!/^\d{5}$/.test(newCode)) {
+                        showError('resetCodeError', 'Please enter a valid 5-digit code (numbers only)');
+                        return;
+                    }
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating...';
+                this.disabled = true;
+                
+                const result = await resetProjectCode(projectId, newCode);
+                
+                this.innerHTML = '<i class="mdi mdi-refresh"></i> Generate New Code';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showSuccess('resetCodeSuccess', `New code generated: ${result.code}`);
+                    document.getElementById('currentCodeDisplay').textContent = result.code;
+                    document.getElementById('customCode').value = '';
+                    
+                    // Get project name for QR code
+                    const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                    
+                    // Show QR code section
+                    document.getElementById('qrCodeSection').classList.remove('hidden');
+                    generateQRCode(projectName, result.code);
+                } else {
+                    showError('resetCodeError', `Failed: ${result.error}`);
+                }
+            });
+            
+            document.getElementById('copyCodeBtn').addEventListener('click', function() {
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                if (code && code !== '-----') {
+                    copyToClipboard(code);
+                } else {
+                    showMessage('No code to copy', 'error');
+                }
+            });
+            
+            document.getElementById('showQRBtn').addEventListener('click', function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                
+                if (!projectId || !code || code === '-----') {
+                    showMessage('Please generate a code first', 'error');
+                    return;
+                }
+                
+                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                document.getElementById('qrCodeSection').classList.remove('hidden');
+                generateQRCode(projectName, code);
+            });
+            
+            document.getElementById('notifyDoctorBtn').addEventListener('click', function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                
+                if (!projectId || !code || code === '-----') {
+                    showMessage('Please generate a code first', 'error');
+                    return;
+                }
+                
+                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                notifyDoctor(projectName, code);
+            });
+
             // Auto-refresh every 5 minutes for logged-in users
             setInterval(async () => {
                 if (currentUser && currentUser.role !== 'guest') {
@@ -2825,7 +3843,30 @@
                     await initDashboard();
                 }
             }, 5 * 60 * 1000); // 5 minutes
+
+            // Handle browser back button for modals
+            window.addEventListener('popstate', function() {
+                hideAllModals();
+            });
+
+            // Close modals with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideAllModals();
+                }
+            });
+
+            // Initialize with focus on login if no user
+            if (!currentUser) {
+                setTimeout(() => {
+                    document.getElementById('loginUsername')?.focus();
+                }, 300);
+            }
         });
+
+        // Make functions available globally for inline onclick handlers
+        window.resetSingleCode = resetSingleCode;
     </script>
 </body>
 </html>
+       
