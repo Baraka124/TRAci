@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="220" viewBox="0 0 600 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    
+    <!-- Background with subtle medical theme -->
+    <rect width="600" height="220" fill="#F8FDFF"/>
+    <rect x="50" y="30" width="500" height="160" rx="10" fill="white" stroke="#00697C" stroke-width="1.5"/>
+    
+    <!-- Medical cross icon -->
+    <path d="M300,45 L300,65 M290,55 L310,55" stroke="#00697C" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- SERVICIO DE NEUMOLOGIA -->
+    <text x="300" y="100" text-anchor="middle" font-family="'Segoe UI', Tahoma, Geneva, sans-serif" font-size="26" font-weight="700" fill="#003642">
+        SERVICIO DE NEUMOLOGIA
+    </text>
+    
+    <!-- ÁREA SANITARIA -->
+    <text x="300" y="135" text-anchor="middle" font-family="'Segoe UI', Tahoma, Geneva, sans-serif" font-size="22" font-weight="500" fill="#00697C">
+        ÁREA SANITARIA
+    </text>
+    
+    <!-- DA CORUÑA E CEE -->
+    <text x="300" y="170" text-anchor="middle" font-family="'Segoe UI', Tahoma, Geneva, sans-serif" font-size="22" font-weight="500" fill="#004A5C">
+        DA CORUÑA E CEE
+    </text>
+    
+    <!-- Bottom accent line -->
+    <line x1="200" y1="180" x2="400" y2="180" stroke="#00697C" stroke-width="2" stroke-linecap="round"/>
+    
+</svg>
