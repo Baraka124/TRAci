@@ -3,56 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neumology Innovation Dashboard</title>
+    <title>TRAci | Innovation Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* ==== IMPROVED CSS VARIABLES ==== */
+        /* ==== DESIGN SYSTEM ==== */
         :root {
-            /* Primary Colors - Improved contrast */
-            --primary: #1d4ed8;
-            --primary-dark: #1e40af;
-            --primary-light: #dbeafe;
-            --secondary: #7c3aed;
-            --secondary-light: #ddd6fe;
+            /* Primary Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
             
-            /* Status Colors - Better accessibility */
-            --success: #059669;
-            --success-light: #d1fae5;
-            --warning: #d97706;
+            /* Secondary Colors */
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --secondary-light: #d1fae5;
+            
+            /* Status Colors */
+            --warning: #f59e0b;
+            --warning-dark: #d97706;
             --warning-light: #fef3c7;
-            --danger: #dc2626;
+            
+            --danger: #ef4444;
             --danger-light: #fee2e2;
-            --info: #2563eb;
+            
+            --info: #3b82f6;
             --info-light: #dbeafe;
             
-            /* Neutral Colors */
-            --light: #f8fafc;
-            --dark: #0f172a;
-            --gray-900: #1e293b;
-            --gray-700: #334155;
+            /* Neutral Palette */
+            --dark: #1e293b;
+            --gray-900: #334155;
+            --gray-700: #475569;
             --gray-500: #64748b;
             --gray-300: #cbd5e1;
             --gray-100: #f1f5f9;
+            --light: #f8fafc;
+            --white: #ffffff;
             
             /* UI Elements */
-            --card-bg: #ffffff;
             --border: #e2e8f0;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-light: rgba(226, 232, 240, 0.5);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             
-            /* Typography Scale */
-            --text-xs: 0.75rem;
-            --text-sm: 0.875rem;
-            --text-base: 1rem;
-            --text-lg: 1.125rem;
-            --text-xl: 1.25rem;
-            --text-2xl: 1.5rem;
-            --text-3xl: 1.875rem;
-            --text-4xl: 2.25rem;
+            /* Typography */
+            --font-inter: 'Inter', sans-serif;
+            --font-space: 'Space Grotesk', sans-serif;
             
             /* Spacing */
             --space-xs: 0.5rem;
@@ -76,16 +77,15 @@
             box-sizing: border-box;
         }
 
-        /* ==== BACKGROUND PATTERN (Improvement #1) ==== */
+        /* ==== BASE STYLES ==== */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            font-family: var(--font-inter);
+            background: var(--light);
             color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
-            padding: var(--space-lg);
+            padding: var(--space-md);
             position: relative;
-            overflow-x: hidden;
         }
 
         body::before {
@@ -95,169 +95,131 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 15% 85%, rgba(37, 99, 235, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 85% 15%, rgba(124, 58, 237, 0.03) 0%, transparent 40%),
-                linear-gradient(135deg, transparent 30%, rgba(248, 250, 252, 0.5) 100%);
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
             z-index: -1;
             pointer-events: none;
         }
 
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            z-index: 100;
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ==== IMPROVED HEADER (Hierarchy Fix #1) ==== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-lg) 0;
-            margin-bottom: var(--space-xl);
-            border-bottom: 1px solid rgba(203, 213, 225, 0.3);
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-sm);
-        }
-
-        .logo-section {
+        /* ==== TRAci BRAND HEADER ==== */
+        .brand-header {
             display: flex;
             align-items: center;
             gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            padding: var(--space-lg) 0;
         }
 
-        .logo {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-lg);
-            display: flex;
+        .brand-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--border) 50%, 
+                transparent 100%);
+        }
+
+        .traci-brand {
+            position: relative;
+            z-index: 1;
+        }
+
+        .traci-logo {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: var(--text-xl);
+            background: var(--primary-gradient);
+            color: var(--white);
+            font-family: var(--font-space);
+            font-size: 1.5rem;
             font-weight: 800;
-            font-family: 'Space Grotesk', sans-serif;
+            width: 100px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .traci-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.2) 50%,
+                transparent 100%);
+            animation: logoShimmer 3s infinite;
+        }
+
+        @keyframes logoShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .traci-logo:hover {
+            transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
-            transition: transform 0.3s ease;
         }
 
-        .logo:hover {
-            transform: rotate(5deg) scale(1.05);
+        .platform-name {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            margin-left: var(--space-sm);
         }
 
-        .title h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: var(--text-3xl);
-            font-weight: 800;
+        .platform-name h1 {
+            font-family: var(--font-space);
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--dark);
-            margin-bottom: var(--space-xs);
-            line-height: 1.2;
             letter-spacing: -0.5px;
         }
 
-        .title p {
+        .platform-name p {
+            font-size: 0.875rem;
             color: var(--gray-500);
-            font-size: var(--text-sm);
             font-weight: 500;
         }
 
-        /* ==== LAST UPDATED WITH LIVE STATUS ==== */
-        .update-status {
+        /* ==== DASHBOARD STATUS BAR ==== */
+        .dashboard-status {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
-            background: linear-gradient(135deg, var(--card-bg), var(--light));
+            gap: var(--space-lg);
+            margin-left: auto;
+            background: var(--white);
             padding: var(--space-sm) var(--space-lg);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .update-status::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--success), var(--primary));
-        }
-
-        .last-updated {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .last-updated i {
-            color: var(--primary);
-        }
-
-        .last-updated strong {
-            font-weight: 700;
-            color: var(--dark);
-            font-variant-numeric: tabular-nums;
         }
 
         .live-indicator {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: var(--space-xs);
-            font-size: var(--text-xs);
-            color: var(--success);
-            font-weight: 700;
-            padding: 4px 10px;
-            background: var(--success-light);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--secondary-light);
             border-radius: 20px;
-            border: 1px solid rgba(5, 150, 105, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .live-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--success);
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
             border-radius: 50%;
             animation: pulse 2s infinite;
             position: relative;
@@ -271,14 +233,14 @@
             right: -3px;
             bottom: -3px;
             border-radius: 50%;
-            background: var(--success);
+            background: var(--secondary);
             opacity: 0.3;
             animation: ripple 2s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            50% { opacity: 0.5; }
         }
 
         @keyframes ripple {
@@ -286,8 +248,44 @@
             100% { transform: scale(2); opacity: 0; }
         }
 
-        /* ==== IMPROVED STATS CARDS (Focus #2) ==== */
-        .stats-container {
+        .last-updated {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .last-updated strong {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--primary-light);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        /* ==== STATS OVERVIEW ==== */
+        .stats-overview {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: var(--space-lg);
@@ -295,48 +293,30 @@
         }
 
         .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
+            background: var(--white);
+            border-radius: var(--radius-xl);
             padding: var(--space-xl);
             box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--border);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s forwards;
         }
-
-        .stat-card.fade-in {
-            animation: fadeInUp 0.6s forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
 
         .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
             opacity: 0;
             transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-card:hover {
@@ -345,286 +325,110 @@
             border-color: var(--primary-light);
         }
 
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-
-        /* Primary focus card */
-        .stat-card:first-child {
-            border: 2px solid var(--primary);
-            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
-            box-shadow: var(--shadow-lg);
-            z-index: 2;
-        }
-
-        /* Urgent feedback card with pulse */
-        .stat-card:nth-child(3) {
-            position: relative;
-        }
-
-        .stat-card:nth-child(3)::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 12px;
-            height: 12px;
-            background: var(--warning);
-            border-radius: 50%;
-            animation: gentle-pulse 3s infinite;
-            box-shadow: 0 0 0 rgba(217, 119, 6, 0.4);
-        }
-
-        @keyframes gentle-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
         }
 
         .stat-icon {
             width: 56px;
             height: 56px;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: var(--text-xl);
-            color: white;
+            font-size: 1.5rem;
+            color: var(--white);
             flex-shrink: 0;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
         }
 
-        .stat-icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+        .stat-icon.tools {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
         }
 
-        .stat-icon.tools { 
-            background: linear-gradient(135deg, var(--primary), #3b82f6); 
-        }
-        .stat-icon.projects { 
-            background: linear-gradient(135deg, var(--secondary), #8b5cf6); 
-        }
-        .stat-icon.feedback { 
-            background: linear-gradient(135deg, var(--warning), #f59e0b); 
-        }
-        .stat-icon.active { 
-            background: linear-gradient(135deg, var(--success), #10b981); 
+        .stat-icon.projects {
+            background: linear-gradient(135deg, #10b981, #34d399);
         }
 
-        .stat-info {
-            flex: 1;
+        .stat-icon.feedback {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
         }
 
-        .stat-info h3 {
-            font-size: var(--text-xs);
+        .stat-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        }
+
+        .stat-content h3 {
+            font-size: 0.875rem;
             color: var(--gray-500);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: var(--space-xs);
+            margin-bottom: 4px;
             font-weight: 600;
         }
 
-        .stat-info .number {
-            font-size: var(--text-2xl);
+        .stat-number {
+            font-size: 2rem;
             font-weight: 800;
             color: var(--dark);
+            font-family: var(--font-space);
             line-height: 1;
-            font-variant-numeric: tabular-nums;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
         }
 
-        .stat-info .trend {
-            font-size: var(--text-sm);
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.875rem;
             font-weight: 600;
-            margin-left: var(--space-xs);
+            margin-top: 8px;
         }
 
-        .trend.up { color: var(--success); }
-        .trend.down { color: var(--danger); }
-
-        /* ==== IMPROVED FILTER CONTROLS (UX #4) ==== */
-        .filter-section {
-            background: var(--light);
-            border-radius: var(--radius-xl);
-            padding: var(--space-md);
-            margin-bottom: var(--space-xl);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            position: sticky;
-            top: 20px;
-            z-index: 50;
+        .stat-change.positive {
+            color: var(--secondary);
         }
 
-        .filter-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-        }
-
-        .filter-header h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: var(--text-lg);
-            font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .filter-header h3 i {
-            color: var(--primary);
-        }
-
-        .clear-filters {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--gray-500);
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            font-size: var(--text-sm);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .clear-filters:hover {
-            background: var(--danger-light);
+        .stat-change.negative {
             color: var(--danger);
-            border-color: var(--danger-light);
         }
 
-        .filter-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-sm);
-            background: var(--card-bg);
-            padding: var(--space-sm);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-        }
-
-        .filter-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            color: var(--gray-700);
-            font-size: var(--text-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: var(--radius-md);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 120px;
-            justify-content: center;
-        }
-
-        .filter-btn:hover {
-            background: var(--gray-100);
-            color: var(--dark);
-        }
-
-        .filter-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--primary-light);
-        }
-
-        .filter-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: var(--primary);
-            border-radius: var(--radius-sm);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                width: 0;
-                opacity: 0;
-            }
-            to {
-                width: 24px;
-                opacity: 1;
-            }
-        }
-
-        /* ==== IMPROVED CONTENT GRID ==== */
-        .content-grid {
+        /* ==== DASHBOARD CONTENT ==== */
+        .dashboard-content {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: var(--space-xl);
             margin-bottom: var(--space-2xl);
         }
 
-        @media (min-width: 992px) {
-            .content-grid {
-                grid-template-columns: 1fr 1fr;
+        @media (max-width: 1024px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* ==== IMPROVED SECTIONS ==== */
-        .section {
-            background: var(--card-bg);
+        /* ==== PROJECTS SECTION ==== */
+        .projects-section {
+            background: var(--white);
             border-radius: var(--radius-xl);
-            overflow: hidden;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+            overflow: hidden;
         }
 
         .section-header {
-            padding: var(--space-lg) var(--space-xl);
+            padding: var(--space-xl);
             background: linear-gradient(90deg, var(--primary-light) 0%, transparent 100%);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-        }
-
-        .section-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
         }
 
         .section-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: var(--text-xl);
+            font-family: var(--font-space);
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--dark);
             display: flex;
@@ -634,159 +438,59 @@
 
         .section-header h2 i {
             color: var(--primary);
-            font-size: var(--text-lg);
+        }
+
+        .urgent-badge {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+            color: var(--white);
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow);
         }
 
         .section-content {
             padding: var(--space-xl);
         }
 
-        /* ==== IMPROVED TOOLS GRID ==== */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--space-lg);
+        /* ==== FILTER CONTROLS ==== */
+        .filter-controls {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
         }
 
-        .tool-card {
-            background: var(--card-bg);
+        .filter-btn {
+            padding: 10px 20px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--success);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .tool-card.warning::before {
-            background: var(--warning);
-        }
-
-        .tool-card:hover::before {
-            opacity: 1;
-        }
-
-        .tool-card:hover {
-            border-color: var(--primary-light);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-3px);
-        }
-
-        .tool-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--space-md);
-        }
-
-        .tool-name {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            font-weight: 700;
-            font-size: var(--text-lg);
-            color: var(--dark);
-        }
-
-        .tool-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-md);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: var(--text-lg);
-            box-shadow: var(--shadow);
-            flex-shrink: 0;
-        }
-
-        .tool-status {
-            font-size: var(--text-xs);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .status-operational {
-            background-color: var(--success-light);
-            color: var(--success);
-            border: 1px solid rgba(5, 150, 105, 0.2);
-        }
-
-        .status-warning {
-            background-color: var(--warning-light);
-            color: var(--warning);
-            border: 1px solid rgba(217, 119, 6, 0.2);
-        }
-
-        .tool-description {
+            background: var(--white);
             color: var(--gray-700);
-            font-size: var(--text-sm);
-            margin-bottom: var(--space-lg);
-            line-height: 1.6;
-        }
-
-        .tool-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: var(--text-sm);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border);
-        }
-
-        .tool-updated {
-            color: var(--gray-500);
-            font-size: var(--text-xs);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .tool-link {
-            color: var(--primary);
-            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
             font-weight: 600;
-            display: inline-flex;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            background: var(--primary-light);
-            transition: all 0.2s;
         }
 
-        .tool-link:hover {
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
             background: var(--primary);
-            color: white;
-            transform: translateX(3px);
+            color: var(--white);
+            border-color: var(--primary);
         }
 
-        .tool-link i {
-            font-size: var(--text-xs);
-            transition: transform 0.2s;
-        }
-
-        .tool-link:hover i {
-            transform: translateX(3px);
-        }
-
-        /* ==== URGENT FEEDBACK CARDS (Critical #2) ==== */
+        /* ==== PROJECTS LIST ==== */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -794,11 +498,11 @@
         }
 
         .project-card {
-            background: var(--card-bg);
+            background: var(--white);
             border: 2px solid var(--border);
             border-radius: var(--radius-lg);
             padding: var(--space-lg);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -810,7 +514,7 @@
             left: 0;
             width: 4px;
             height: 100%;
-            background: var(--info);
+            background: var(--primary);
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -821,57 +525,44 @@
 
         .project-card:hover {
             border-color: var(--primary-light);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
 
-        /* URGENT FEEDBACK STATE - HIGHLIGHTED */
-        .project-card.needs-feedback {
-            border: 2px solid var(--warning);
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            animation: urgent-pulse 2s infinite;
-            position: relative;
-            overflow: visible;
-            z-index: 1;
+        /* Urgent Project Styling */
+        .project-card.urgent {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            animation: urgentPulse 2s infinite;
         }
 
-        @keyframes urgent-pulse {
-            0%, 100% { 
-                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1),
-                            0 0 0 0 rgba(217, 119, 6, 0.2); 
-            }
-            50% { 
-                box-shadow: 0 8px 24px rgba(217, 119, 6, 0.2),
-                            0 0 0 6px rgba(217, 119, 6, 0); 
-            }
-        }
-
-        .project-card.needs-feedback::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
+        .project-card.urgent::before {
             background: linear-gradient(to bottom, var(--warning), #f59e0b);
             opacity: 1;
         }
 
-        .project-card.needs-feedback::after {
-            content: '🚨 URGENT';
+        .project-card.urgent::after {
+            content: 'URGENT';
             position: absolute;
             top: 20px;
-            right: -35px;
+            right: -30px;
             background: linear-gradient(135deg, var(--warning), #f59e0b);
-            color: white;
+            color: var(--white);
             font-size: 10px;
             font-weight: 800;
             padding: 6px 40px;
             transform: rotate(45deg);
             letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            z-index: 10;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { 
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+            }
+            50% { 
+                box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+            }
         }
 
         .project-header {
@@ -883,7 +574,7 @@
 
         .project-title {
             font-weight: 700;
-            font-size: var(--text-lg);
+            font-size: 1.125rem;
             color: var(--dark);
             display: flex;
             align-items: center;
@@ -895,87 +586,64 @@
         }
 
         .project-status {
-            font-size: var(--text-xs);
+            font-size: 0.75rem;
             padding: 6px 12px;
             border-radius: 20px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border: 1px solid;
         }
 
-        .status-development { 
-            background-color: var(--info-light);
-            color: var(--info);
-            border-color: rgba(37, 99, 235, 0.2);
-        }
-        .status-testing { 
-            background-color: var(--warning-light);
-            color: var(--warning);
-            border-color: rgba(217, 119, 6, 0.2);
-        }
-        .status-staging { 
-            background-color: #fef3c7;
-            color: #b45309;
-            border-color: rgba(180, 83, 9, 0.2);
-        }
-        .status-production { 
-            background-color: var(--success-light);
-            color: var(--success);
-            border-color: rgba(5, 150, 105, 0.2);
-        }
-        .status-planning { 
-            background-color: var(--gray-100);
-            color: var(--gray-700);
-            border-color: var(--border);
-        }
+        .status-dev { background: var(--info-light); color: var(--info); }
+        .status-testing { background: var(--warning-light); color: var(--warning); }
+        .status-prod { background: var(--secondary-light); color: var(--secondary); }
+        .status-planning { background: var(--gray-100); color: var(--gray-700); }
 
         .project-description {
             color: var(--gray-700);
-            font-size: var(--text-sm);
+            font-size: 0.875rem;
             margin-bottom: var(--space-lg);
             line-height: 1.6;
         }
 
-        /* ==== IMPROVED PROGRESS BAR (Animation #2) ==== */
-        .project-progress {
+        /* Progress Bar */
+        .progress-container {
             margin-bottom: var(--space-lg);
         }
 
-        .progress-label {
+        .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--space-sm);
-            font-size: var(--text-sm);
         }
 
-        .progress-label span:first-child {
+        .progress-label {
+            font-size: 0.875rem;
             color: var(--gray-700);
             font-weight: 600;
         }
 
-        .progress-label span:last-child {
+        .progress-percentage {
+            font-size: 0.875rem;
             color: var(--dark);
             font-weight: 700;
-            font-variant-numeric: tabular-nums;
+            font-family: var(--font-space);
         }
 
         .progress-bar {
-            height: 10px;
-            background-color: var(--gray-100);
-            border-radius: 5px;
+            height: 8px;
+            background: var(--gray-100);
+            border-radius: 4px;
             overflow: hidden;
-            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            border-radius: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: var(--primary-gradient);
+            border-radius: 4px;
             position: relative;
-            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: width 1s ease-in-out;
         }
 
         .progress-fill::after {
@@ -987,7 +655,7 @@
             height: 100%;
             background: linear-gradient(90deg,
                 transparent 0%,
-                rgba(255,255,255,0.4) 50%,
+                rgba(255, 255, 255, 0.4) 50%,
                 transparent 100%);
             animation: progressShine 2s infinite;
         }
@@ -997,11 +665,11 @@
             100% { transform: translateX(100%); }
         }
 
+        /* Project Links */
         .project-links {
             display: flex;
             gap: var(--space-sm);
             margin-bottom: var(--space-lg);
-            flex-wrap: wrap;
         }
 
         .project-link {
@@ -1010,59 +678,31 @@
             gap: 8px;
             color: var(--primary);
             text-decoration: none;
-            font-size: var(--text-sm);
+            font-size: 0.875rem;
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 8px 16px;
             border: 2px solid var(--primary-light);
             border-radius: var(--radius-md);
-            background: white;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-link::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: var(--primary);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-            z-index: 0;
+            background: var(--white);
+            transition: all 0.2s;
         }
 
         .project-link:hover {
-            color: white;
+            background: var(--primary);
+            color: var(--white);
             border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
-        .project-link:hover::before {
-            width: 150%;
-            height: 150%;
-        }
-
-        .project-link i, .project-link span {
-            position: relative;
-            z-index: 1;
-        }
-
+        /* Project Footer */
         .project-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: var(--text-sm);
+            font-size: 0.875rem;
             color: var(--gray-500);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border);
         }
 
-        .last-commit {
+        .last-update {
             display: flex;
             align-items: center;
             gap: 6px;
@@ -1075,75 +715,131 @@
         }
 
         .feedback-badge {
-            background: linear-gradient(135deg, var(--warning), #f59e0b);
-            color: white;
-            font-size: var(--text-xs);
-            padding: 8px 16px;
+            background: var(--warning);
+            color: var(--white);
+            font-size: 0.75rem;
+            padding: 6px 12px;
             border-radius: 20px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
-            animation: badgePulse 2s infinite;
-        }
-
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .feedback-channels {
             display: flex;
-            gap: var(--space-sm);
+            gap: var(--space-xs);
         }
 
         .channel-btn {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--white);
             text-decoration: none;
-            font-size: var(--text-lg);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .channel-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .channel-btn:hover::before {
-            width: 100%;
-            height: 100%;
+            font-size: 1rem;
+            transition: transform 0.2s;
         }
 
         .channel-btn:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transform: scale(1.1);
         }
 
-        .whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); }
-        .email { background: linear-gradient(135deg, var(--primary), #1e40af); }
-        .github { background: linear-gradient(135deg, #333, #000); }
-        .slack { background: linear-gradient(135deg, #4A154B, #611f69); }
+        .channel-whatsapp { background: #25D366; }
+        .channel-email { background: var(--primary); }
+        .channel-github { background: var(--dark); }
+        .channel-slack { background: #4A154B; }
 
-        /* ==== IMPROVED UPDATES SECTION ==== */
+        /* ==== TOOLS SECTION ==== */
+        .tools-section {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .tool-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: var(--primary-gradient);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .tool-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        .tool-status {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: var(--space-xs);
+        }
+
+        .status-up { background: var(--secondary-light); color: var(--secondary); }
+        .status-down { background: var(--danger-light); color: var(--danger); }
+
+        .tool-description {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-md);
+            line-height: 1.5;
+        }
+
+        .tool-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ==== RECENT UPDATES ==== */
         .updates-section {
-            margin-top: var(--space-2xl);
+            margin-top: var(--space-xl);
         }
 
         .timeline {
@@ -1158,51 +854,30 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, var(--primary-light), var(--secondary-light));
+            background: linear-gradient(to bottom, var(--primary-light), transparent);
         }
 
         .timeline-item {
             position: relative;
             margin-bottom: var(--space-xl);
-            opacity: 0;
-            transform: translateX(-20px);
-            animation: slideInRight 0.6s forwards;
-        }
-
-        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
-        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
-        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
-        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
-        .timeline-item:nth-child(5) { animation-delay: 0.5s; }
-
-        @keyframes slideInRight {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
 
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -28px;
+            left: -26px;
             top: 8px;
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: white;
+            background: var(--white);
             border: 3px solid var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-light);
-            z-index: 1;
         }
 
         .timeline-date {
-            font-size: var(--text-sm);
+            font-size: 0.875rem;
             color: var(--primary);
-            margin-bottom: var(--space-sm);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: var(--space-xs);
             font-weight: 600;
         }
 
@@ -1211,63 +886,91 @@
             border-radius: var(--radius-lg);
             padding: var(--space-lg);
             border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            opacity: 0.3;
-        }
-
-        .timeline-content:hover {
-            transform: translateX(5px);
-            box-shadow: var(--shadow-md);
         }
 
         .timeline-content h4 {
-            font-size: var(--text-lg);
-            margin-bottom: var(--space-sm);
+            font-size: 1rem;
             color: var(--dark);
-            font-weight: 700;
+            margin-bottom: var(--space-xs);
         }
 
         .timeline-content p {
-            font-size: var(--text-sm);
+            font-size: 0.875rem;
             color: var(--gray-700);
-            margin-bottom: var(--space-md);
-            line-height: 1.6;
+            margin-bottom: var(--space-sm);
         }
 
         .timeline-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: var(--text-sm);
             color: var(--primary);
             text-decoration: none;
+            font-size: 0.875rem;
             font-weight: 600;
-            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ==== DASHBOARD FOOTER ==== */
+        .dashboard-footer {
+            margin-top: var(--space-2xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .footer-traci {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            color: var(--white);
+            font-family: var(--font-space);
+            font-weight: 800;
+            width: 60px;
+            height: 32px;
             border-radius: var(--radius-md);
-            background: var(--primary-light);
-            transition: all 0.2s;
         }
 
-        .timeline-link:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateX(3px);
+        .footer-info {
+            font-size: 0.875rem;
+            color: var(--gray-500);
         }
 
-        /* ==== IMPROVED LOADING STATES ==== */
+        .footer-info strong {
+            color: var(--dark);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-lg);
+        }
+
+        .footer-link {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        /* ==== LOADING STATES ==== */
         .loading {
             text-align: center;
             padding: var(--space-2xl);
@@ -1275,28 +978,13 @@
         }
 
         .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--gray-100);
-            border-top: 4px solid var(--primary);
-            border-right: 4px solid var(--secondary);
+            border: 3px solid var(--gray-100);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto var(--space-lg);
-            position: relative;
-        }
-
-        .loading-spinner::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top: 4px solid rgba(124, 58, 237, 0.3);
-            animation: spin 1.5s linear infinite reverse;
+            margin: 0 auto var(--space-md);
         }
 
         @keyframes spin {
@@ -1304,7 +992,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ==== IMPROVED SKELETON LOADING ==== */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -1313,483 +1000,849 @@
         }
 
         .skeleton-card {
-            height: 180px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .skeleton-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255,255,255,0.4) 50%, 
-                transparent 100%);
-            animation: skeletonShine 1.5s infinite;
-        }
-
-        @keyframes skeletonShine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* ==== IMPROVED EMPTY STATES ==== */
-        .empty-state {
-            text-align: center;
-            padding: var(--space-2xl);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-xl);
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            transition: all 0.3s;
-        }
-
-        .empty-state:hover {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            transform: translateY(-2px);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: var(--space-lg);
-            color: var(--primary);
-            opacity: 0.7;
-        }
-
-        .empty-state h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: var(--text-xl);
-            color: var(--dark);
-            margin-bottom: var(--space-sm);
-        }
-
-        .empty-state p {
-            color: var(--gray-500);
-            margin-bottom: var(--space-lg);
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-button {
-            margin-top: var(--space-md);
-            padding: 12px 28px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255,255,255,0.2) 50%, 
-                transparent 100%);
-            transition: left 0.5s;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        /* ==== IMPROVED FOOTER ==== */
-        .footer {
-            margin-top: var(--space-2xl);
-            padding-top: var(--space-xl);
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--space-xl);
-            margin-bottom: var(--space-xl);
-        }
-
-        .footer-section {
-            padding: var(--space-lg);
-            background: var(--light);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-        }
-
-        .footer-section h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: var(--text-lg);
-            color: var(--dark);
-            margin-bottom: var(--space-md);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .footer-section h4 i {
-            color: var(--primary);
-        }
-
-        .sync-status {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .status-dot.online {
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.offline {
-            background: var(--gray-300);
-        }
-
-        .quick-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-sm);
-        }
-
-        .action-btn {
-            padding: 10px 16px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--gray-700);
-            font-size: var(--text-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            min-width: 0;
-            justify-content: center;
-        }
-
-        .action-btn:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            border-color: var(--primary-light);
-            transform: translateY(-1px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding: var(--space-lg);
-            color: var(--gray-500);
-            font-size: var(--text-sm);
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-bottom a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            margin: 0 8px;
-            position: relative;
-        }
-
-        .footer-bottom a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--primary);
-            transition: width 0.3s;
-        }
-
-        .footer-bottom a:hover::after {
-            width: 100%;
-        }
-
-        /* ==== MICROINTERACTIONS (Improvement #4) ==== */
-        .clickable {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .clickable:active {
-            transform: scale(0.98);
-            transition: transform 0.1s;
+            height: 160px;
         }
 
         /* ==== RESPONSIVE DESIGN ==== */
         @media (max-width: 768px) {
             body {
-                padding: var(--space-md);
+                padding: var(--space-sm);
             }
-            
-            .header {
+
+            .brand-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: var(--space-lg);
             }
-            
-            .update-status {
+
+            .dashboard-status {
                 width: 100%;
+                justify-content: space-between;
             }
-            
-            .stats-container {
+
+            .stats-overview {
                 grid-template-columns: 1fr;
             }
-            
+
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+
             .filter-controls {
-                flex-direction: column;
+                justify-content: center;
             }
-            
-            .filter-btn {
-                min-width: 100%;
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            
+
             .project-footer {
                 flex-direction: column;
                 gap: var(--space-md);
                 align-items: flex-start;
             }
-            
+
             .feedback-section {
                 width: 100%;
                 justify-content: space-between;
             }
-            
-            .footer-grid {
-                grid-template-columns: 1fr;
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-md);
             }
         }
 
-        @media (max-width: 480px) {
-            .title h1 {
-                font-size: var(--text-2xl);
-            }
-            
-            .stat-card {
-                padding: var(--space-lg);
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-sm);
-            }
-            
-            .project-links {
-                flex-direction: column;
-            }
-            
-            .project-link {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* ==== DARK MODE SUPPORT (Future Enhancement) ==== */
+        /* ==== DARK MODE ==== */
         @media (prefers-color-scheme: dark) {
             :root {
-                --card-bg: #1e293b;
                 --light: #0f172a;
+                --white: #1e293b;
                 --dark: #f8fafc;
-                --border: #334155;
                 --gray-700: #cbd5e1;
                 --gray-500: #94a3b8;
+                --border: #334155;
+                --gray-100: #1e293b;
             }
-        }
 
-        /* ==== PRINT STYLES ==== */
-        @media print {
-            .filter-section,
-            .footer,
-            .action-btn,
-            .tool-link,
-            .project-link,
-            .timeline-link,
-            .channel-btn {
-                display: none !important;
-            }
-            
             .stat-card,
-            .tool-card,
-            .project-card {
-                break-inside: avoid;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
+            .projects-section,
+            .tools-section {
+                background: #1e293b;
+                border-color: #334155;
+            }
+
+            .section-header {
+                background: rgba(99, 102, 241, 0.1);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Rest of your HTML structure remains the same -->
-    <!-- Just update the footer section to use new structure -->
-    
-    <!-- IMPROVED FOOTER -->
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h4><i class="fas fa-sync-alt"></i> Sync Status</h4>
-                <div class="sync-status">
-                    <span class="status-dot online"></span>
-                    <span id="syncStatusText">Syncing every 5 minutes</span>
+    <div class="container">
+        <!-- TRAci Brand Header -->
+        <header class="brand-header">
+            <div class="traci-brand">
+                <div class="traci-logo">TRAci</div>
+                <div class="platform-name">
+                    <h1>Innovation Dashboard</h1>
+                    <p>Real-time project monitoring & collaboration</p>
                 </div>
-                <p class="sync-info" style="margin-top: 12px; font-size: var(--text-sm); color: var(--gray-500);">
-                    Last sync: <span id="lastSyncTime">Just now</span>
-                </p>
             </div>
             
-            <div class="footer-section">
-                <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+            <div class="dashboard-status">
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    <span>LIVE</span>
+                </div>
+                <div class="last-updated">
+                    Updated: <strong id="lastUpdated">Just now</strong>
+                </div>
                 <div class="quick-actions">
-                    <button onclick="refreshData()" class="action-btn clickable">
+                    <button class="action-btn" id="refreshBtn">
                         <i class="fas fa-redo"></i> Refresh
                     </button>
-                    <button onclick="exportData()" class="action-btn clickable">
+                    <button class="action-btn" id="exportBtn">
                         <i class="fas fa-download"></i> Export
-                    </button>
-                    <button onclick="toggleTheme()" class="action-btn clickable">
-                        <i class="fas fa-moon"></i> Theme
                     </button>
                 </div>
             </div>
-            
-            <div class="footer-section">
-                <h4><i class="fas fa-info-circle"></i> Dashboard Info</h4>
-                <p style="color: var(--gray-700); margin-bottom: 8px;">
-                    <strong id="dataCount">0 items</strong> loaded
-                </p>
-                <p style="color: var(--gray-500); font-size: var(--text-sm);">
-                    Version 1.2.3 • Built with Supabase
-                </p>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon tools">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Active Tools</h3>
+                        <div class="stat-number" id="toolsCount">8</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2 this week</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>
-                Neumology Innovation Dashboard • 
-                <a href="#" id="refreshLink">Refresh Data</a> • 
-                <a href="https://github.com" target="_blank">GitHub</a> • 
-                <a href="#" onclick="showReportIssue()">Report Issue</a>
-            </p>
-            <p style="margin-top: var(--space-sm); font-size: var(--text-xs); color: var(--gray-500);">
-                <i class="fas fa-mobile-alt"></i> Bookmark this page for quick access • 
-                Auto-refresh: <span id="autoRefreshStatus">Enabled</span>
-            </p>
-        </div>
-    </footer>
 
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon projects">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Projects</h3>
+                        <div class="stat-number" id="projectsCount">14</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+1 new</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon feedback">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Needs Feedback</h3>
+                        <div class="stat-number" id="feedbackCount">3</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Review required</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon active">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Active Dev</h3>
+                        <div class="stat-number" id="activeCount">9</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>65% active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Projects Section -->
+            <section class="projects-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-code"></i> Active Projects</h2>
+                    <div class="urgent-badge" id="urgentBadge">3 Urgent</div>
+                </div>
+                <div class="section-content">
+                    <!-- Filter Controls -->
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-layer-group"></i> All
+                        </button>
+                        <button class="filter-btn" data-filter="urgent">
+                            <i class="fas fa-exclamation-circle"></i> Urgent
+                        </button>
+                        <button class="filter-btn" data-filter="development">
+                            <i class="fas fa-code"></i> Development
+                        </button>
+                        <button class="filter-btn" data-filter="testing">
+                            <i class="fas fa-vial"></i> Testing
+                        </button>
+                        <button class="filter-btn" data-filter="production">
+                            <i class="fas fa-rocket"></i> Production
+                        </button>
+                    </div>
+
+                    <!-- Projects List -->
+                    <div class="projects-list" id="projectsList">
+                        <!-- Project 1 - Urgent -->
+                        <div class="project-card urgent">
+                            <div class="project-header">
+                                <div class="project-title">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Security Dashboard v2.0
+                                </div>
+                                <span class="project-status status-dev">Development</span>
+                            </div>
+                            <p class="project-description">
+                                Next-gen security monitoring interface with real-time threat detection and automated response system.
+                            </p>
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span class="progress-label">Completion</span>
+                                    <span class="progress-percentage">78%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">
+                                    <i class="fab fa-github"></i> Repository
+                                </a>
+                                <a href="#" class="project-link">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
+                                </a>
+                            </div>
+                            <div class="project-footer">
+                                <div class="last-update">
+                                    <i class="far fa-clock"></i>
+                                    <span>Updated 2 hours ago</span>
+                                </div>
+                                <div class="feedback-section">
+                                    <span class="feedback-badge">Feedback Required</span>
+                                    <div class="feedback-channels">
+                                        <a href="#" class="channel-btn channel-slack">
+                                            <i class="fab fa-slack"></i>
+                                        </a>
+                                        <a href="#" class="channel-btn channel-email">
+                                            <i class="fas fa-envelope"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project 2 -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <div class="project-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Analytics Platform
+                                </div>
+                                <span class="project-status status-testing">Testing</span>
+                            </div>
+                            <p class="project-description">
+                                Advanced analytics and visualization platform for processing large-scale datasets.
+                            </p>
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span class="progress-label">Completion</span>
+                                    <span class="progress-percentage">92%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 92%"></div>
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">
+                                    <i class="fab fa-github"></i> Repository
+                                </a>
+                                <a href="#" class="project-link">
+                                    <i class="fas fa-external-link-alt"></i> Staging
+                                </a>
+                            </div>
+                            <div class="project-footer">
+                                <div class="last-update">
+                                    <i class="far fa-clock"></i>
+                                    <span>Updated 1 day ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools & Updates Sidebar -->
+            <aside class="sidebar">
+                <!-- Tools Section -->
+                <section class="tools-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tools"></i> Development Tools</h2>
+                    </div>
+                    <div class="section-content">
+                        <div class="tools-grid" id="toolsGrid">
+                            <!-- Tool 1 -->
+                            <div class="tool-card">
+                                <div class="tool-header">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <div class="tool-name">API Gateway</div>
+                                        <span class="tool-status status-up">Operational</span>
+                                    </div>
+                                </div>
+                                <p class="tool-description">
+                                    Main API endpoint for all services
+                                </p>
+                                <a href="#" class="tool-link">
+                                    Access <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+
+                            <!-- Tool 2 -->
+                            <div class="tool-card">
+                                <div class="tool-header">
+                                    <div class="tool-icon">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div>
+                                        <div class="tool-name">Supabase DB</div>
+                                        <span class="tool-status status-up">Operational</span>
+                                    </div>
+                                </div>
+                                <p class="tool-description">
+                                    Primary database cluster
+                                </p>
+                                <a href="#" class="tool-link">
+                                    Monitor <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Updates -->
+                <section class="updates-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-history"></i> Recent Updates</h2>
+                    </div>
+                    <div class="section-content">
+                        <div class="timeline" id="timeline">
+                            <!-- Update 1 -->
+                            <div class="timeline-item">
+                                <div class="timeline-date">
+                                    <i class="far fa-clock"></i> 2 hours ago
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Security Dashboard Update</h4>
+                                    <p>Added new threat detection algorithms and improved UI components.</p>
+                                    <a href="#" class="timeline-link">
+                                        View Changes <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Update 2 -->
+                            <div class="timeline-item">
+                                <div class="timeline-date">
+                                    <i class="far fa-clock"></i> 1 day ago
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Analytics Platform</h4>
+                                    <p>Performance optimizations and bug fixes deployed to staging.</p>
+                                    <a href="#" class="timeline-link">
+                                        Review <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+
+        <!-- Dashboard Footer -->
+        <footer class="dashboard-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="footer-traci">TRAci</div>
+                    <div class="footer-info">
+                        <strong>Innovation Dashboard</strong> • v1.2.3
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Documentation</a>
+                    <a href="#" class="footer-link">GitHub</a>
+                    <a href="#" class="footer-link">Support</a>
+                    <a href="#" class="footer-link">Settings</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
     <script>
-        // IMPROVED JS WITH MICROINTERACTIONS
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add microinteractions
-            addMicrointeractions();
-            
-            // Initialize with fade-in
-            setTimeout(() => {
-                document.querySelectorAll('.stat-card').forEach((card, i) => {
-                    card.style.animationDelay = `${i * 0.1}s`;
-                    card.classList.add('fade-in');
-                });
-            }, 100);
-        });
+        // Configuration
+        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+        const SUPABASE_KEY = 'your_supabase_key_here';
 
-        function addMicrointeractions() {
-            // Button press effect
-            document.querySelectorAll('.clickable').forEach(btn => {
-                btn.addEventListener('mousedown', () => {
-                    btn.style.transform = 'scale(0.98)';
-                });
-                btn.addEventListener('mouseup', () => {
-                    btn.style.transform = '';
-                });
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transform = '';
-                });
-            });
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            // Card hover with z-index management
-            document.querySelectorAll('.stat-card, .tool-card, .project-card').forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.zIndex = '10';
-                });
-                card.addEventListener('mouseleave', () => {
-                    setTimeout(() => {
-                        card.style.zIndex = '1';
-                    }, 150);
-                });
-            });
+        // Dashboard State
+        const dashboardState = {
+            projects: [],
+            tools: [],
+            updates: [],
+            filters: {
+                active: 'all'
+            }
+        };
 
-            // Ripple effect for buttons
-            document.querySelectorAll('.action-btn, .project-link, .cta-button').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const ripple = document.createElement('span');
-                    const rect = this.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    const x = e.clientX - rect.left - size/2;
-                    const y = e.clientY - rect.top - size/2;
-                    
-                    ripple.style.cssText = `
-                        position: absolute;
-                        border-radius: 50%;
-                        background: rgba(255,255,255,0.7);
-                        transform: scale(0);
-                        animation: ripple-animation 0.6s linear;
-                        width: ${size}px;
-                        height: ${size}px;
-                        left: ${x}px;
-                        top: ${y}px;
-                        pointer-events: none;
-                    `;
-                    
-                    this.appendChild(ripple);
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
+        // DOM Elements
+        const elements = {
+            lastUpdated: document.getElementById('lastUpdated'),
+            toolsCount: document.getElementById('toolsCount'),
+            projectsCount: document.getElementById('projectsCount'),
+            feedbackCount: document.getElementById('feedbackCount'),
+            activeCount: document.getElementById('activeCount'),
+            urgentBadge: document.getElementById('urgentBadge'),
+            projectsList: document.getElementById('projectsList'),
+            toolsGrid: document.getElementById('toolsGrid'),
+            timeline: document.getElementById('timeline'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            filterBtns: document.querySelectorAll('.filter-btn')
+        };
 
-            // Add CSS for ripple
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes ripple-animation {
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
+        // Initialize Dashboard
+        async function initDashboard() {
+            try {
+                await Promise.all([
+                    loadProjects(),
+                    loadTools(),
+                    loadUpdates()
+                ]);
+                
+                updateDashboard();
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('Dashboard initialization failed:', error);
+                showErrorState();
+            }
         }
+
+        // Load Projects
+        async function loadProjects() {
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+                
+                if (error) throw error;
+                dashboardState.projects = data || [];
+                
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                // Fallback to sample data
+                dashboardState.projects = getSampleProjects();
+            }
+        }
+
+        // Load Tools
+        async function loadTools() {
+            try {
+                const { data, error } = await supabase
+                    .from('tools')
+                    .select('*')
+                    .order('status', { ascending: true });
+                
+                if (error) throw error;
+                dashboardState.tools = data || [];
+                
+            } catch (error) {
+                console.error('Failed to load tools:', error);
+                dashboardState.tools = getSampleTools();
+            }
+        }
+
+        // Load Updates
+        async function loadUpdates() {
+            try {
+                const { data, error } = await supabase
+                    .from('updates')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                dashboardState.updates = data || [];
+                
+            } catch (error) {
+                console.error('Failed to load updates:', error);
+                dashboardState.updates = getSampleUpdates();
+            }
+        }
+
+        // Update Dashboard UI
+        function updateDashboard() {
+            updateStats();
+            updateProjectsList();
+            updateToolsGrid();
+            updateTimeline();
+            updateTimestamp();
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const projects = dashboardState.projects;
+            const tools = dashboardState.tools;
+            
+            const urgentCount = projects.filter(p => p.is_urgent).length;
+            const feedbackCount = projects.filter(p => p.needs_feedback).length;
+            const activeCount = projects.filter(p => 
+                p.status === 'development' || p.status === 'testing'
+            ).length;
+            
+            elements.toolsCount.textContent = tools.length;
+            elements.projectsCount.textContent = projects.length;
+            elements.feedbackCount.textContent = feedbackCount;
+            elements.activeCount.textContent = activeCount;
+            
+            elements.urgentBadge.textContent = `${urgentCount} Urgent`;
+        }
+
+        // Update Projects List with Filtering
+        function updateProjectsList() {
+            const projects = filterProjects(dashboardState.projects);
+            const projectsHTML = projects.map(project => createProjectCard(project)).join('');
+            
+            elements.projectsList.innerHTML = projectsHTML || `
+                <div class="empty-state">
+                    <p>No projects found</p>
+                </div>
+            `;
+        }
+
+        // Filter Projects
+        function filterProjects(projects) {
+            const filter = dashboardState.filters.active;
+            
+            if (filter === 'all') return projects;
+            if (filter === 'urgent') return projects.filter(p => p.is_urgent);
+            
+            return projects.filter(p => p.status === filter);
+        }
+
+        // Create Project Card HTML
+        function createProjectCard(project) {
+            const statusClass = `status-${project.status?.toLowerCase().replace(' ', '-')}`;
+            const isUrgent = project.is_urgent ? 'urgent' : '';
+            
+            return `
+                <div class="project-card ${isUrgent}">
+                    <div class="project-header">
+                        <div class="project-title">
+                            <i class="${project.icon || 'fas fa-code'}"></i>
+                            ${project.name}
+                        </div>
+                        <span class="project-status ${statusClass}">
+                            ${project.status || 'Development'}
+                        </span>
+                    </div>
+                    <p class="project-description">${project.description}</p>
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-label">Completion</span>
+                            <span class="progress-percentage">${project.progress || 0}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                        </div>
+                    </div>
+                    <div class="project-links">
+                        ${project.github_url ? `
+                            <a href="${project.github_url}" class="project-link">
+                                <i class="fab fa-github"></i> Repository
+                            </a>
+                        ` : ''}
+                        ${project.demo_url ? `
+                            <a href="${project.demo_url}" class="project-link">
+                                <i class="fas fa-external-link-alt"></i> Demo
+                            </a>
+                        ` : ''}
+                    </div>
+                    <div class="project-footer">
+                        <div class="last-update">
+                            <i class="far fa-clock"></i>
+                            <span>Updated ${formatTimeAgo(project.updated_at)}</span>
+                        </div>
+                        ${project.needs_feedback ? `
+                            <div class="feedback-section">
+                                <span class="feedback-badge">Feedback Required</span>
+                                <div class="feedback-channels">
+                                    ${createFeedbackChannels(project)}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create Feedback Channels HTML
+        function createFeedbackChannels(project) {
+            const channels = project.feedback_channels || ['slack', 'email'];
+            return channels.map(channel => `
+                <a href="#" class="channel-btn channel-${channel}">
+                    <i class="fab fa-${channel}"></i>
+                </a>
+            `).join('');
+        }
+
+        // Update Tools Grid
+        function updateToolsGrid() {
+            const toolsHTML = dashboardState.tools.map(tool => createToolCard(tool)).join('');
+            elements.toolsGrid.innerHTML = toolsHTML;
+        }
+
+        // Create Tool Card HTML
+        function createToolCard(tool) {
+            const statusClass = tool.status === 'operational' ? 'status-up' : 'status-down';
+            const statusText = tool.status === 'operational' ? 'Operational' : 'Issues';
+            
+            return `
+                <div class="tool-card">
+                    <div class="tool-header">
+                        <div class="tool-icon">
+                            <i class="${tool.icon || 'fas fa-server'}"></i>
+                        </div>
+                        <div>
+                            <div class="tool-name">${tool.name}</div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                    <p class="tool-description">${tool.description}</p>
+                    <a href="${tool.url}" class="tool-link">
+                        Access <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            `;
+        }
+
+        // Update Timeline
+        function updateTimeline() {
+            const updatesHTML = dashboardState.updates.map(update => createUpdateItem(update)).join('');
+            elements.timeline.innerHTML = updatesHTML;
+        }
+
+        // Create Update Item HTML
+        function createUpdateItem(update) {
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-date">
+                        <i class="far fa-clock"></i> ${formatTimeAgo(update.created_at)}
+                    </div>
+                    <div class="timeline-content">
+                        <h4>${update.title}</h4>
+                        <p>${update.description}</p>
+                        ${update.link ? `
+                            <a href="${update.link}" class="timeline-link">
+                                View Details <i class="fas fa-arrow-right"></i>
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update Timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            elements.lastUpdated.textContent = `${timeString}`;
+        }
+
+        // Format Time Ago
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Filter buttons
+            elements.filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    elements.filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    dashboardState.filters.active = btn.dataset.filter;
+                    updateProjectsList();
+                });
+            });
+            
+            // Refresh button
+            elements.refreshBtn.addEventListener('click', async () => {
+                elements.refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing';
+                await initDashboard();
+                elements.refreshBtn.innerHTML = '<i class="fas fa-redo"></i> Refresh';
+            });
+            
+            // Export button
+            elements.exportBtn.addEventListener('click', exportDashboardData);
+            
+            // Auto-refresh every 5 minutes
+            setInterval(async () => {
+                await initDashboard();
+            }, 5 * 60 * 1000);
+            
+            // Update timestamp every minute
+            setInterval(updateTimestamp, 60 * 1000);
+        }
+
+        // Export Dashboard Data
+        function exportDashboardData() {
+            const data = {
+                exported: new Date().toISOString(),
+                projects: dashboardState.projects,
+                tools: dashboardState.tools,
+                updates: dashboardState.updates
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `traci-dashboard-export-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show Error State
+        function showErrorState() {
+            elements.projectsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Unable to load dashboard data</p>
+                    <button onclick="initDashboard()" class="action-btn">
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        // Sample Data (Fallback)
+        function getSampleProjects() {
+            return [
+                {
+                    id: 1,
+                    name: 'Security Dashboard v2.0',
+                    description: 'Next-gen security monitoring interface with real-time threat detection.',
+                    status: 'development',
+                    progress: 78,
+                    is_urgent: true,
+                    needs_feedback: true,
+                    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    github_url: 'https://github.com/example/security-dashboard',
+                    demo_url: 'https://demo.example.com',
+                    feedback_channels: ['slack', 'email'],
+                    icon: 'fas fa-shield-alt'
+                },
+                {
+                    id: 2,
+                    name: 'Analytics Platform',
+                    description: 'Advanced analytics and visualization platform.',
+                    status: 'testing',
+                    progress: 92,
+                    is_urgent: false,
+                    needs_feedback: false,
+                    updated_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                    github_url: 'https://github.com/example/analytics',
+                    demo_url: 'https://staging.example.com',
+                    icon: 'fas fa-chart-line'
+                }
+            ];
+        }
+
+        function getSampleTools() {
+            return [
+                {
+                    id: 1,
+                    name: 'API Gateway',
+                    description: 'Main API endpoint for all services',
+                    status: 'operational',
+                    url: 'https://api.example.com',
+                    icon: 'fas fa-server'
+                },
+                {
+                    id: 2,
+                    name: 'Supabase DB',
+                    description: 'Primary database cluster',
+                    status: 'operational',
+                    url: 'https://supabase.io',
+                    icon: 'fas fa-database'
+                }
+            ];
+        }
+
+        function getSampleUpdates() {
+            return [
+                {
+                    id: 1,
+                    title: 'Security Dashboard Update',
+                    description: 'Added new threat detection algorithms and improved UI components.',
+                    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    link: 'https://github.com/example/security-dashboard/pull/123'
+                },
+                {
+                    id: 2,
+                    title: 'Analytics Platform',
+                    description: 'Performance optimizations and bug fixes deployed to staging.',
+                    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                    link: 'https://github.com/example/analytics/releases/tag/v1.2.0'
+                }
+            ];
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
 </html>
