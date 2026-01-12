@@ -851,24 +851,17 @@
     </div>
 
     <!-- ==== ONLY ONE SCRIPT TAG - NO DUPLICATES ==== -->
-    <script>
+   <script>
     // ========== CONFIGURATION ==========
     const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
     // ========== SINGLE SUPABASE INITIALIZATION ==========
-    // IMPORTANT: If you have supabase declared elsewhere, REMOVE it!
-    // This should be the ONLY supabase declaration
-    let supabase;
-
-    // Initialize only once
-    if (!window._supabaseInitialized) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window._supabaseInitialized = true;
-    } else {
-        // Use existing instance if already initialized
-        supabase = window.supabase;
+    // Check if already exists to avoid duplicate declaration
+    if (!window.supabaseClient) {
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
+    const supabase = window.supabaseClient;
 
     // ========== STATE MANAGEMENT ==========
     let dashboardData = {
@@ -957,7 +950,6 @@
         dashboardData.updates = data || [];
     }
 
-    // ========== NEW FILTERING FUNCTION ==========
     function filterProjects(filterType) {
         document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.filter === filterType);
@@ -1017,12 +1009,7 @@
         const toolsGrid = document.getElementById('toolsGrid');
         
         if (dashboardData.tools.length === 0) {
-            toolsGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-toolbox"></i>
-                    <p>No tools found. Add some in Supabase.</p>
-                </div>
-            `;
+            toolsGrid.innerHTML = '<div class="empty-state"><i class="fas fa-toolbox"></i><p>No tools found.</p></div>';
             return;
         }
         
@@ -1070,12 +1057,7 @@
             : dashboardData.projects;
         
         if (projectsToRender.length === 0) {
-            projectsList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-code-branch"></i>
-                    <p>No projects found. Add some in Supabase.</p>
-                </div>
-            `;
+            projectsList.innerHTML = '<div class="empty-state"><i class="fas fa-code-branch"></i><p>No projects found.</p></div>';
             return;
         }
         
@@ -1113,41 +1095,21 @@
                         className = 'slack';
                     }
                     
-                    feedbackChannelsHTML += `
-                        <a href="${link}" target="_blank" class="channel-btn ${className}" 
-                           title="${channel.label || `Send ${channel.channel} feedback`}">
-                            <i class="${icon}"></i>
-                        </a>
-                    `;
+                    feedbackChannelsHTML += `<a href="${link}" target="_blank" class="channel-btn ${className}" title="${channel.label || `Send ${channel.channel} feedback`}"><i class="${icon}"></i></a>`;
                 });
             }
             
             let feedbackSection = '';
             if (project.needs_feedback) {
-                feedbackSection = `
-                    <div class="feedback-section">
-                        <span class="feedback-badge">Ready for review</span>
-                        <div class="feedback-channels">
-                            ${feedbackChannelsHTML}
-                        </div>
-                    </div>
-                `;
+                feedbackSection = `<div class="feedback-section"><span class="feedback-badge">Ready for review</span><div class="feedback-channels">${feedbackChannelsHTML}</div></div>`;
             }
             
             let projectLinks = '';
             if (project.github_url) {
-                projectLinks += `
-                    <a href="${project.github_url}" target="_blank" class="project-link">
-                        <i class="fab fa-github"></i> GitHub
-                    </a>
-                `;
+                projectLinks += `<a href="${project.github_url}" target="_blank" class="project-link"><i class="fab fa-github"></i> GitHub</a>`;
             }
             if (project.live_url) {
-                projectLinks += `
-                    <a href="${project.live_url}" target="_blank" class="project-link">
-                        <i class="fas fa-external-link-alt"></i> Live Demo
-                    </a>
-                `;
+                projectLinks += `<a href="${project.live_url}" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Live Demo</a>`;
             }
             
             projectsHTML += `
@@ -1191,12 +1153,7 @@
         const timeline = document.getElementById('timeline');
         
         if (dashboardData.updates.length === 0) {
-            timeline.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-history"></i>
-                    <p>No updates yet. Add some in Supabase.</p>
-                </div>
-            `;
+            timeline.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No updates yet.</p></div>';
             return;
         }
         
@@ -1220,11 +1177,7 @@
                     <div class="timeline-content">
                         <h4>${update.title}</h4>
                         <p>${update.content || ''}</p>
-                        ${update.link ? `
-                            <a href="${update.link}" target="_blank" class="timeline-link">
-                                <i class="fas fa-external-link-alt"></i> View Details
-                            </a>
-                        ` : ''}
+                        ${update.link ? `<a href="${update.link}" target="_blank" class="timeline-link"><i class="fas fa-external-link-alt"></i> View Details</a>` : ''}
                     </div>
                 </div>
             `;
@@ -1252,7 +1205,6 @@
         dashboardData.lastUpdated = now;
     }
 
-    // ========== UI STATE FUNCTIONS ==========
     function showLoadingState() {
         document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     }
@@ -1283,7 +1235,6 @@
         });
     }
 
-    // ========== EVENT LISTENERS ==========
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(initDashboard, 100);
         
@@ -1309,7 +1260,6 @@
         }, 5 * 60 * 1000);
     });
 
-    // Make login function globally available
     window.login = login;
 </script>
 </body>
