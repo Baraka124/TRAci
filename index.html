@@ -939,77 +939,25 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+      <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== STATE ==========
+        // ========== STATE MANAGEMENT ==========
         let currentUser = null;
         let authToken = localStorage.getItem('traci_auth_token');
-        let dashboardData = { projects: [], tools: [], filteredProjects: [], comments: [], lastUpdated: new Date() };
+        let dashboardData = {
+            projects: [],
+            tools: [],
+            filteredProjects: [],
+            comments: [],
+            lastUpdated: new Date()
+        };
 
-        // ========== DATABASE SCHEMA ==========
-        /*
-        REQUIRED TABLES in Supabase:
-        
-        1. dashboard_users
-           - id (uuid, primary key)
-           - username (text, unique)
-           - password (text) - store SHA256 hash
-           - full_name (text)
-           - role (text) - 'admin', 'doctor', 'guest'
-           - department (text)
-           - created_at (timestamp)
-        
-        2. projects
-           - id (uuid, primary key)
-           - name (text)
-           - description (text)
-           - status (text) - 'planning', 'development', 'testing', 'production'
-           - progress (integer)
-           - needs_feedback (boolean)
-           - visibility (text) - 'public', 'private'
-           - edit_code (text) - 5-digit code
-           - recommended_by (text)
-           - github_url (text)
-           - live_url (text)
-           - last_updated (timestamp)
-           - created_at (timestamp)
-        
-        3. tools
-           - id (uuid, primary key)
-           - name (text)
-           - description (text)
-           - url (text)
-           - status (text) - 'operational', 'warning'
-           - icon (text)
-           - category (text)
-           - last_checked (timestamp)
-           - created_at (timestamp)
-        
-        4. feedback_channels
-           - id (uuid, primary key)
-           - project_id (uuid, foreign key)
-           - channel (text) - 'email', 'whatsapp', 'github', 'slack'
-           - label (text)
-           - action_url (text)
-           - created_at (timestamp)
-        
-        5. guest_comments (NEW TABLE)
-           - id (uuid, primary key)
-           - comment (text, max 150 words)
-           - author_name (text) - optional
-           - author_email (text) - optional
-           - status (text) - 'pending', 'approved', 'rejected'
-           - approved_by (text) - admin who approved
-           - approved_at (timestamp)
-           - created_at (timestamp)
-        */
-
-        // ========== AUTH FUNCTIONS ==========
+        // ========== AUTHENTICATION FUNCTIONS ==========
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -1024,6 +972,7 @@
             
             try {
                 const hashedPassword = await hashPassword(password);
+                
                 const { data, error } = await supabaseClient
                     .from('dashboard_users')
                     .select('*')
@@ -1055,6 +1004,7 @@
                 return true;
                 
             } catch (error) {
+                console.error('Login error:', error);
                 errorEl.textContent = 'Login failed. Please try again.';
                 errorEl.style.display = 'block';
                 return false;
@@ -1074,12 +1024,13 @@
                 try {
                     currentUser = JSON.parse(atob(authToken));
                 } catch (e) {
+                    console.error('Failed to parse auth token:', e);
                     localStorage.removeItem('traci_auth_token');
                 }
             }
         }
 
-        // ========== UI MANAGEMENT ==========
+        // ========== UI MANAGEMENT FUNCTIONS ==========
         function updateAuthUI() {
             const guestView = document.getElementById('guestView');
             const userView = document.getElementById('userView');
@@ -1096,13 +1047,17 @@
                 userView.classList.remove('hidden');
                 loginRequiredSection.classList.add('hidden');
                 
-                // Set user info
+                // Set user avatar initials
                 const avatar = document.getElementById('userAvatar');
                 const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 avatar.textContent = initials;
-                document.getElementById('currentUsername').textContent = name;
                 
+                // Set username
+                document.getElementById('currentUsername').textContent = 
+                    currentUser.full_name || currentUser.username;
+                
+                // Set role badge
                 const roleBadge = document.getElementById('currentUserRole');
                 roleBadge.textContent = currentUser.role;
                 roleBadge.className = `user-role ${currentUser.role}`;
@@ -1166,6 +1121,12 @@
             if (modals[modalName]) {
                 modals[modalName].style.display = 'flex';
                 document.body.style.overflow = 'hidden';
+                
+                // Focus on first input if available
+                setTimeout(() => {
+                    const firstInput = modals[modalName].querySelector('input, select, textarea');
+                    if (firstInput) firstInput.focus();
+                }, 100);
             }
         }
 
@@ -1184,7 +1145,7 @@
             });
         }
 
-        // ========== DASHBOARD FUNCTIONS ==========
+        // ========== DASHBOARD DATA FUNCTIONS ==========
         async function initDashboard() {
             showLoadingState();
             
@@ -1213,6 +1174,7 @@
                     feedback_channels (*)
                 `);
             
+            // Apply visibility filter based on user role
             if (currentUser && currentUser.role === 'guest') {
                 query = query.eq('visibility', 'public');
             }
@@ -1262,7 +1224,7 @@
             dashboardData.comments = data || [];
         }
 
-        // ========== COMMENT SYSTEM ==========
+        // ========== COMMENT SYSTEM FUNCTIONS ==========
         async function submitGuestComment(commentText) {
             try {
                 const { data, error } = await supabaseClient
@@ -1277,10 +1239,12 @@
                 
                 if (error) throw error;
                 
+                // Show success message
                 document.getElementById('commentSuccess').style.display = 'block';
                 document.getElementById('guestComment').value = '';
                 document.getElementById('wordCount').textContent = '0/150 words';
                 
+                // Hide success message after 3 seconds
                 setTimeout(() => {
                     document.getElementById('commentSuccess').style.display = 'none';
                 }, 3000);
@@ -1484,7 +1448,7 @@
             }
         }
 
-        // ========== EDIT CODE MANAGEMENT ==========
+        // ========== EDIT CODE MANAGEMENT FUNCTIONS ==========
         async function loadEditCodes() {
             try {
                 const { data: projects, error } = await supabaseClient
@@ -1543,7 +1507,7 @@
                     tbody.appendChild(row);
                 });
                 
-                // Setup search
+                // Setup search functionality
                 document.getElementById('codeSearch').addEventListener('input', function() {
                     const searchTerm = this.value.toLowerCase().trim();
                     const rows = tbody.querySelectorAll('tr');
@@ -1585,9 +1549,121 @@
             }
         }
 
-        // ========== PROJECT CRUD ==========
+        async function loadProjectsForReset() {
+            try {
+                const { data: projects, error } = await supabaseClient
+                    .from('projects')
+                    .select('id, name')
+                    .order('name');
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('resetProjectSelect');
+                select.innerHTML = '<option value="">-- Choose a project --</option>';
+                
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    select.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        async function getProjectCode(projectId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select('edit_code, name')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (error) throw error;
+                
+                return { success: true, code: data.edit_code, name: data.name };
+                
+            } catch (error) {
+                console.error('Error getting project code:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function resetProjectCode(projectId, newCode = null) {
+            try {
+                // Generate new code if not provided
+                const editCode = newCode || Math.floor(10000 + Math.random() * 90000).toString();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({ 
+                        edit_code: editCode,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                return { success: true, code: editCode };
+                
+            } catch (error) {
+                console.error('Error resetting code:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        function generateQRCode(projectName, editCode) {
+            const qrContainer = document.getElementById('qrCode');
+            if (!qrContainer) return;
+            
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+            
+            // Create QR code data
+            const qrData = `TRAci Edit Code\n\nProject: ${projectName}\nCode: ${editCode}\n\nScan this code or enter manually`;
+            
+            // Generate QR code
+            QRCode.toCanvas(qrContainer, qrData, {
+                width: 200,
+                height: 200,
+                margin: 1,
+                color: {
+                    dark: '#0c4a6e',
+                    light: '#ffffff'
+                }
+            }, function(error) {
+                if (error) {
+                    console.error('QR Code generation error:', error);
+                    qrContainer.innerHTML = '<p style="color: var(--danger);">Failed to generate QR code</p>';
+                }
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy code');
+            });
+        }
+
+        function notifyDoctor(projectName, editCode) {
+            const subject = `TRAci Edit Code for ${projectName}`;
+            const body = `Hello Doctor,\n\nYour edit code for project "${projectName}" is:\n\n🔐 **${editCode}**\n\nUse this code to edit the project in the TRAci Innovation Dashboard.\n\nBest regards,\nPneumology Innovation Department`;
+            
+            // Open email client
+            window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+            
+            return true;
+        }
+
+        // ========== PROJECT CRUD FUNCTIONS ==========
         async function addProject(projectData) {
             try {
+                // Generate a 5-digit edit code
                 const editCode = Math.floor(10000 + Math.random() * 90000).toString();
                 
                 const { data, error } = await supabaseClient
@@ -1603,6 +1679,7 @@
                 
                 if (error) throw error;
                 
+                // SHOW THE CODE TO THE ADMIN!
                 alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
                 
                 showSuccess('projectSuccess', 'Project added successfully!');
@@ -1622,9 +1699,11 @@
 
         async function updateProject(projectId, projectData) {
             try {
+                // Verify edit code for doctors
                 if (currentUser && currentUser.role === 'doctor') {
                     const enteredCode = document.getElementById('editCodeVerification').value;
                     
+                    // Validate 5-digit code
                     if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
                         showError('editProjectError', 'Valid 5-digit edit code required');
                         return { success: false, error: 'Invalid edit code format' };
@@ -1674,6 +1753,123 @@
             }
         }
 
+        async function deleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return { success: false, error: 'Cancelled by user' };
+            }
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert('Project deleted successfully!');
+                hideAllModals();
+                await initDashboard();
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Failed to delete project: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function recommendProject(projectId) {
+            try {
+                // Get project name first
+                const { data: project, error: fetchError } = await supabaseClient
+                    .from('projects')
+                    .select('name')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (fetchError || !project) {
+                    alert('Project not found');
+                    return { success: false, error: 'Project not found' };
+                }
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({
+                        recommended_by: currentUser.full_name || currentUser.username,
+                        needs_feedback: true,
+                        visibility: 'private',
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert('Project recommended for review!');
+                await initDashboard();
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error recommending project:', error);
+                alert('Failed to recommend project: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        function loadProjectForEdit(project) {
+            document.getElementById('editProjectId').value = project.id;
+            document.getElementById('editProjectName').value = project.name || '';
+            document.getElementById('editProjectDescription').value = project.description || '';
+            document.getElementById('editProjectStatus').value = project.status || 'development';
+            document.getElementById('editProjectProgress').value = project.progress || 0;
+            document.getElementById('editProjectNeedsFeedback').checked = project.needs_feedback || false;
+            
+            // Show/hide edit code section based on role
+            const editCodeSection = document.getElementById('editCodeSection');
+            const visibilityControl = document.getElementById('visibilityControl');
+            
+            if (currentUser && currentUser.role === 'doctor') {
+                editCodeSection.classList.remove('hidden');
+                visibilityControl.classList.add('hidden');
+                document.getElementById('editCodeVerification').value = '';
+            } else if (currentUser && currentUser.role === 'admin') {
+                editCodeSection.classList.add('hidden');
+                visibilityControl.classList.remove('hidden');
+                document.getElementById('editProjectVisibility').value = project.visibility || 'public';
+            } else {
+                editCodeSection.classList.add('hidden');
+                visibilityControl.classList.add('hidden');
+            }
+        }
+
+        // ========== TOOL CRUD FUNCTIONS ==========
+        async function addTool(toolData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([{
+                        ...toolData,
+                        last_checked: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                showSuccess('toolSuccess', 'Tool added successfully!');
+                setTimeout(() => {
+                    hideAllModals();
+                    initDashboard();
+                }, 1500);
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error adding tool:', error);
+                showError('toolError', 'Failed to add tool: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
         // ========== RENDER FUNCTIONS ==========
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
@@ -1714,6 +1910,7 @@
             }
             
             let toolsHTML = '';
+            
             dashboardData.tools.forEach(tool => {
                 const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
                 const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
@@ -1770,10 +1967,12 @@
             }
             
             let projectsHTML = '';
+            
             projectsToRender.forEach(project => {
                 const statusClass = `status-${project.status}`;
                 const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
                 
+                // Visibility badge
                 const visibilityBadge = project.visibility === 'private' 
                     ? `<span class="visibility-badge private" title="Visible to doctors and admin only">
                          <i class="mdi mdi-lock"></i> Private
@@ -1782,8 +1981,55 @@
                          <i class="mdi mdi-earth"></i> Public
                        </span>`;
                 
+                // Feedback channels
+                let feedbackChannelsHTML = '';
+                if (project.needs_feedback && project.feedback_channels && project.feedback_channels.length > 0) {
+                    project.feedback_channels.forEach(channel => {
+                        let icon = 'mdi mdi-email';
+                        let className = 'email';
+                        
+                        if (channel.channel === 'whatsapp') {
+                            icon = 'mdi mdi-whatsapp';
+                            className = 'whatsapp';
+                        } else if (channel.channel === 'github') {
+                            icon = 'mdi mdi-github';
+                            className = 'github';
+                        } else if (channel.channel === 'slack') {
+                            icon = 'mdi mdi-slack';
+                            className = 'slack';
+                        }
+                        
+                        feedbackChannelsHTML += `
+                            <a href="${channel.action_url}" target="_blank" class="channel-btn ${className}" 
+                               title="${channel.label || `Send ${channel.channel} feedback`}">
+                                <i class="${icon}"></i>
+                            </a>
+                        `;
+                    });
+                }
+                
+                // Project links
+                let projectLinks = '';
+                if (project.github_url) {
+                    projectLinks += `
+                        <a href="${project.github_url}" target="_blank" class="project-link">
+                            <i class="mdi mdi-github"></i>
+                            GitHub
+                        </a>
+                    `;
+                }
+                if (project.live_url) {
+                    projectLinks += `
+                        <a href="${project.live_url}" target="_blank" class="project-link">
+                            <i class="mdi mdi-web"></i>
+                            Live Demo
+                        </a>
+                    `;
+                }
+                
+                // Admin/Doctor actions
                 let actionButtons = '';
-                if (currentUser && currentUser.role !== 'guest') {
+                if (currentUser) {
                     if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
@@ -1815,6 +2061,35 @@
                     }
                 }
                 
+                // Feedback section
+                let feedbackSection = '';
+                if (project.needs_feedback) {
+                    feedbackSection = `
+                        <div class="feedback-section">
+                            <span class="feedback-badge">
+                                <i class="mdi mdi-alert"></i>
+                                Ready for review
+                            </span>
+                            ${feedbackChannelsHTML ? `
+                                <div class="feedback-channels">
+                                    ${feedbackChannelsHTML}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+                
+                // Doctor recommendation badge
+                let doctorBadge = '';
+                if (project.recommended_by) {
+                    doctorBadge = `
+                        <div class="doctor-badge">
+                            <i class="mdi mdi-doctor"></i>
+                            Recommended by ${project.recommended_by}
+                        </div>
+                    `;
+                }
+                
                 projectsHTML += `
                     <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
                         <div class="project-header">
@@ -1828,6 +2103,8 @@
                         
                         <p class="project-description">${project.description || 'No description available'}</p>
                         
+                        ${doctorBadge}
+                        
                         <div class="project-progress">
                             <div class="progress-label">
                                 <span>Progress</span>
@@ -1838,6 +2115,10 @@
                             </div>
                         </div>
                         
+                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                        
+                        ${feedbackSection}
+                        
                         ${actionButtons}
                     </div>
                 `;
@@ -1845,8 +2126,9 @@
             
             projectsList.innerHTML = projectsHTML;
             
-            // Add event listeners
+            // Add event listeners to action buttons
             if (currentUser && currentUser.role !== 'guest') {
+                // Edit buttons
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const projectId = this.dataset.projectId;
@@ -1857,7 +2139,43 @@
                         }
                     });
                 });
+                
+                // Delete buttons (admin only)
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.dataset.projectId;
+                        deleteProject(projectId);
+                    });
+                });
+                
+                // Recommend buttons (doctors only)
+                document.querySelectorAll('.recommend-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.dataset.projectId;
+                        recommendProject(projectId);
+                    });
+                });
             }
+        }
+
+        // ========== FILTER FUNCTIONS ==========
+        function filterProjects(filterType) {
+            // Update active filter button
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filterType);
+            });
+            
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else if (filterType === 'needs_feedback') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.needs_feedback);
+            } else if (filterType === 'private') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
+            } else if (filterType === 'public') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
+            }
+            
+            renderProjects();
         }
 
         // ========== HELPER FUNCTIONS ==========
@@ -1876,6 +2194,7 @@
             
             document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
             document.getElementById('syncTime').textContent = timeString;
+            
             dashboardData.lastUpdated = now;
         }
 
@@ -1908,25 +2227,30 @@
 
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize
             loadStoredUser();
             updateAuthUI();
             
-            // Login
+            // Login button events
             document.getElementById('loginBtn').addEventListener('click', () => showModal('login'));
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('login'));
+            
+            // Logout button
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modal close
+            // Modal close buttons
             document.querySelectorAll('.modal-close').forEach(btn => {
                 btn.addEventListener('click', hideAllModals);
             });
+            
+            // Close modal on overlay click
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) hideAllModals();
                 });
             });
             
-            // Login form
+            // Login form submission
             document.getElementById('submitLogin').addEventListener('click', async function() {
                 const username = document.getElementById('loginUsername').value.trim();
                 const password = document.getElementById('loginPassword').value.trim();
@@ -1950,8 +2274,16 @@
                 }
             });
             
+            // Allow Enter key in login form
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submitLogin').click();
+                }
+            });
+            
             // Admin buttons
             document.getElementById('addProjectBtn').addEventListener('click', () => {
+                // Reset form
                 document.getElementById('projectName').value = '';
                 document.getElementById('projectDescription').value = '';
                 document.getElementById('projectStatus').value = 'development';
@@ -1961,14 +2293,17 @@
             });
             
             document.getElementById('addToolBtn').addEventListener('click', () => {
+                // Reset form
                 document.getElementById('toolName').value = '';
                 document.getElementById('toolDescription').value = '';
                 document.getElementById('toolUrl').value = '';
                 document.getElementById('toolStatus').value = 'operational';
                 document.getElementById('toolIcon').value = 'mdi mdi-toolbox';
+                document.getElementById('toolCategory').value = '';
                 showModal('addTool');
             });
             
+            // Edit Code Management buttons
             document.getElementById('viewCodesBtn').addEventListener('click', () => {
                 loadEditCodes();
                 showModal('viewCodes');
@@ -2035,9 +2370,99 @@
                 this.disabled = false;
             });
             
-            // Refresh
+            // Save project
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
+                    github_url: null,
+                    live_url: null
+                };
+                
+                if (!projectData.name) {
+                    showError('projectError', 'Project name is required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addProject(projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
+                this.disabled = false;
+            });
+            
+            // Update project
+            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                const projectData = {
+                    name: document.getElementById('editProjectName').value.trim(),
+                    description: document.getElementById('editProjectDescription').value.trim(),
+                    status: document.getElementById('editProjectStatus').value,
+                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
+                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked,
+                    github_url: null,
+                    live_url: null
+                };
+                
+                // Add visibility if admin
+                if (currentUser && currentUser.role === 'admin') {
+                    projectData.visibility = document.getElementById('editProjectVisibility').value;
+                }
+                
+                if (!projectData.name) {
+                    showError('editProjectError', 'Project name is required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Updating...';
+                this.disabled = true;
+                
+                await updateProject(projectId, projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Update Project';
+                this.disabled = false;
+            });
+            
+            // Delete project
+            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                await deleteProject(projectId);
+            });
+            
+            // Save tool
+            document.getElementById('saveToolBtn').addEventListener('click', async function() {
+                const toolData = {
+                    name: document.getElementById('toolName').value.trim(),
+                    description: document.getElementById('toolDescription').value.trim(),
+                    url: document.getElementById('toolUrl').value.trim(),
+                    status: document.getElementById('toolStatus').value,
+                    icon: document.getElementById('toolIcon').value.trim() || 'mdi mdi-toolbox',
+                    category: document.getElementById('toolCategory').value.trim() || 'General'
+                };
+                
+                if (!toolData.name || !toolData.url) {
+                    showError('toolError', 'Tool name and URL are required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addTool(toolData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Tool';
+                this.disabled = false;
+            });
+            
+            // Dashboard refresh
             document.getElementById('refreshLink').addEventListener('click', async function(e) {
                 e.preventDefault();
+                
                 if (!currentUser) return;
                 
                 const lastUpdated = document.getElementById('lastUpdatedTime');
@@ -2049,37 +2474,137 @@
                 setTimeout(() => updateTimestamp(), 2000);
             });
 
-            // Filters
+            // Filter buttons
             document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const filter = btn.dataset.filter;
-                    document.querySelectorAll('#filterControls .filter-btn').forEach(b => {
-                        b.classList.toggle('active', b === btn);
-                    });
-                    
-                    if (filter === 'all') {
-                        dashboardData.filteredProjects = [...dashboardData.projects];
-                    } else if (filter === 'needs_feedback') {
-                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.needs_feedback);
-                    } else if (filter === 'private') {
-                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
-                    } else if (filter === 'public') {
-                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
-                    }
-                    
-                    renderProjects();
-                });
+                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
             });
 
-            // Auto-refresh
+            // Reset Code Modal Events
+            document.getElementById('resetProjectSelect').addEventListener('change', async function() {
+                const projectId = this.value;
+                if (!projectId) {
+                    document.getElementById('currentCodeDisplay').textContent = '-----';
+                    return;
+                }
+                
+                const result = await getProjectCode(projectId);
+                if (result.success) {
+                    document.getElementById('currentCodeDisplay').textContent = result.code || 'Not set';
+                }
+            });
+            
+            document.getElementById('newCodeOption').addEventListener('change', function() {
+                const customSection = document.getElementById('customCodeSection');
+                customSection.classList.toggle('hidden', this.value !== 'custom');
+            });
+            
+            document.getElementById('generateCodeBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const option = document.getElementById('newCodeOption').value;
+                
+                if (!projectId) {
+                    showError('resetCodeError', 'Please select a project first');
+                    return;
+                }
+                
+                let newCode;
+                if (option === 'custom') {
+                    newCode = document.getElementById('customCode').value;
+                    if (!/^\d{5}$/.test(newCode)) {
+                        showError('resetCodeError', 'Please enter a valid 5-digit code (numbers only)');
+                        return;
+                    }
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating...';
+                this.disabled = true;
+                
+                const result = await resetProjectCode(projectId, newCode);
+                
+                this.innerHTML = '<i class="mdi mdi-refresh"></i> Generate New Code';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showSuccess('resetCodeSuccess', `New code generated: ${result.code}`);
+                    document.getElementById('currentCodeDisplay').textContent = result.code;
+                    document.getElementById('customCode').value = '';
+                    
+                    // Get project name for QR code
+                    const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                    
+                    // Show QR code section
+                    document.getElementById('qrCodeSection').classList.remove('hidden');
+                    generateQRCode(projectName, result.code);
+                } else {
+                    showError('resetCodeError', `Failed: ${result.error}`);
+                }
+            });
+            
+            document.getElementById('copyCodeBtn').addEventListener('click', function() {
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                if (code && code !== '-----') {
+                    copyToClipboard(code);
+                } else {
+                    alert('No code to copy');
+                }
+            });
+            
+            document.getElementById('showQRBtn').addEventListener('click', function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                
+                if (!projectId || !code || code === '-----') {
+                    alert('Please generate a code first');
+                    return;
+                }
+                
+                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                document.getElementById('qrCodeSection').classList.remove('hidden');
+                generateQRCode(projectName, code);
+            });
+            
+            document.getElementById('notifyDoctorBtn').addEventListener('click', function() {
+                const projectId = document.getElementById('resetProjectSelect').value;
+                const code = document.getElementById('currentCodeDisplay').textContent.trim();
+                
+                if (!projectId || !code || code === '-----') {
+                    alert('Please generate a code first');
+                    return;
+                }
+                
+                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
+                notifyDoctor(projectName, code);
+            });
+
+            // Close modals with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideAllModals();
+                }
+            });
+
+            // Handle browser back button for modals
+            window.addEventListener('popstate', function() {
+                hideAllModals();
+            });
+
+            // Initialize with focus on login if no user
+            if (!currentUser) {
+                setTimeout(() => {
+                    document.getElementById('loginUsername')?.focus();
+                }, 300);
+            }
+
+            // Auto-refresh every 5 minutes for logged-in users
             setInterval(async () => {
                 if (currentUser) {
+                    console.log('Auto-refreshing dashboard...');
                     await initDashboard();
                 }
-            }, 5 * 60 * 1000);
+            }, 5 * 60 * 1000); // 5 minutes
         });
 
-        // Make functions available globally
+        // Make functions available globally for inline onclick handlers
         window.resetSingleCode = resetSingleCode;
         window.approveComment = approveComment;
         window.rejectComment = rejectComment;
