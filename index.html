@@ -11,16 +11,16 @@
         /* ==== PROFESSIONAL MEDICAL COLOR PALETTE ==== */
         :root {
             /* Clean Medical Blues */
-            --primary: #1e40af;          /* Deep professional blue */
-            --primary-light: #3b82f6;    /* Brighter blue for highlights */
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
             --primary-dark: #1e3a8a;
-            --primary-bg: #eff6ff;       /* Very light blue background */
+            --primary-bg: #eff6ff;
             
             /* Medical Accent Colors */
-            --success: #059669;          /* Professional green */
-            --warning: #d97706;          /* Amber (less harsh) */
-            --danger: #dc2626;           /* Professional red */
-            --info: #0ea5e9;             /* Sky blue for info */
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0ea5e9;
             
             /* Neutral Professional Grays */
             --white: #ffffff;
@@ -41,11 +41,8 @@
             --glass-border: rgba(229, 231, 235, 0.5);
             --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
             
-            /* Gradients - Professional and subtle */
+            /* Gradients */
             --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            --gradient-success: linear-gradient(135deg, var(--success) 0%, #10b981 100%);
-            --gradient-warning: linear-gradient(135deg, var(--warning) 0%, #f59e0b 100%);
-            --gradient-danger: linear-gradient(135deg, var(--danger) 0%, #ef4444 100%);
             
             /* Typography */
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -76,7 +73,6 @@
             --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Dark Mode Support */
         @media (prefers-color-scheme: dark) {
             :root {
                 --primary-bg: #0f172a;
@@ -118,31 +114,6 @@
             }
         }
 
-        /* ==== PROFESSIONAL TYPOGRAPHY ==== */
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-heading);
-            font-weight: 600;
-            line-height: 1.3;
-            color: var(--gray-900);
-            letter-spacing: -0.025em;
-        }
-
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
-        h3 { font-size: 1.25rem; }
-        h4 { font-size: 1.125rem; }
-
-        p {
-            font-size: 0.9375rem;
-            color: var(--gray-600);
-            margin-bottom: var(--space-md);
-        }
-
-        .text-lead { font-size: 1rem; font-weight: 500; }
-        .text-small { font-size: 0.8125rem; color: var(--gray-500); }
-        .text-muted { color: var(--gray-500); }
-
-        /* ==== LAYOUT ==== */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -195,6 +166,12 @@
             color: var(--gray-500);
             font-weight: 500;
             letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
         }
 
         /* ==== STATUS PANEL ==== */
@@ -308,7 +285,58 @@
             color: var(--danger);
         }
 
-        /* ==== STATS CARDS - Minimal Icons ==== */
+        /* ==== BUTTONS ==== */
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            background: var(--white);
+            color: var(--gray-700);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+            border-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* ==== ADMIN CONTROLS ==== */
+        .admin-controls {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
+        }
+
+        /* ==== STATS CARDS ==== */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -359,47 +387,7 @@
             color: var(--primary);
         }
 
-        /* ==== ADMIN CONTROLS ==== */
-        .admin-controls {
-            display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-xl);
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: var(--space-sm) var(--space-lg);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            background: var(--white);
-            color: var(--gray-700);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.875rem;
-        }
-
-        .btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-            border-color: var(--primary);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            color: var(--white);
-        }
-
-        /* ==== PROJECT CARDS - Clean Design ==== */
+        /* ==== CONTENT GRID ==== */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -413,6 +401,7 @@
             }
         }
 
+        /* ==== SECTIONS ==== */
         .section {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -425,6 +414,9 @@
             padding: var(--space-lg);
             border-bottom: 1px solid var(--glass-border);
             background: var(--gray-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .section-header h2 {
@@ -436,6 +428,7 @@
             padding: var(--space-lg);
         }
 
+        /* ==== PROJECT CARDS ==== */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -447,6 +440,7 @@
             border-radius: var(--radius);
             padding: var(--space-lg);
             transition: all 0.2s;
+            position: relative;
         }
 
         .project-card:hover {
@@ -455,8 +449,7 @@
         }
 
         .project-card.needs-feedback {
-            border-color: var(--warning);
-            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent);
+            border-left: 4px solid var(--warning);
         }
 
         .project-title {
@@ -470,6 +463,7 @@
             color: var(--gray-600);
             margin-bottom: var(--space-md);
             line-height: 1.5;
+            font-size: 0.9375rem;
         }
 
         /* Doctor Recommendation Badge */
@@ -524,7 +518,81 @@
             color: var(--primary);
         }
 
-        /* ==== CLEAN LOGIN MODAL ==== */
+        /* Project Actions (Edit/Delete) */
+        .project-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        /* ==== TOOLS GRID ==== */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .tool-card {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: var(--space-lg);
+            transition: all 0.2s;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow);
+        }
+
+        .tool-card.operational {
+            border-left: 4px solid var(--success);
+        }
+
+        .tool-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-sm);
+        }
+
+        .tool-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--gray-900);
+        }
+
+        .tool-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .tool-status.warning {
+            background: var(--warning);
+        }
+
+        .tool-description {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .tool-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+
+        /* ==== MODALS ==== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -544,25 +612,45 @@
             background: var(--white);
             border-radius: var(--radius-xl);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             box-shadow: var(--shadow-xl);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-header {
             padding: var(--space-xl);
-            text-align: center;
             border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .modal-header h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
             font-size: 1.5rem;
-            color: var(--primary);
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius);
+        }
+
+        .modal-close:hover {
+            background: var(--gray-100);
+            color: var(--gray-700);
         }
 
         .modal-body {
             padding: var(--space-xl);
         }
 
+        /* ==== FORMS ==== */
         .form-group {
             margin-bottom: var(--space-lg);
         }
@@ -582,6 +670,7 @@
             border-radius: var(--radius);
             font-size: 0.9375rem;
             transition: all 0.2s;
+            font-family: var(--font-sans);
         }
 
         .form-control:focus {
@@ -590,6 +679,40 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==== LOGIN MODAL ==== */
         .login-btn {
             width: 100%;
             padding: 12px;
@@ -607,6 +730,79 @@
             background: var(--primary-dark);
         }
 
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* ==== MESSAGES ==== */
+        .error-message {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+            padding: var(--space-md);
+            border-radius: var(--radius);
+            margin-top: var(--space-md);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        .success-message {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+            padding: var(--space-md);
+            border-radius: var(--radius);
+            margin-top: var(--space-md);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--success);
+        }
+
+        /* ==== FEEDBACK CHANNELS ==== */
+        .feedback-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .feedback-badge {
+            background: var(--warning);
+            color: var(--white);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+        }
+
+        .feedback-channels {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .channel-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: transform 0.2s;
+        }
+
+        .channel-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .channel-btn.whatsapp { background: #25D366; }
+        .channel-btn.email { background: var(--primary); }
+        .channel-btn.github { background: var(--gray-800); }
+        .channel-btn.slack { background: #4A154B; }
+
         /* ==== RESPONSIVE DESIGN ==== */
         @media (max-width: 768px) {
             .header {
@@ -616,7 +812,6 @@
             }
             
             .header-right {
-                display: flex;
                 flex-direction: column;
                 gap: var(--space-md);
             }
@@ -635,6 +830,16 @@
             
             .admin-controls {
                 justify-content: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .feedback-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-sm);
             }
         }
 
@@ -655,6 +860,10 @@
             
             .platform-name {
                 font-size: 1.25rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -808,7 +1017,7 @@
             <div class="section">
                 <div class="section-header">
                     <h2>Development Projects</h2>
-                    <div class="text-small" id="feedbackBadge" style="display: none;"></div>
+                    <div class="feedback-badge" id="feedbackBadge" style="display: none;">0 need feedback</div>
                 </div>
                 <div class="section-content">
                     <div class="projects-list" id="projectsList">
@@ -844,11 +1053,14 @@
         </footer>
     </div>
 
-    <!-- Clean Login Modal -->
+    <!-- ==== MODALS ==== -->
+
+    <!-- Login Modal -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Secure Login</h3>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -865,19 +1077,181 @@
                 <div class="text-center mt-3">
                     <p class="text-small text-muted">Authorized personnel only</p>
                 </div>
-                <div id="loginError" style="display: none; color: var(--danger); font-size: 0.875rem; margin-top: var(--space-md);"></div>
+                <div id="loginError" class="error-message"></div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectName">Project Name *</label>
+                    <input type="text" id="projectName" class="form-control" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" class="form-control" placeholder="Project description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development" selected>Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="staging">Staging</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectProgress">Progress (%)</label>
+                        <input type="number" id="projectProgress" class="form-control" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="projectNeedsFeedback">
+                        <span>Needs Feedback</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="projectGithubUrl">GitHub URL (Optional)</label>
+                    <input type="url" id="projectGithubUrl" class="form-control" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                    <label for="projectLiveUrl">Live URL (Optional)</label>
+                    <input type="url" id="projectLiveUrl" class="form-control" placeholder="https://demo.example.com">
+                </div>
+                <button id="saveProjectBtn" class="btn btn-primary" style="width: 100%;">
+                    Save Project
+                </button>
+                <div id="projectError" class="error-message"></div>
+                <div id="projectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editProjectId">
+                <div class="form-group">
+                    <label for="editProjectName">Project Name *</label>
+                    <input type="text" id="editProjectName" class="form-control" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="editProjectDescription">Description</label>
+                    <textarea id="editProjectDescription" class="form-control" placeholder="Project description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProjectStatus">Status</label>
+                        <select id="editProjectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development">Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="staging">Staging</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectProgress">Progress (%)</label>
+                        <input type="number" id="editProjectProgress" class="form-control" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editProjectNeedsFeedback">
+                        <span>Needs Feedback</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="editProjectGithubUrl">GitHub URL</label>
+                    <input type="url" id="editProjectGithubUrl" class="form-control" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                    <label for="editProjectLiveUrl">Live URL</label>
+                    <input type="url" id="editProjectLiveUrl" class="form-control" placeholder="https://demo.example.com">
+                </div>
+                <div class="form-row">
+                    <button id="updateProjectBtn" class="btn btn-primary">
+                        Update Project
+                    </button>
+                    <button id="deleteProjectBtn" class="btn btn-danger">
+                        Delete Project
+                    </button>
+                </div>
+                <div id="editProjectError" class="error-message"></div>
+                <div id="editProjectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tool Modal -->
+    <div id="addToolModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Tool</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="toolName">Tool Name *</label>
+                    <input type="text" id="toolName" class="form-control" placeholder="Enter tool name">
+                </div>
+                <div class="form-group">
+                    <label for="toolDescription">Description</label>
+                    <textarea id="toolDescription" class="form-control" placeholder="Tool description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="toolUrl">URL *</label>
+                    <input type="url" id="toolUrl" class="form-control" placeholder="https://tool.example.com">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="toolStatus">Status</label>
+                        <select id="toolStatus" class="form-control">
+                            <option value="operational" selected>Operational</option>
+                            <option value="warning">Needs Attention</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolIcon">Icon Class</label>
+                        <input type="text" id="toolIcon" class="form-control" placeholder="fas fa-toolbox" value="fas fa-toolbox">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="toolCategory">Category</label>
+                    <input type="text" id="toolCategory" class="form-control" placeholder="Development, Design, etc.">
+                </div>
+                <button id="saveToolBtn" class="btn btn-primary" style="width: 100%;">
+                    Save Tool
+                </button>
+                <div id="toolError" class="error-message"></div>
+                <div id="toolSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript with Complete Backend Logic -->
     <script>
-        // Configuration
+        // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // State
+        // ========== STATE MANAGEMENT ==========
         let currentUser = null;
         let authToken = localStorage.getItem('traci_auth_token');
         let dashboardData = {
@@ -887,24 +1261,38 @@
             lastUpdated: new Date(),
             filteredProjects: []
         };
+        let currentEditingProjectId = null;
 
-        // Modal Management
+        // ========== MODAL MANAGEMENT ==========
         const modals = {
-            login: document.getElementById('loginModal')
+            login: document.getElementById('loginModal'),
+            addProject: document.getElementById('addProjectModal'),
+            editProject: document.getElementById('editProjectModal'),
+            addTool: document.getElementById('addToolModal')
         };
 
         function showModal(modalName) {
             Object.values(modals).forEach(modal => modal.style.display = 'none');
             if (modals[modalName]) {
                 modals[modalName].style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
         }
 
         function hideAllModals() {
             Object.values(modals).forEach(modal => modal.style.display = 'none');
+            document.body.style.overflow = 'auto';
+            clearFormMessages();
         }
 
-        // Authentication Functions
+        function clearFormMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+        }
+
+        // ========== PASSWORD HASHING ==========
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -913,6 +1301,7 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
+        // ========== AUTHENTICATION ==========
         async function loginUser(username, password) {
             const errorEl = document.getElementById('loginError');
             errorEl.style.display = 'none';
@@ -927,13 +1316,13 @@
                     .single();
                 
                 if (error || !data) {
-                    errorEl.textContent = 'Invalid credentials';
+                    errorEl.textContent = 'Invalid username or password';
                     errorEl.style.display = 'block';
                     return false;
                 }
                 
                 if (data.password_hash !== hashedPassword) {
-                    errorEl.textContent = 'Invalid credentials';
+                    errorEl.textContent = 'Invalid username or password';
                     errorEl.style.display = 'block';
                     return false;
                 }
@@ -978,7 +1367,7 @@
             }
         }
 
-        // UI Management
+        // ========== UI MANAGEMENT ==========
         function updateAuthUI() {
             const guestView = document.getElementById('guestView');
             const userView = document.getElementById('userView');
@@ -1017,8 +1406,8 @@
                     initDashboard();
                 }
                 
-                // Show admin controls for admins
-                if (currentUser.role === 'admin') {
+                // Show admin controls for admins and doctors
+                if (currentUser.role === 'admin' || currentUser.is_doctor) {
                     adminControls.style.display = 'flex';
                 } else {
                     adminControls.style.display = 'none';
@@ -1039,14 +1428,15 @@
             document.getElementById('contentGrid').style.display = 'none';
         }
 
-        // Dashboard Functions
+        // ========== DASHBOARD FUNCTIONS ==========
         async function initDashboard() {
             showLoadingState();
             
             try {
                 await Promise.all([
                     fetchProjects(),
-                    fetchTools()
+                    fetchTools(),
+                    fetchUpdates()
                 ]);
                 
                 updateStats();
@@ -1062,7 +1452,11 @@
         async function fetchProjects() {
             const { data, error } = await supabaseClient
                 .from('projects')
-                .select('*')
+                .select(`
+                    *,
+                    feedback_channels (*)
+                `)
+                .order('needs_feedback', { ascending: false })
                 .order('created_at', { ascending: false });
             
             if (error) {
@@ -1089,6 +1483,150 @@
             dashboardData.tools = data || [];
         }
 
+        async function fetchUpdates() {
+            const { data, error } = await supabaseClient
+                .from('updates')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
+            
+            if (error) {
+                console.error('Error fetching updates:', error);
+                dashboardData.updates = [];
+                return;
+            }
+            
+            dashboardData.updates = data || [];
+        }
+
+        // ========== AUTO-CREATE FEEDBACK CHANNELS ==========
+        async function autoCreateFeedbackChannels(projectId, projectName) {
+            try {
+                const channels = [
+                    {
+                        channel: 'email',
+                        label: 'Email Feedback',
+                        action_url: `mailto:feedback@pneumology-innovation.com?subject=Feedback on ${encodeURIComponent(projectName)}`
+                    },
+                    {
+                        channel: 'whatsapp',
+                        label: 'WhatsApp Group',
+                        action_url: `https://wa.me/?text=Feedback on ${encodeURIComponent(projectName)} - Pneumology Innovation`
+                    }
+                ];
+                
+                for (const channel of channels) {
+                    const { error } = await supabaseClient
+                        .from('feedback_channels')
+                        .insert([{
+                            project_id: projectId,
+                            ...channel
+                        }]);
+                    
+                    if (error) console.error('Error creating channel:', error);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error auto-creating feedback channels:', error);
+                return false;
+            }
+        }
+
+        // ========== PROJECT CRUD OPERATIONS ==========
+        async function addProject(projectData) {
+            try {
+                // Auto-add doctor info if current user is a doctor
+                if (currentUser && currentUser.is_doctor) {
+                    projectData.needs_feedback = true;
+                    projectData.recommended_by = currentUser.full_name || currentUser.username;
+                    projectData.doctor_id = currentUser.id;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([{
+                        ...projectData,
+                        last_updated: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                // Auto-create feedback channels
+                await autoCreateFeedbackChannels(data.id, projectData.name);
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error adding project:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function updateProject(projectId, projectData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .update({
+                        ...projectData,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error updating project:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function deleteProject(projectId) {
+            try {
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // ========== TOOL CRUD OPERATIONS ==========
+        async function addTool(toolData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([{
+                        ...toolData,
+                        last_checked: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error adding tool:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // ========== RENDER FUNCTIONS ==========
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
@@ -1104,13 +1642,16 @@
 
             const feedbackBadge = document.getElementById('feedbackBadge');
             if (feedbackCount > 0) {
-                feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need feedback`;
+                feedbackBadge.textContent = `${feedbackCount} need feedback`;
                 feedbackBadge.style.display = 'block';
+            } else {
+                feedbackBadge.style.display = 'none';
             }
         }
 
         function renderDashboard() {
             renderProjects();
+            renderTools();
         }
 
         function renderProjects() {
@@ -1138,7 +1679,7 @@
                     `;
                 }
                 
-                // Status badge
+                // Status colors
                 const statusMap = {
                     'planning': { color: 'var(--gray-500)', label: 'Planning' },
                     'development': { color: 'var(--primary)', label: 'Development' },
@@ -1149,6 +1690,46 @@
                 
                 const status = statusMap[project.status] || statusMap.planning;
                 
+                // Feedback channels
+                let feedbackSection = '';
+                if (project.needs_feedback && project.feedback_channels && project.feedback_channels.length > 0) {
+                    let channelsHTML = '';
+                    project.feedback_channels.forEach(channel => {
+                        let icon = 'fas fa-comment';
+                        let className = '';
+                        
+                        if (channel.channel === 'whatsapp') {
+                            icon = 'fab fa-whatsapp';
+                            className = 'whatsapp';
+                        } else if (channel.channel === 'email') {
+                            icon = 'fas fa-envelope';
+                            className = 'email';
+                        } else if (channel.channel === 'github') {
+                            icon = 'fab fa-github';
+                            className = 'github';
+                        } else if (channel.channel === 'slack') {
+                            icon = 'fab fa-slack';
+                            className = 'slack';
+                        }
+                        
+                        channelsHTML += `
+                            <a href="${channel.action_url}" target="_blank" class="channel-btn ${className}" 
+                               title="${channel.label}">
+                                <i class="${icon}"></i>
+                            </a>
+                        `;
+                    });
+                    
+                    feedbackSection = `
+                        <div class="feedback-section">
+                            <span class="feedback-badge">Ready for review</span>
+                            <div class="feedback-channels">
+                                ${channelsHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 // Links
                 let links = '';
                 if (project.github_url) {
@@ -1156,6 +1737,19 @@
                 }
                 if (project.live_url) {
                     links += `<a href="${project.live_url}" target="_blank" class="project-link">Live Demo</a>`;
+                }
+                
+                // Admin actions
+                let adminActions = '';
+                if (currentUser && (currentUser.role === 'admin' || currentUser.is_doctor)) {
+                    adminActions = `
+                        <div class="project-actions">
+                            <button class="btn edit-project-btn" data-project-id="${project.id}" 
+                                    style="padding: 4px 12px; font-size: 0.8125rem;">
+                                Edit
+                            </button>
+                        </div>
+                    `;
                 }
                 
                 projectsHTML += `
@@ -1184,13 +1778,100 @@
                         </div>
                         
                         ${links ? `<div class="project-links">${links}</div>` : ''}
+                        
+                        ${feedbackSection}
+                        
+                        ${adminActions}
                     </div>
                 `;
             });
             
             projectsList.innerHTML = projectsHTML;
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-project-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    loadProjectForEdit(projectId);
+                    showModal('editProject');
+                });
+            });
         }
 
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
+            
+            if (dashboardData.tools.length === 0) {
+                toolsGrid.innerHTML = `
+                    <div class="text-center" style="padding: var(--space-2xl); color: var(--gray-500);">
+                        <p>No tools found.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let toolsHTML = '';
+            
+            dashboardData.tools.forEach(tool => {
+                const statusClass = tool.status === 'operational' ? '' : 'warning';
+                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+                
+                const lastChecked = tool.last_checked ? 
+                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric'
+                    }) : 'Never';
+                
+                toolsHTML += `
+                    <div class="tool-card ${tool.status}">
+                        <div class="tool-header">
+                            <div class="tool-name">${tool.name}</div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="tool-description">${tool.description || 'No description available'}</p>
+                        <div class="tool-footer">
+                            <span>Last checked: ${lastChecked}</span>
+                            <a href="${tool.url}" target="_blank" class="project-link" 
+                               style="padding: 4px 8px; font-size: 0.8125rem;">
+                                Access
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            toolsGrid.innerHTML = toolsHTML;
+        }
+
+        // ========== EDIT PROJECT FUNCTIONS ==========
+        async function loadProjectForEdit(projectId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (error) throw error;
+                
+                currentEditingProjectId = projectId;
+                
+                document.getElementById('editProjectId').value = projectId;
+                document.getElementById('editProjectName').value = data.name || '';
+                document.getElementById('editProjectDescription').value = data.description || '';
+                document.getElementById('editProjectStatus').value = data.status || 'development';
+                document.getElementById('editProjectProgress').value = data.progress || 0;
+                document.getElementById('editProjectNeedsFeedback').checked = data.needs_feedback || false;
+                document.getElementById('editProjectGithubUrl').value = data.github_url || '';
+                document.getElementById('editProjectLiveUrl').value = data.live_url || '';
+                
+            } catch (error) {
+                console.error('Error loading project for edit:', error);
+                alert('Failed to load project details');
+            }
+        }
+
+        // ========== HELPER FUNCTIONS ==========
         function updateTimestamp() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('en-US', { 
@@ -1211,21 +1892,47 @@
             document.getElementById('lastUpdatedTime').textContent = 'Loading...';
         }
 
-        // Event Listeners
+        function showErrorState() {
+            document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
+        }
+
+        function showMessage(elementId, message, isError = true) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+                el.style.display = 'block';
+                el.className = isError ? 'error-message' : 'success-message';
+                
+                if (!isError) {
+                    setTimeout(() => {
+                        el.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredUser();
             updateAuthUI();
             
-            // Login button
+            // Login button events
             document.getElementById('loginBtn').addEventListener('click', () => showModal('login'));
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('login'));
             
             // Logout button
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modal close on outside click
-            document.getElementById('loginModal').addEventListener('click', function(e) {
-                if (e.target === this) hideAllModals();
+            // Modal close buttons
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', hideAllModals);
+            });
+            
+            // Close modal on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) hideAllModals();
+                });
             });
             
             // Login form submission
@@ -1234,8 +1941,7 @@
                 const password = document.getElementById('loginPassword').value.trim();
                 
                 if (!username || !password) {
-                    document.getElementById('loginError').textContent = 'Please enter both username and password';
-                    document.getElementById('loginError').style.display = 'block';
+                    showMessage('loginError', 'Please enter both username and password', true);
                     return;
                 }
                 
@@ -1260,10 +1966,156 @@
                 }
             });
             
+            // Admin buttons
+            document.getElementById('addProjectBtn').addEventListener('click', () => {
+                // Auto-check needs_feedback for doctors
+                if (currentUser && currentUser.is_doctor) {
+                    document.getElementById('projectNeedsFeedback').checked = true;
+                }
+                showModal('addProject');
+            });
+            
+            document.getElementById('addToolBtn').addEventListener('click', () => showModal('addTool'));
+            
+            // Save project
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
+                    github_url: document.getElementById('projectGithubUrl').value.trim() || null,
+                    live_url: document.getElementById('projectLiveUrl').value.trim() || null
+                };
+                
+                if (!projectData.name) {
+                    showMessage('projectError', 'Project name is required', true);
+                    return;
+                }
+                
+                this.textContent = 'Saving...';
+                this.disabled = true;
+                
+                const result = await addProject(projectData);
+                
+                this.textContent = 'Save Project';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showMessage('projectSuccess', 'Project added successfully!', false);
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                } else {
+                    showMessage('projectError', `Failed to add project: ${result.error}`, true);
+                }
+            });
+            
+            // Update project
+            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                const projectData = {
+                    name: document.getElementById('editProjectName').value.trim(),
+                    description: document.getElementById('editProjectDescription').value.trim(),
+                    status: document.getElementById('editProjectStatus').value,
+                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
+                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked,
+                    github_url: document.getElementById('editProjectGithubUrl').value.trim() || null,
+                    live_url: document.getElementById('editProjectLiveUrl').value.trim() || null
+                };
+                
+                if (!projectData.name) {
+                    showMessage('editProjectError', 'Project name is required', true);
+                    return;
+                }
+                
+                this.textContent = 'Updating...';
+                this.disabled = true;
+                
+                const result = await updateProject(projectId, projectData);
+                
+                this.textContent = 'Update Project';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showMessage('editProjectSuccess', 'Project updated successfully!', false);
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                } else {
+                    showMessage('editProjectError', `Failed to update project: ${result.error}`, true);
+                }
+            });
+            
+            // Delete project
+            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                
+                if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                    return;
+                }
+                
+                this.textContent = 'Deleting...';
+                this.disabled = true;
+                
+                const result = await deleteProject(projectId);
+                
+                this.textContent = 'Delete Project';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showMessage('editProjectSuccess', 'Project deleted successfully!', false);
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                } else {
+                    showMessage('editProjectError', `Failed to delete project: ${result.error}`, true);
+                }
+            });
+            
+            // Save tool
+            document.getElementById('saveToolBtn').addEventListener('click', async function() {
+                const toolData = {
+                    name: document.getElementById('toolName').value.trim(),
+                    description: document.getElementById('toolDescription').value.trim(),
+                    url: document.getElementById('toolUrl').value.trim(),
+                    status: document.getElementById('toolStatus').value,
+                    icon: document.getElementById('toolIcon').value.trim() || 'fas fa-toolbox',
+                    category: document.getElementById('toolCategory').value.trim() || 'General'
+                };
+                
+                if (!toolData.name || !toolData.url) {
+                    showMessage('toolError', 'Tool name and URL are required', true);
+                    return;
+                }
+                
+                this.textContent = 'Saving...';
+                this.disabled = true;
+                
+                const result = await addTool(toolData);
+                
+                this.textContent = 'Save Tool';
+                this.disabled = false;
+                
+                if (result.success) {
+                    showMessage('toolSuccess', 'Tool added successfully!', false);
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                } else {
+                    showMessage('toolError', `Failed to add tool: ${result.error}`, true);
+                }
+            });
+            
             // Refresh link
             document.getElementById('refreshLink').addEventListener('click', async function(e) {
                 e.preventDefault();
-                if (currentUser) {
+                if (currentUser && currentUser.role !== 'guest') {
                     await initDashboard();
                 }
             });
