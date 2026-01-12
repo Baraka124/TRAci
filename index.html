@@ -847,12 +847,13 @@
 
 <script>
     // ========== FIXED: SINGLE SUPABASE INITIALIZATION ==========
-    // Remove ALL other supabase declarations in your code
+    // Only declare supabase ONCE - remove any other declarations
     
     // ========== CONFIGURATION ==========
     const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
+    // ========== SINGLE DECLARATION ==========
     // Initialize Supabase client ONCE
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1279,7 +1280,7 @@
         // Initialize dashboard
         setTimeout(initDashboard, 100);
         
-        // Setup filter buttons - NEW IMPROVEMENT
+        // Setup filter buttons
         document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
             btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
         });
