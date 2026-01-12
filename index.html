@@ -7,1970 +7,1389 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <style>
-        /* ==== CSS VARIABLES - ENHANCED ==== */
-        :root {
-            /* Professional Healthcare/Innovation Colors */
-            --primary: #2563eb;           /* Softer professional blue */
-            --primary-dark: #1e40af;      /* Darker for contrast */
-            --primary-light: #dbeafe;     /* Light blue for backgrounds */
-            --secondary: #7c3aed;         /* Complementary purple */
-            --accent: #0d9488;           /* Teal for healthcare feel */
-            
-            /* Status Colors - Softer versions */
-            --success: #059669;          /* Softer green */
-            --warning: #d97706;          /* Softer amber/orange */
-            --danger: #dc2626;           /* Professional red */
-            --info: #0ea5e9;             /* Info blue */
-            
-            /* Neutral Palette */
-            --light: #f8fafc;
-            --dark: #1e293b;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
-            
-            /* UI Colors */
-            --border: #e2e8f0;
-            --card-bg: #ffffff;
-            --sidebar-bg: #f8fafc;
-            
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--accent));
-            --gradient-success: linear-gradient(135deg, var(--success), #10b981);
-            --gradient-warning: linear-gradient(135deg, var(--warning), #f59e0b);
-            --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            
-            /* Shadows - Softer */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Spacing System */
-            --space-xs: 4px;
-            --space-sm: 8px;
-            --space-md: 16px;
-            --space-lg: 24px;
-            --space-xl: 32px;
-            --space-2xl: 48px;
-            
-            /* Border Radius */
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
-            --radius-2xl: 20px;
-            
-            /* Transitions */
-            --transition-fast: 150ms ease;
-            --transition-normal: 250ms ease;
-            --transition-slow: 350ms ease;
-        }
-
-        /* ==== DARK MODE SUPPORT ==== */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --light: #0f172a;
-                --dark: #f8fafc;
-                --gray-50: #0f172a;
-                --gray-100: #1e293b;
-                --gray-200: #334155;
-                --gray-300: #475569;
-                --gray-400: #64748b;
-                --gray-500: #94a3b8;
-                --gray-600: #cbd5e1;
-                --gray-700: #e2e8f0;
-                --gray-800: #f1f5f9;
-                --gray-900: #f8fafc;
-                --card-bg: #1e293b;
-                --border: #334155;
-                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-                --gradient-card: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            }
-        }
-
-        /* ==== RESET & BASE ==== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--dark);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: var(--space-lg);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 var(--space-md);
-        }
-
-        /* ==== TYPOGRAPHY ==== */
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-        }
-
-        p {
-            margin-bottom: var(--space-md);
-        }
-
-        a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color var(--transition-fast);
-        }
-
-        a:hover {
-            color: var(--primary-dark);
-        }
-
-        /* ==== HEADER - ENHANCED ==== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-lg) 0;
-            margin-bottom: var(--space-xl);
-            position: relative;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-        }
-
-        .logo {
-            width: 64px;
-            height: 64px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-xl);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
-            box-shadow: var(--shadow-lg);
-            transition: all var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .logo::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
-            animation: logoShine 3s infinite;
-        }
-
-        @keyframes logoShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .logo:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .title {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-        }
-
-        .platform-name {
-            font-size: 32px;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-            line-height: 1;
-        }
-
-        .department-subtitle {
-            color: var(--primary);
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .department-subtitle::before {
-            content: '';
-            width: 20px;
-            height: 2px;
-            background: var(--primary);
-            opacity: 0.5;
-        }
-
-        .dashboard-description {
-            color: var(--gray-500);
-            font-size: 14px;
-            font-weight: 400;
-            max-width: 500px;
-        }
-
-        /* ==== HEADER RIGHT SECTION ==== */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-        }
-
-        .last-updated {
-            background: var(--card-bg);
-            padding: var(--space-md) var(--space-lg);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            border: 1px solid var(--border);
-            min-width: 280px;
-        }
-
-        .live-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 600;
-            padding: var(--space-xs) var(--space-sm);
-            background: rgba(5, 150, 105, 0.1);
-            border-radius: var(--radius-md);
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 0.7;
-                transform: scale(1.1);
-            }
-        }
-
-        /* ==== AUTH SECTION ==== */
-        .auth-section {
-            position: relative;
-        }
-
-        .auth-btn {
-            padding: var(--space-sm) var(--space-lg);
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-lg);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: 14px;
-            box-shadow: var(--shadow);
-        }
-
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .auth-btn:active {
-            transform: translateY(0);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            background: var(--card-bg);
-            padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-sm);
-            border-radius: var(--radius-2xl);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            transition: all var(--transition-normal);
-        }
-
-        .user-profile:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .username {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--dark);
-        }
-
-        .role-badge {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-align: center;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .role-badge.viewer { 
-            background: var(--gray-100); 
-            color: var(--gray-600); 
-        }
-        .role-badge.user { 
-            background: var(--primary-light); 
-            color: var(--primary); 
-        }
-        .role-badge.admin { 
-            background: var(--gradient-success); 
-            color: white; 
-        }
-
-        /* ==== STATS CARDS - ENHANCED ==== */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: var(--space-2xl);
-        }
-
-        .stat-card {
-            background: var(--gradient-card);
-            border-radius: var(--radius-xl);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-            transition: all var(--transition-normal);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity var(--transition-normal);
-        }
-
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-light);
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
-            animation: iconShine 3s infinite;
-        }
-
-        @keyframes iconShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .stat-icon.tools { background: linear-gradient(135deg, #0ea5e9, #3b82f6); }
-        .stat-icon.projects { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .stat-icon.feedback { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .stat-icon.active { background: linear-gradient(135deg, #10b981, #059669); }
-
-        .stat-info {
-            flex: 1;
-        }
-
-        .stat-info h3 {
-            font-size: 12px;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: var(--space-xs);
-            font-weight: 600;
-        }
-
-        .stat-info .number {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1;
-            font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: var(--space-xs);
-        }
-
-        .stat-trend {
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .trend-up {
-            color: var(--success);
-        }
-
-        .trend-down {
-            color: var(--danger);
-        }
-
-        /* ==== ADMIN CONTROLS ==== */
-        .admin-controls {
-            display: flex;
-            gap: var(--space-md);
-            margin-bottom: var(--space-xl);
-            flex-wrap: wrap;
-        }
-
-        .admin-btn {
-            padding: var(--space-md) var(--space-lg);
-            background: var(--gradient-card);
-            color: var(--dark);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: 14px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .admin-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary);
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .admin-btn.add {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .admin-btn.add:hover {
-            background: var(--primary-dark);
-        }
-
-        .admin-btn.delete {
-            background: var(--card-bg);
-            color: var(--danger);
-            border-color: var(--danger);
-        }
-
-        .admin-btn.delete:hover {
-            background: rgba(220, 38, 38, 0.1);
-        }
-
-        /* ==== FILTER CONTROLS ==== */
-        .filter-controls {
-            display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-xl);
-            flex-wrap: wrap;
-            background: var(--card-bg);
-            padding: var(--space-md);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .filter-btn {
-            padding: var(--space-sm) var(--space-lg);
-            background: var(--gray-100);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            color: var(--gray-600);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .filter-btn:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            border-color: var(--primary-light);
-            transform: translateY(-1px);
-        }
-
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-        }
-
-        .filter-count {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* ==== CONTENT GRID ==== */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-xl);
-            margin-bottom: var(--space-2xl;
-        }
-
-        @media (min-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        /* ==== SECTION STYLES ==== */
-        .section {
-            background: var(--card-bg);
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: transform var(--transition-normal);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .section-header {
-            padding: var(--space-lg) var(--space-xl);
-            background: linear-gradient(90deg, var(--primary-light) 0%, transparent 100%);
-            color: var(--dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .section-header h2 i {
-            font-size: 22px;
-            color: var(--primary);
-            width: 24px;
-            text-align: center;
-        }
-
-        .section-content {
-            padding: var(--space-xl);
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        /* ==== TOOLS GRID ==== */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--space-lg);
-        }
-
-        .tool-card {
-            background: var(--gradient-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            transition: all var(--transition-normal);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tool-card:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-3px);
-        }
-
-        .tool-card.operational {
-            border-left: 4px solid var(--success);
-        }
-
-        .tool-card.warning {
-            border-left: 4px solid var(--warning);
-        }
-
-        .tool-card.maintenance {
-            border-left: 4px solid var(--info);
-        }
-
-        .tool-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--space-md);
-        }
-
-        .tool-name {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--dark);
-            flex: 1;
-        }
-
-        .tool-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-md);
-            background: var(--gradient-primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .tool-status {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-operational {
-            background-color: rgba(5, 150, 105, 0.1);
-            color: var(--success);
-        }
-
-        .status-warning {
-            background-color: rgba(217, 119, 6, 0.1);
-            color: var(--warning);
-        }
-
-        .status-maintenance {
-            background-color: rgba(14, 165, 233, 0.1);
-            color: var(--info);
-        }
-
-        .tool-description {
-            color: var(--gray-500);
-            font-size: 14px;
-            margin-bottom: var(--space-lg);
-            line-height: 1.5;
-            flex: 1;
-        }
-
-        .tool-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            margin-top: auto;
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border);
-        }
-
-        .tool-updated {
-            color: var(--gray-500);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tool-link {
-            color: var(--primary);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color var(--transition-fast);
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            background: var(--primary-light);
-        }
-
-        .tool-link:hover {
-            color: var(--primary-dark);
-            background: rgba(37, 99, 235, 0.15);
-        }
-
-        /* ==== PROJECTS LIST ==== */
-        .projects-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
-
-        .project-card {
-            background: var(--gradient-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            transition: all var(--transition-normal);
-            position: relative;
-        }
-
-        .project-card:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .project-card.needs-feedback {
-            border: 2px solid var(--warning);
-            background: linear-gradient(135deg, rgba(255, 251, 235, 0.5) 0%, rgba(254, 243, 199, 0.5) 100%);
-            animation: urgentPulse 3s infinite;
-        }
-
-        @keyframes urgentPulse {
-            0%, 100% { 
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2);
-            }
-            70% { 
-                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
-            }
-        }
-
-        .project-card.needs-feedback::after {
-            content: 'URGENT FEEDBACK';
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: var(--gradient-warning);
-            color: white;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 4px 12px;
-            border-radius: var(--radius-md);
-            letter-spacing: 1px;
-            box-shadow: var(--shadow);
-        }
-
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--space-md);
-        }
-
-        .project-title {
-            font-weight: 600;
-            font-size: 18px;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            flex: 1;
-        }
-
-        .project-title i {
-            color: var(--primary);
-            font-size: 16px;
-        }
-
-        .project-status {
-            font-size: 11px;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-development { 
-            background-color: rgba(37, 99, 235, 0.1); 
-            color: var(--primary); 
-        }
-        .status-testing { 
-            background-color: rgba(14, 165, 233, 0.1); 
-            color: var(--info); 
-        }
-        .status-staging { 
-            background-color: rgba(217, 119, 6, 0.1); 
-            color: var(--warning); 
-        }
-        .status-production { 
-            background-color: rgba(5, 150, 105, 0.1); 
-            color: var(--success); 
-        }
-        .status-planning { 
-            background-color: rgba(100, 116, 139, 0.1); 
-            color: var(--gray-500); 
-        }
-
-        .project-description {
-            color: var(--gray-500);
-            font-size: 14px;
-            margin-bottom: var(--space-lg);
-            line-height: 1.6;
-        }
-
-        /* ==== PROGRESS BAR ==== */
-        .project-progress {
-            margin-bottom: var(--space-lg);
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--space-xs);
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-
-        .progress-bar {
-            height: 6px;
-            background-color: var(--gray-200);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            background: var(--gradient-primary);
-            transition: width 1s ease-in-out;
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.3) 50%,
-                transparent 100%);
-            animation: progressShine 2s infinite;
-        }
-
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* ==== PROJECT LINKS ==== */
-        .project-links {
-            display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-lg);
-            flex-wrap: wrap;
-        }
-
-        .project-link {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            color: var(--primary);
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 16px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            transition: all var(--transition-fast);
-            text-decoration: none;
-        }
-
-        .project-link:hover {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-1px);
-        }
-
-        .project-link i {
-            font-size: 16px;
-        }
-
-        /* ==== PROJECT FOOTER ==== */
-        .project-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: var(--gray-500);
-            margin-top: var(--space-lg);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border);
-        }
-
-        .last-commit {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ==== FEEDBACK SECTION ==== */
-        .feedback-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .feedback-badge {
-            background: var(--gradient-warning);
-            color: white;
-            font-size: 12px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .feedback-channels {
-            display: flex;
-            gap: var(--space-sm);
-        }
-
-        .channel-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            transition: all var(--transition-fast);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .channel-btn:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow);
-        }
-
-        .whatsapp { background-color: #25D366; }
-        .email { background-color: var(--primary); }
-        .github { background-color: var(--gray-800); }
-        .slack { background-color: #4A154B; }
-
-        /* ==== ADMIN ACTIONS ==== */
-        .project-actions {
-            display: flex;
-            gap: var(--space-sm);
-            margin-top: var(--space-md);
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all var(--transition-fast);
-        }
-
-        .edit-btn {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .delete-btn {
-            background: rgba(220, 38, 38, 0.1);
-            color: var(--danger);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .edit-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* ==== UPDATES SECTION ==== */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 10px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--primary), transparent);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: var(--space-lg);
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -26px;
-            top: 5px;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--primary);
-            border: 3px solid var(--card-bg);
-            box-shadow: 0 0 0 3px var(--primary-light);
-            z-index: 1;
-        }
-
-        .timeline-date {
-            font-size: 13px;
-            color: var(--gray-500);
-            margin-bottom: var(--space-xs);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .timeline-content {
-            background: var(--gradient-card);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            border-left: 4px solid var(--primary);
-            transition: transform var(--transition-normal);
-        }
-
-        .timeline-content:hover {
-            transform: translateX(8px);
-        }
-
-        .timeline-content h4 {
-            font-size: 16px;
-            margin-bottom: var(--space-sm);
-            color: var(--dark);
-        }
-
-        .timeline-content p {
-            font-size: 14px;
-            color: var(--gray-500);
-            margin-bottom: var(--space-sm);
-        }
-
-        .timeline-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: var(--primary);
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        .timeline-link:hover {
-            text-decoration: underline;
-        }
-
-        /* ==== MODAL STYLES ==== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(8px);
-            padding: var(--space-md);
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-xl);
-            animation: modalSlide 0.3s ease;
-            border: 1px solid var(--border);
-        }
-
-        @keyframes modalSlide {
-            from { 
-                transform: translateY(-20px) scale(0.95); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateY(0) scale(1); 
-                opacity: 1; 
-            }
-        }
-
-        /* ==== UTILITY CLASSES ==== */
-        .loading {
-            text-align: center;
-            padding: var(--space-2xl);
-            color: var(--gray-500);
-        }
-
-        .loading-spinner {
-            border: 4px solid var(--gray-200);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto var(--space-lg);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: var(--space-2xl) var(--space-lg);
-            color: var(--gray-500);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: var(--space-lg);
-            color: var(--gray-300);
-            opacity: 0.5;
-        }
-
-        /* ==== FOOTER ==== */
-        .footer {
-            text-align: center;
-            padding: var(--space-xl) 0;
-            color: var(--gray-500);
-            font-size: 14px;
-            border-top: 1px solid var(--border);
-            margin-top: var(--space-2xl);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-xl);
-            margin-bottom: var(--space-md);
-        }
-
-        .footer-link {
-            color: var(--gray-500);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color var(--transition-fast);
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        /* ==== RESPONSIVE DESIGN ==== */
-        @media (max-width: 1200px) {
-            .container {
-                padding: 0 var(--space-sm);
-            }
-            
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            html {
-                font-size: 14px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-lg);
-            }
-            
-            .header-right {
-                width: 100%;
-                flex-direction: column;
-                gap: var(--space-md);
-            }
-            
-            .last-updated {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-sm);
-            }
-            
-            .project-footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-md);
-            }
-            
-            .feedback-section {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-controls {
-                justify-content: center;
-            }
-            
-            .admin-controls {
-                justify-content: center;
-            }
-            
-            .logo-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-md);
-            }
-            
-            .title {
-                align-items: flex-start;
-            }
-            
-            .platform-name {
-                font-size: 24px;
-            }
-        }
-
-        /* ==== PRINT STYLES ==== */
-        @media print {
-            .auth-section,
-            .admin-controls,
-            .filter-controls,
-            .action-btn,
-            .channel-btn,
-            .tool-link,
-            .project-link,
-            .footer-links {
-                display: none !important;
-            }
-            
-            .section {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid var(--gray-300);
-            }
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Enhanced Header -->
-        <header class="header">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-chart-network"></i>
-                </div>
-                <div class="title">
-                    <h1 class="platform-name">TRAci Dashboard</h1>
-                    <div class="department-subtitle">Pneumology Innovation</div>
-                    <p class="dashboard-description">Real-time monitoring of research tools and development projects</p>
-                </div>
-            </div>
-            
-            <div class="header-right">
-                <div class="last-updated">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>Last sync: <strong id="lastUpdatedTime">Loading...</strong></span>
-                    <span class="live-indicator">
-                        <span class="live-dot"></span> LIVE
-                    </span>
-                </div>
-                
-                <div class="auth-section" id="authSection">
-                    <div id="guestView">
-                        <button id="loginBtn" class="auth-btn">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </div>
-                    
-                    <div id="userView" style="display: none;">
-                        <div class="user-profile">
-                            <span class="user-avatar">
-                                <i class="fas fa-user-md"></i>
-                            </span>
-                            <div class="user-info">
-                                <span id="currentUsername" class="username"></span>
-                                <span id="currentUserRole" class="role-badge"></span>
-                            </div>
-                            <button id="logoutBtn" class="auth-btn logout" style="margin-left: 8px; padding: 8px;">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Admin Controls -->
-        <div class="admin-controls" id="adminControls" style="display: none;">
-            <button class="admin-btn add" id="addProjectBtn">
-                <i class="fas fa-plus-circle"></i> Add Project
-            </button>
-            <button class="admin-btn add" id="addToolBtn">
-                <i class="fas fa-tools"></i> Add Tool
-            </button>
-            <button class="admin-btn" id="addUpdateBtn">
-                <i class="fas fa-bullhorn"></i> Announce
-            </button>
-            <button class="admin-btn delete" id="exportDataBtn">
-                <i class="fas fa-file-export"></i> Export
-            </button>
-        </div>
-
-        <!-- Stats Overview -->
-        <div class="stats-container" id="statsContainer" style="display: none;">
-            <div class="stat-card">
-                <div class="stat-icon tools">
-                    <i class="fas fa-microscope"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Active Tools</h3>
-                    <div class="number" id="toolsCount">0</div>
-                    <div class="stat-trend trend-up">
-                        <i class="fas fa-arrow-up"></i> 12% this month
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon projects">
-                    <i class="fas fa-project-diagram"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Active Projects</h3>
-                    <div class="number" id="projectsCount">0</div>
-                    <div class="stat-trend trend-up">
-                        <i class="fas fa-arrow-up"></i> 3 new
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon feedback">
-                    <i class="fas fa-comment-medical"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Awaiting Feedback</h3>
-                    <div class="number" id="feedbackCount">0</div>
-                    <div class="stat-trend trend-down">
-                        <i class="fas fa-arrow-down"></i> 2 resolved
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon active">
-                    <i class="fas fa-lungs"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>In Development</h3>
-                    <div class="number" id="activeCount">0</div>
-                    <div class="stat-trend">
-                        <i class="fas fa-clock"></i> 4 ongoing
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Controls -->
-        <div class="filter-controls" id="filterControls" style="display: none;">
-            <button class="filter-btn active" data-filter="all">
-                All Projects
-                <span class="filter-count" id="count-all">0</span>
-            </button>
-            <button class="filter-btn" data-filter="needs_feedback">
-                <i class="fas fa-comment-exclamation"></i> Needs Feedback
-                <span class="filter-count" id="count-feedback">0</span>
-            </button>
-            <button class="filter-btn" data-filter="development">
-                <i class="fas fa-code"></i> Development
-                <span class="filter-count" id="count-development">0</span>
-            </button>
-            <button class="filter-btn" data-filter="testing">
-                <i class="fas fa-vial"></i> Testing
-                <span class="filter-count" id="count-testing">0</span>
-            </button>
-            <button class="filter-btn" data-filter="production">
-                <i class="fas fa-server"></i> Production
-                <span class="filter-count" id="count-production">0</span>
-            </button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="content-grid" id="contentGrid" style="display: none;">
-            <!-- Tools Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-tools"></i> Research Tools & Resources</h2>
-                    <span class="tool-status status-operational" id="toolsStatus">All Operational</span>
-                </div>
-                <div class="section-content">
-                    <div class="tools-grid" id="toolsGrid">
-                        <!-- Tools loaded dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Projects Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-project-diagram"></i> Active Development</h2>
-                    <div class="feedback-badge" id="feedbackBadge" style="display: none;">
-                        0 need feedback
-                    </div>
-                </div>
-                <div class="section-content">
-                    <div class="projects-list" id="projectsList">
-                        <!-- Projects loaded dynamically -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Updates Section -->
-        <div class="section" id="updatesSection" style="display: none;">
-            <div class="section-header">
-                <h2><i class="fas fa-history"></i> Recent Updates</h2>
-            </div>
-            <div class="section-content">
-                <div class="timeline" id="timeline">
-                    <!-- Updates loaded dynamically -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Login Required -->
-        <div class="section" id="loginRequiredSection">
-            <div class="section-content" style="text-align: center; padding: 80px 20px;">
-                <div style="font-size: 72px; color: var(--primary-light); margin-bottom: var(--space-lg);">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h2 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: var(--space-md);">
-                    Secure Innovation Portal
-                </h2>
-                <p style="color: var(--gray-500); max-width: 500px; margin: 0 auto var(--space-xl); line-height: 1.6;">
-                    Access to Pneumology Innovation tools and project tracking is restricted to authorized team members. Please authenticate to continue.
-                </p>
-                <button id="loginRequiredBtn" class="auth-btn" style="margin: 0 auto; padding: var(--space-md) var(--space-xl);">
-                    <i class="fas fa-sign-in-alt"></i> Login to Continue
-                </button>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-links">
-                <a href="#" id="refreshLink" class="footer-link">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
-                </a>
-                <a href="https://github.com" target="_blank" class="footer-link">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-                <a href="#" id="printLink" class="footer-link">
-                    <i class="fas fa-print"></i> Print Report
-                </a>
-                <a href="#" id="helpLink" class="footer-link">
-                    <i class="fas fa-question-circle"></i> Help
-                </a>
-            </div>
-            <p>TRAci Dashboard v2.0 • Pneumology Innovation Department • 
-                <span id="syncTime">Last sync: --:--</span>
-            </p>
-            <p style="margin-top: var(--space-sm); font-size: 12px; color: var(--gray-400);">
-                © 2024 Pneumology Innovation. All rights reserved. | 
-                <a href="#" style="color: var(--gray-400);">Privacy Policy</a> • 
-                <a href="#" style="color: var(--gray-400);">Terms of Use</a>
-            </p>
-        </footer>
+    <div id="app">
+        <!-- Everything rendered dynamically via JavaScript -->
     </div>
 
-    <!-- Modals (keep your existing modal HTML structure) -->
-    <!-- ... Your existing modal HTML goes here ... -->
-
-    <!-- JavaScript with Enhanced Features -->
     <script>
         // ========== CONFIGURATION ==========
-        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
-
-        // ========== SUPABASE INITIALIZATION ==========
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // ========== ENHANCED ICON MAPPING ==========
-        const professionalIcons = {
-            tools: {
-                'analysis': 'fas fa-chart-bar',
-                'data': 'fas fa-database',
-                'medical': 'fas fa-stethoscope',
-                'research': 'fas fa-microscope',
-                'imaging': 'fas fa-x-ray',
-                'lab': 'fas fa-vial',
-                'development': 'fas fa-code',
-                'testing': 'fas fa-flask',
-                'default': 'fas fa-toolbox'
+        const CONFIG = {
+            SUPABASE_URL: 'https://bledpouekiytppuhxeqq.supabase.co',
+            SUPABASE_ANON_KEY: 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C',
+            APP_NAME: 'TRAci',
+            DEPARTMENT: 'Pneumology Innovation',
+            COLORS: {
+                primary: '#2563eb',
+                primaryDark: '#1e40af',
+                primaryLight: '#dbeafe',
+                secondary: '#7c3aed',
+                accent: '#0d9488',
+                success: '#059669',
+                warning: '#d97706',
+                danger: '#dc2626',
+                info: '#0ea5e9',
+                dark: '#1e293b',
+                light: '#f8fafc',
+                gray: '#64748b'
             },
-            projects: {
-                'development': 'fas fa-code',
-                'testing': 'fas fa-vial',
-                'production': 'fas fa-server',
-                'planning': 'fas fa-tasks',
-                'research': 'fas fa-microscope',
-                'clinical': 'fas fa-hospital-user',
-                'default': 'fas fa-project-diagram'
-            },
-            categories: {
-                'pulmonary': 'fas fa-lungs',
-                'respiratory': 'fas fa-wind',
-                'diagnostic': 'fas fa-search',
-                'therapeutic': 'fas fa-heartbeat',
-                'ai': 'fas fa-brain',
-                'data': 'fas fa-chart-line',
-                'software': 'fas fa-laptop-code',
-                'hardware': 'fas fa-microchip'
-            }
-        };
-
-        // ========== AUTHENTICATION STATE ==========
-        let currentUser = null;
-        let authToken = localStorage.getItem('traci_auth_token');
-
-        // ========== DASHBOARD DATA ==========
-        let dashboardData = {
-            projects: [],
-            tools: [],
-            updates: [],
-            lastUpdated: new Date(),
-            filteredProjects: []
-        };
-
-        // ========== MODAL MANAGEMENT ==========
-        // ... Keep your existing modal management code ...
-
-        // ========== ENHANCED AUTHENTICATION ==========
-        async function loginUser(username, password) {
-            // ... Keep your existing login logic ...
-        }
-
-        // ========== ENHANCED ICON HELPERS ==========
-        function getToolIcon(tool) {
-            const category = (tool.category || '').toLowerCase();
-            for (const [key, icon] of Object.entries(professionalIcons.categories)) {
-                if (category.includes(key)) {
-                    return icon;
-                }
-            }
-            return professionalIcons.tools[tool.type] || professionalIcons.tools.default;
-        }
-
-        function getProjectIcon(project) {
-            const category = (project.category || '').toLowerCase();
-            for (const [key, icon] of Object.entries(professionalIcons.categories)) {
-                if (category.includes(key)) {
-                    return icon;
-                }
-            }
-            return professionalIcons.projects[project.status] || professionalIcons.projects.default;
-        }
-
-        // ========== ENHANCED TOOL RENDERING ==========
-        function renderTools() {
-            const toolsGrid = document.getElementById('toolsGrid');
-            
-            if (dashboardData.tools.length === 0) {
-                toolsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-tools"></i>
-                        <h3>No Tools Available</h3>
-                        <p>${currentUser.role === 'admin' ? 'Add your first tool using the "Add Tool" button above.' : 'No tools have been added yet.'}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let toolsHTML = '';
-            
-            dashboardData.tools.forEach(tool => {
-                const iconClass = getToolIcon(tool);
-                const statusClass = tool.status === 'operational' ? 'status-operational' : 
-                                  tool.status === 'maintenance' ? 'status-maintenance' : 'status-warning';
-                const statusText = tool.status === 'operational' ? 'Operational' : 
-                                 tool.status === 'maintenance' ? 'Maintenance' : 'Needs Attention';
-                
-                const lastChecked = tool.last_checked ? 
-                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) : 'Never';
-                
-                toolsHTML += `
-                    <div class="tool-card ${tool.status}">
-                        <div class="tool-header">
-                            <div class="tool-name">
-                                <div class="tool-icon">
-                                    <i class="${iconClass}"></i>
-                                </div>
-                                <span>${tool.name}</span>
-                            </div>
-                            <span class="tool-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <p class="tool-description">${tool.description || 'No description available'}</p>
-                        <div class="tool-meta">
-                            <span class="tool-updated">
-                                <i class="far fa-clock"></i> ${lastChecked}
-                            </span>
-                            <a href="${tool.url}" target="_blank" class="tool-link">
-                                Access <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            toolsGrid.innerHTML = toolsHTML;
-        }
-
-        // ========== ENHANCED PROJECT RENDERING ==========
-        function renderProjects() {
-            const projectsList = document.getElementById('projectsList');
-            const projectsToRender = dashboardData.filteredProjects.length > 0 
-                ? dashboardData.filteredProjects 
-                : dashboardData.projects;
-            
-            if (projectsToRender.length === 0) {
-                projectsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-project-diagram"></i>
-                        <h3>No Projects Found</h3>
-                        <p>${currentUser.role === 'admin' ? 'Start by adding a new project.' : 'No active projects at this time.'}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let projectsHTML = '';
-            
-            projectsToRender.forEach(project => {
-                const iconClass = getProjectIcon(project);
-                const statusClass = `status-${project.status}`;
-                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-                
-                // ... Rest of your project rendering logic ...
-            });
-            
-            projectsList.innerHTML = projectsHTML;
-            
-            // Update filter counts
-            updateFilterCounts();
-        }
-
-        function updateFilterCounts() {
-            const filters = ['all', 'needs_feedback', 'development', 'testing', 'production'];
-            filters.forEach(filter => {
-                const count = filter === 'all' 
-                    ? dashboardData.projects.length
-                    : dashboardData.projects.filter(p => 
-                        filter === 'needs_feedback' ? p.needs_feedback : p.status === filter
-                    ).length;
-                const element = document.getElementById(`count-${filter}`);
-                if (element) {
-                    element.textContent = count;
-                }
-            });
-        }
-
-        // ========== ENHANCED STATS UPDATE ==========
-        function updateStats() {
-            const toolsCount = dashboardData.tools.length;
-            const projectsCount = dashboardData.projects.length;
-            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-            const activeCount = dashboardData.projects.filter(p => 
-                p.status === 'development' || p.status === 'testing'
-            ).length;
-
-            document.getElementById('toolsCount').textContent = toolsCount;
-            document.getElementById('projectsCount').textContent = projectsCount;
-            document.getElementById('feedbackCount').textContent = feedbackCount;
-            document.getElementById('activeCount').textContent = activeCount;
-
-            // Update feedback badge
-            const feedbackBadge = document.getElementById('feedbackBadge');
-            if (feedbackCount > 0) {
-                feedbackBadge.textContent = `${feedbackCount} need${feedbackCount > 1 ? '' : 's'} feedback`;
-                feedbackBadge.style.display = 'block';
-            } else {
-                feedbackBadge.style.display = 'none';
-            }
-
-            // Update tools status
-            const toolsStatus = document.getElementById('toolsStatus');
-            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
-            const hasMaintenance = dashboardData.tools.some(t => t.status === 'maintenance');
-            
-            if (hasWarning) {
-                toolsStatus.textContent = 'Needs Attention';
-                toolsStatus.className = 'tool-status status-warning';
-            } else if (hasMaintenance) {
-                toolsStatus.textContent = 'Maintenance';
-                toolsStatus.className = 'tool-status status-maintenance';
-            } else {
-                toolsStatus.textContent = 'All Operational';
-                toolsStatus.className = 'tool-status status-operational';
-            }
-        }
-
-        // ========== ENHANCED TIMESTAMP ==========
-        function updateTimestamp() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            const dateString = now.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-            
-            document.getElementById('lastUpdatedTime').innerHTML = 
-                `<span title="${dateString}">${timeString}</span>`;
-            document.getElementById('syncTime').textContent = `Last sync: ${timeString}`;
-            
-            dashboardData.lastUpdated = now;
-        }
-
-        // ========== EVENT LISTENERS ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... Your existing event listeners ...
-            
-            // Add new event listeners for enhanced features
-            document.getElementById('printLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                window.print();
-            });
-            
-            document.getElementById('helpLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Help documentation coming soon!');
-            });
-            
-            document.getElementById('exportDataBtn').addEventListener('click', function() {
-                if (currentUser && currentUser.role === 'admin') {
-                    exportDashboardData();
-                }
-            });
-        });
-
-        // ========== ENHANCED DATA EXPORT ==========
-        function exportDashboardData() {
-            const data = {
-                exportedAt: new Date().toISOString(),
-                user: currentUser,
-                stats: {
-                    tools: dashboardData.tools.length,
-                    projects: dashboardData.projects.length,
-                    feedback: dashboardData.projects.filter(p => p.needs_feedback).length,
-                    active: dashboardData.projects.filter(p => 
-                        p.status === 'development' || p.status === 'testing'
-                    ).length
+            ICONS: {
+                logo: 'fas fa-chart-network',
+                tools: {
+                    default: 'fas fa-tools',
+                    analysis: 'fas fa-chart-bar',
+                    medical: 'fas fa-stethoscope',
+                    research: 'fas fa-microscope',
+                    data: 'fas fa-database',
+                    imaging: 'fas fa-x-ray',
+                    lab: 'fas fa-vial'
                 },
-                tools: dashboardData.tools,
-                projects: dashboardData.projects,
-                updates: dashboardData.updates
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `traci-export-${new Date().toISOString().split('T')[0]}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
+                projects: {
+                    default: 'fas fa-project-diagram',
+                    development: 'fas fa-code',
+                    testing: 'fas fa-flask',
+                    production: 'fas fa-server',
+                    planning: 'fas fa-tasks'
+                },
+                status: {
+                    operational: 'fas fa-check-circle',
+                    warning: 'fas fa-exclamation-triangle',
+                    maintenance: 'fas fa-tools'
+                }
+            }
+        };
 
-        // ========== AUTO-REFRESH WITH VISUAL FEEDBACK ==========
-        let refreshInterval;
-        
-        function setupAutoRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            
-            if (currentUser && currentUser.role !== 'viewer') {
-                refreshInterval = setInterval(async () => {
-                    const lastUpdatedEl = document.getElementById('lastUpdatedTime');
-                    const originalContent = lastUpdatedEl.innerHTML;
-                    
-                    // Visual feedback
-                    lastUpdatedEl.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Refreshing...';
-                    lastUpdatedEl.style.color = 'var(--primary)';
-                    
-                    await initDashboard();
-                    
-                    // Success feedback
-                    lastUpdatedEl.innerHTML = '<i class="fas fa-check-circle"></i> Updated';
-                    lastUpdatedEl.style.color = 'var(--success)';
-                    
-                    setTimeout(() => {
-                        updateTimestamp();
-                        lastUpdatedEl.style.color = '';
-                    }, 2000);
-                }, 5 * 60 * 1000); // 5 minutes
+        // ========== APPLICATION STATE ==========
+        class AppState {
+            constructor() {
+                this.currentUser = null;
+                this.authToken = localStorage.getItem('traci_auth_token');
+                this.data = {
+                    projects: [],
+                    tools: [],
+                    updates: [],
+                    lastUpdated: new Date()
+                };
+                this.supabase = null;
+                this.isLoading = false;
+                this.init();
+            }
+
+            async init() {
+                this.supabase = window.supabase.createClient(
+                    CONFIG.SUPABASE_URL,
+                    CONFIG.SUPABASE_ANON_KEY
+                );
+                this.loadStoredUser();
+                this.render();
+            }
+
+            loadStoredUser() {
+                if (this.authToken) {
+                    try {
+                        this.currentUser = JSON.parse(atob(this.authToken));
+                    } catch (e) {
+                        localStorage.removeItem('traci_auth_token');
+                        this.authToken = null;
+                    }
+                }
+            }
+
+            async login(username, password) {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('dashboard_users')
+                        .select('username, role, password_hash')
+                        .eq('username', username)
+                        .single();
+
+                    if (error || !data || data.password_hash !== password) {
+                        throw new Error('Invalid credentials');
+                    }
+
+                    this.currentUser = {
+                        username: data.username,
+                        role: data.role
+                    };
+
+                    this.authToken = btoa(JSON.stringify(this.currentUser));
+                    localStorage.setItem('traci_auth_token', this.authToken);
+
+                    this.render();
+                    return true;
+
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    return false;
+                }
+            }
+
+            logout() {
+                this.currentUser = null;
+                this.authToken = null;
+                localStorage.removeItem('traci_auth_token');
+                this.render();
+            }
+
+            async fetchData() {
+                this.isLoading = true;
+                this.render();
+
+                try {
+                    const [projects, tools, updates] = await Promise.all([
+                        this.fetchProjects(),
+                        this.fetchTools(),
+                        this.fetchUpdates()
+                    ]);
+
+                    this.data.projects = projects;
+                    this.data.tools = tools;
+                    this.data.updates = updates;
+                    this.data.lastUpdated = new Date();
+
+                } catch (error) {
+                    console.error('Failed to fetch data:', error);
+                } finally {
+                    this.isLoading = false;
+                    this.render();
+                }
+            }
+
+            async fetchProjects() {
+                const { data, error } = await this.supabase
+                    .from('projects')
+                    .select('*')
+                    .order('needs_feedback', { ascending: false })
+                    .order('status', { ascending: true });
+
+                return error ? [] : data || [];
+            }
+
+            async fetchTools() {
+                const { data, error } = await this.supabase
+                    .from('tools')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                return error ? [] : data || [];
+            }
+
+            async fetchUpdates() {
+                const { data, error } = await this.supabase
+                    .from('updates')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                return error ? [] : data || [];
+            }
+
+            async addProject(projectData) {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('projects')
+                        .insert([{
+                            ...projectData,
+                            last_updated: new Date().toISOString()
+                        }])
+                        .select();
+
+                    if (error) throw error;
+                    await this.fetchData();
+                    return { success: true, data };
+
+                } catch (error) {
+                    console.error('Add project failed:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async updateProject(id, projectData) {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('projects')
+                        .update({
+                            ...projectData,
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('id', id)
+                        .select();
+
+                    if (error) throw error;
+                    await this.fetchData();
+                    return { success: true, data };
+
+                } catch (error) {
+                    console.error('Update project failed:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async deleteProject(id) {
+                try {
+                    const { error } = await this.supabase
+                        .from('projects')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    await this.fetchData();
+                    return { success: true };
+
+                } catch (error) {
+                    console.error('Delete project failed:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                app.innerHTML = this.generateHTML();
+                this.attachEventListeners();
+            }
+
+            generateHTML() {
+                if (this.isLoading) {
+                    return this.renderLoadingScreen();
+                }
+
+                if (!this.currentUser) {
+                    return this.renderLoginScreen();
+                }
+
+                return `
+                    ${this.renderStyles()}
+                    <div class="container">
+                        ${this.renderHeader()}
+                        ${this.currentUser.role !== 'viewer' ? this.renderDashboard() : this.renderViewerScreen()}
+                        ${this.renderFooter()}
+                    </div>
+                    ${this.renderModals()}
+                `;
+            }
+
+            renderStyles() {
+                return `
+                    <style>
+                        /* ==== CSS VARIABLES ==== */
+                        :root {
+                            --primary: ${CONFIG.COLORS.primary};
+                            --primary-dark: ${CONFIG.COLORS.primaryDark};
+                            --primary-light: ${CONFIG.COLORS.primaryLight};
+                            --secondary: ${CONFIG.COLORS.secondary};
+                            --accent: ${CONFIG.COLORS.accent};
+                            --success: ${CONFIG.COLORS.success};
+                            --warning: ${CONFIG.COLORS.warning};
+                            --danger: ${CONFIG.COLORS.danger};
+                            --info: ${CONFIG.COLORS.info};
+                            --dark: ${CONFIG.COLORS.dark};
+                            --light: ${CONFIG.COLORS.light};
+                            --gray: ${CONFIG.COLORS.gray};
+                            --border: #e2e8f0;
+                            --card-bg: #ffffff;
+                            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+                            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+                            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+                            --radius: 12px;
+                            --transition: 200ms ease;
+                        }
+
+                        /* ==== BASE STYLES ==== */
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                            color: var(--dark);
+                            min-height: 100vh;
+                            padding: 20px;
+                            -webkit-font-smoothing: antialiased;
+                        }
+
+                        .container {
+                            max-width: 1400px;
+                            margin: 0 auto;
+                        }
+
+                        /* ==== HEADER ==== */
+                        .header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 20px 0;
+                            margin-bottom: 30px;
+                            border-bottom: 2px solid var(--border);
+                        }
+
+                        .logo-section {
+                            display: flex;
+                            align-items: center;
+                            gap: 15px;
+                        }
+
+                        .logo {
+                            width: 60px;
+                            height: 60px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            border-radius: var(--radius);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 24px;
+                            box-shadow: var(--shadow);
+                        }
+
+                        .title h1 {
+                            font-family: 'Space Grotesk', sans-serif;
+                            font-size: 28px;
+                            font-weight: 700;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            margin-bottom: 4px;
+                        }
+
+                        .title .subtitle {
+                            font-size: 14px;
+                            color: var(--gray);
+                            font-weight: 500;
+                        }
+
+                        .department {
+                            color: var(--primary);
+                            font-size: 12px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            margin-top: 2px;
+                        }
+
+                        .header-right {
+                            display: flex;
+                            align-items: center;
+                            gap: 20px;
+                        }
+
+                        .last-updated {
+                            background: var(--card-bg);
+                            padding: 10px 20px;
+                            border-radius: 10px;
+                            border: 1px solid var(--border);
+                            font-size: 14px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .live-indicator {
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            color: var(--success);
+                            font-size: 12px;
+                            font-weight: 600;
+                        }
+
+                        .live-dot {
+                            width: 8px;
+                            height: 8px;
+                            background: var(--success);
+                            border-radius: 50%;
+                            animation: pulse 2s infinite;
+                        }
+
+                        @keyframes pulse {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+
+                        /* ==== AUTH ==== */
+                        .auth-btn {
+                            padding: 10px 20px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            color: white;
+                            border: none;
+                            border-radius: 10px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            transition: transform var(--transition);
+                        }
+
+                        .auth-btn:hover {
+                            transform: translateY(-2px);
+                        }
+
+                        .user-profile {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            background: var(--card-bg);
+                            padding: 8px 16px;
+                            border-radius: 25px;
+                            border: 1px solid var(--border);
+                        }
+
+                        .user-avatar {
+                            width: 36px;
+                            height: 36px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                        }
+
+                        /* ==== STATS ==== */
+                        .stats-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                            gap: 20px;
+                            margin-bottom: 30px;
+                        }
+
+                        .stat-card {
+                            background: var(--card-bg);
+                            border-radius: var(--radius);
+                            padding: 20px;
+                            border: 1px solid var(--border);
+                            display: flex;
+                            align-items: center;
+                            gap: 15px;
+                            transition: all var(--transition);
+                        }
+
+                        .stat-card:hover {
+                            transform: translateY(-4px);
+                            box-shadow: var(--shadow-lg);
+                        }
+
+                        .stat-icon {
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 10px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 20px;
+                        }
+
+                        .stat-content h3 {
+                            font-size: 12px;
+                            color: var(--gray);
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+
+                        .stat-number {
+                            font-size: 32px;
+                            font-weight: 700;
+                            font-family: 'Space Grotesk', sans-serif;
+                        }
+
+                        /* ==== CONTENT GRID ==== */
+                        .content-grid {
+                            display: grid;
+                            grid-template-columns: 1fr;
+                            gap: 30px;
+                            margin-bottom: 40px;
+                        }
+
+                        @media (min-width: 1024px) {
+                            .content-grid {
+                                grid-template-columns: 1fr 1fr;
+                            }
+                        }
+
+                        /* ==== SECTION ==== */
+                        .section {
+                            background: var(--card-bg);
+                            border-radius: var(--radius);
+                            border: 1px solid var(--border);
+                            overflow: hidden;
+                        }
+
+                        .section-header {
+                            padding: 20px;
+                            border-bottom: 1px solid var(--border);
+                            background: linear-gradient(90deg, var(--primary-light), transparent);
+                        }
+
+                        .section-header h2 {
+                            font-family: 'Space Grotesk', sans-serif;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .section-content {
+                            padding: 20px;
+                        }
+
+                        /* ==== TOOLS ==== */
+                        .tools-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                            gap: 20px;
+                        }
+
+                        .tool-card {
+                            border: 1px solid var(--border);
+                            border-radius: 10px;
+                            padding: 20px;
+                            transition: all var(--transition);
+                        }
+
+                        .tool-card:hover {
+                            transform: translateY(-2px);
+                            box-shadow: var(--shadow-lg);
+                        }
+
+                        .tool-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 15px;
+                        }
+
+                        .tool-title {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            font-weight: 600;
+                        }
+
+                        .tool-icon {
+                            width: 40px;
+                            height: 40px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                        }
+
+                        /* ==== PROJECTS ==== */
+                        .projects-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 20px;
+                        }
+
+                        .project-card {
+                            border: 1px solid var(--border);
+                            border-radius: 10px;
+                            padding: 20px;
+                            transition: all var(--transition);
+                        }
+
+                        .project-card.needs-feedback {
+                            border-color: var(--warning);
+                            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+                        }
+
+                        .project-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 15px;
+                        }
+
+                        .project-title {
+                            font-weight: 600;
+                            font-size: 18px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .project-status {
+                            font-size: 12px;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-weight: 600;
+                        }
+
+                        .status-development { background: #dbeafe; color: var(--primary); }
+                        .status-testing { background: #e0f2fe; color: var(--info); }
+                        .status-production { background: #d1fae5; color: var(--success); }
+
+                        .progress-bar {
+                            height: 8px;
+                            background: var(--border);
+                            border-radius: 4px;
+                            overflow: hidden;
+                            margin: 10px 0;
+                        }
+
+                        .progress-fill {
+                            height: 100%;
+                            background: linear-gradient(90deg, var(--primary), var(--accent));
+                            border-radius: 4px;
+                        }
+
+                        /* ==== MODALS ==== */
+                        .modal-overlay {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(0,0,0,0.5);
+                            display: none;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 1000;
+                        }
+
+                        .modal-content {
+                            background: var(--card-bg);
+                            border-radius: var(--radius);
+                            width: 90%;
+                            max-width: 500px;
+                            padding: 30px;
+                            box-shadow: var(--shadow-lg);
+                        }
+
+                        .modal-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 20px;
+                        }
+
+                        .form-group {
+                            margin-bottom: 20px;
+                        }
+
+                        .form-group label {
+                            display: block;
+                            margin-bottom: 8px;
+                            font-weight: 500;
+                        }
+
+                        .form-group input,
+                        .form-group select,
+                        .form-group textarea {
+                            width: 100%;
+                            padding: 12px;
+                            border: 1px solid var(--border);
+                            border-radius: 8px;
+                            font-family: inherit;
+                        }
+
+                        .btn-primary {
+                            width: 100%;
+                            padding: 12px;
+                            background: linear-gradient(135deg, var(--primary), var(--accent));
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: opacity var(--transition);
+                        }
+
+                        .btn-primary:hover {
+                            opacity: 0.9;
+                        }
+
+                        /* ==== FOOTER ==== */
+                        .footer {
+                            text-align: center;
+                            padding: 30px 0;
+                            color: var(--gray);
+                            border-top: 1px solid var(--border);
+                        }
+
+                        /* ==== UTILITY ==== */
+                        .loading {
+                            text-align: center;
+                            padding: 60px;
+                        }
+
+                        .empty-state {
+                            text-align: center;
+                            padding: 40px;
+                            color: var(--gray);
+                        }
+
+                        .hidden {
+                            display: none !important;
+                        }
+                    </style>
+                `;
+            }
+
+            renderHeader() {
+                return `
+                    <header class="header">
+                        <div class="logo-section">
+                            <div class="logo">
+                                <i class="${CONFIG.ICONS.logo}"></i>
+                            </div>
+                            <div class="title">
+                                <h1>${CONFIG.APP_NAME}</h1>
+                                <div class="subtitle">Innovation Dashboard</div>
+                                <div class="department">${CONFIG.DEPARTMENT}</div>
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <div class="last-updated">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Last: ${this.formatTime(this.data.lastUpdated)}</span>
+                                <span class="live-indicator">
+                                    <span class="live-dot"></span> LIVE
+                                </span>
+                            </div>
+                            ${this.currentUser ? this.renderUserProfile() : this.renderLoginButton()}
+                        </div>
+                    </header>
+                `;
+            }
+
+            renderLoginButton() {
+                return `
+                    <button class="auth-btn" id="showLoginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                `;
+            }
+
+            renderUserProfile() {
+                return `
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">${this.currentUser.username}</div>
+                            <div style="font-size: 12px; color: var(--gray);">${this.currentUser.role}</div>
+                        </div>
+                        <button class="auth-btn" id="logoutBtn" style="padding: 8px; background: var(--gray);">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderDashboard() {
+                return `
+                    ${this.currentUser.role === 'admin' ? this.renderAdminControls() : ''}
+                    ${this.renderStats()}
+                    ${this.renderFilterControls()}
+                    ${this.renderContentGrid()}
+                    ${this.renderUpdatesSection()}
+                `;
+            }
+
+            renderAdminControls() {
+                return `
+                    <div class="admin-controls" style="margin-bottom: 30px;">
+                        <button class="auth-btn" id="addProjectBtn">
+                            <i class="fas fa-plus-circle"></i> Add Project
+                        </button>
+                        <button class="auth-btn" id="addToolBtn">
+                            <i class="fas fa-tools"></i> Add Tool
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderStats() {
+                const stats = this.calculateStats();
+                return `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="${CONFIG.ICONS.tools.medical}"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Active Tools</h3>
+                                <div class="stat-number">${stats.tools}</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="${CONFIG.ICONS.projects.default}"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Projects</h3>
+                                <div class="stat-number">${stats.projects}</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-comment-medical"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Feedback Needed</h3>
+                                <div class="stat-number">${stats.feedback}</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Active Development</h3>
+                                <div class="stat-number">${stats.active}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderFilterControls() {
+                return `
+                    <div class="filter-controls" style="margin-bottom: 30px;">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="development">Development</button>
+                        <button class="filter-btn" data-filter="testing">Testing</button>
+                        <button class="filter-btn" data-filter="production">Production</button>
+                    </div>
+                `;
+            }
+
+            renderContentGrid() {
+                return `
+                    <div class="content-grid">
+                        <div class="section">
+                            <div class="section-header">
+                                <h2><i class="fas fa-tools"></i> Tools & Resources</h2>
+                            </div>
+                            <div class="section-content">
+                                ${this.renderTools()}
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-header">
+                                <h2><i class="fas fa-project-diagram"></i> Active Projects</h2>
+                            </div>
+                            <div class="section-content">
+                                ${this.renderProjects()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderTools() {
+                if (this.data.tools.length === 0) {
+                    return `
+                        <div class="empty-state">
+                            <i class="fas fa-tools" style="font-size: 48px; margin-bottom: 20px;"></i>
+                            <p>No tools available</p>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="tools-grid">
+                        ${this.data.tools.map(tool => `
+                            <div class="tool-card">
+                                <div class="tool-header">
+                                    <div class="tool-title">
+                                        <div class="tool-icon">
+                                            <i class="${this.getToolIcon(tool)}"></i>
+                                        </div>
+                                        <span>${tool.name}</span>
+                                    </div>
+                                    <span class="tool-status ${tool.status}">
+                                        ${tool.status === 'operational' ? '✓' : '⚠'}
+                                    </span>
+                                </div>
+                                <p style="color: var(--gray); margin: 15px 0;">${tool.description || 'No description'}</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <small style="color: var(--gray);">Updated: ${this.formatTime(tool.last_checked)}</small>
+                                    <a href="${tool.url}" target="_blank" style="color: var(--primary); font-weight: 500;">
+                                        Access <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            renderProjects() {
+                if (this.data.projects.length === 0) {
+                    return `
+                        <div class="empty-state">
+                            <i class="fas fa-project-diagram" style="font-size: 48px; margin-bottom: 20px;"></i>
+                            <p>No projects available</p>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="projects-list">
+                        ${this.data.projects.map(project => `
+                            <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                                <div class="project-header">
+                                    <div class="project-title">
+                                        <i class="${this.getProjectIcon(project)}"></i>
+                                        ${project.name}
+                                    </div>
+                                    <span class="project-status status-${project.status}">
+                                        ${project.status}
+                                    </span>
+                                </div>
+                                <p style="color: var(--gray); margin-bottom: 15px;">${project.description || 'No description'}</p>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 15px; margin: 20px 0;">
+                                    ${project.github_url ? `
+                                        <a href="${project.github_url}" target="_blank" style="display: flex; align-items: center; gap: 5px; color: var(--primary);">
+                                            <i class="fab fa-github"></i> GitHub
+                                        </a>
+                                    ` : ''}
+                                    ${project.live_url ? `
+                                        <a href="${project.live_url}" target="_blank" style="display: flex; align-items: center; gap: 5px; color: var(--primary);">
+                                            <i class="fas fa-external-link-alt"></i> Live
+                                        </a>
+                                    ` : ''}
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 14px;">
+                                    <span>Updated: ${this.formatTime(project.last_updated)}</span>
+                                    ${project.needs_feedback ? `
+                                        <span style="color: var(--warning); font-weight: 600;">
+                                            <i class="fas fa-comment-exclamation"></i> Needs Feedback
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                
+                                ${this.currentUser.role === 'admin' ? `
+                                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                        <button class="edit-project-btn" data-id="${project.id}" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px;">
+                                            Edit
+                                        </button>
+                                        <button class="delete-project-btn" data-id="${project.id}" style="padding: 8px 16px; background: var(--danger); color: white; border: none; border-radius: 6px;">
+                                            Delete
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            renderUpdatesSection() {
+                if (this.data.updates.length === 0) return '';
+
+                return `
+                    <div class="section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-history"></i> Recent Updates</h2>
+                        </div>
+                        <div class="section-content">
+                            ${this.data.updates.map(update => `
+                                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                        <h3 style="font-size: 16px;">${update.title}</h3>
+                                        <small style="color: var(--gray);">${this.formatTime(update.created_at)}</small>
+                                    </div>
+                                    <p style="color: var(--gray);">${update.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderLoginScreen() {
+                return `
+                    ${this.renderStyles()}
+                    <div class="container" style="max-width: 500px; margin-top: 100px;">
+                        <div class="section">
+                            <div style="text-align: center; padding: 60px 40px;">
+                                <div style="font-size: 72px; color: var(--primary-light); margin-bottom: 30px;">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h1 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px;">
+                                    ${CONFIG.APP_NAME} Dashboard
+                                </h1>
+                                <p style="color: var(--gray); margin-bottom: 30px;">
+                                    ${CONFIG.DEPARTMENT}<br>
+                                    Secure access to innovation tools and projects
+                                </p>
+                                <button class="auth-btn" id="showLoginBtn" style="margin: 0 auto;">
+                                    <i class="fas fa-sign-in-alt"></i> Login to Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderViewerScreen() {
+                return `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-eye" style="font-size: 48px; color: var(--gray); margin-bottom: 20px;"></i>
+                        <h2>Viewer Access</h2>
+                        <p style="color: var(--gray); max-width: 500px; margin: 0 auto;">
+                            You have view-only access. Contact an administrator for edit permissions.
+                        </p>
+                    </div>
+                `;
+            }
+
+            renderLoadingScreen() {
+                return `
+                    ${this.renderStyles()}
+                    <div class="container" style="text-align: center; padding: 100px 20px;">
+                        <div class="loading-spinner" style="border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 60px; height: 60px; margin: 0 auto 30px; animation: spin 1s linear infinite;"></div>
+                        <h2>Loading Dashboard...</h2>
+                        <p style="color: var(--gray);">Fetching latest data from the server</p>
+                    </div>
+                `;
+            }
+
+            renderModals() {
+                return `
+                    ${this.renderLoginModal()}
+                    ${this.renderAddProjectModal()}
+                    ${this.renderAddToolModal()}
+                `;
+            }
+
+            renderLoginModal() {
+                return `
+                    <div class="modal-overlay" id="loginModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2><i class="fas fa-lock"></i> Login</h2>
+                                <button class="modal-close">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Username</label>
+                                    <input type="text" id="loginUsername" placeholder="Enter username">
+                                </div>
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="password" id="loginPassword" placeholder="Enter password">
+                                </div>
+                                <button class="btn-primary" id="submitLogin">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </button>
+                                <div id="loginError" style="color: var(--danger); margin-top: 15px; display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderAddProjectModal() {
+                return `
+                    <div class="modal-overlay" id="addProjectModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2><i class="fas fa-plus-circle"></i> Add Project</h2>
+                                <button class="modal-close">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Project Name</label>
+                                    <input type="text" id="projectName">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="projectDescription" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="projectStatus">
+                                        <option value="planning">Planning</option>
+                                        <option value="development">Development</option>
+                                        <option value="testing">Testing</option>
+                                        <option value="production">Production</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Progress (%)</label>
+                                    <input type="number" id="projectProgress" min="0" max="100" value="0">
+                                </div>
+                                <button class="btn-primary" id="saveProjectBtn">
+                                    <i class="fas fa-save"></i> Save Project
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderAddToolModal() {
+                return `
+                    <div class="modal-overlay" id="addToolModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2><i class="fas fa-tools"></i> Add Tool</h2>
+                                <button class="modal-close">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Tool Name</label>
+                                    <input type="text" id="toolName">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="toolDescription" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>URL</label>
+                                    <input type="url" id="toolUrl">
+                                </div>
+                                <button class="btn-primary" id="saveToolBtn">
+                                    <i class="fas fa-save"></i> Save Tool
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderFooter() {
+                return `
+                    <footer class="footer">
+                        <p>${CONFIG.APP_NAME} • ${CONFIG.DEPARTMENT} • ${new Date().getFullYear()}</p>
+                        <p style="margin-top: 10px; font-size: 14px; color: var(--gray);">
+                            <button id="refreshData" style="background: none; border: none; color: var(--primary); cursor: pointer;">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            • Auto-refresh: 5 min
+                        </p>
+                    </footer>
+                `;
+            }
+
+            // ========== HELPER METHODS ==========
+            calculateStats() {
+                return {
+                    tools: this.data.tools.length,
+                    projects: this.data.projects.length,
+                    feedback: this.data.projects.filter(p => p.needs_feedback).length,
+                    active: this.data.projects.filter(p => p.status === 'development' || p.status === 'testing').length
+                };
+            }
+
+            getToolIcon(tool) {
+                const category = (tool.category || '').toLowerCase();
+                if (category.includes('medical')) return CONFIG.ICONS.tools.medical;
+                if (category.includes('research')) return CONFIG.ICONS.tools.research;
+                if (category.includes('data')) return CONFIG.ICONS.tools.data;
+                return CONFIG.ICONS.tools.default;
+            }
+
+            getProjectIcon(project) {
+                return CONFIG.ICONS.projects[project.status] || CONFIG.ICONS.projects.default;
+            }
+
+            formatTime(dateString) {
+                if (!dateString) return 'Never';
+                const date = new Date(dateString);
+                return date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+            }
+
+            showModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+
+            hideModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+
+            attachEventListeners() {
+                // Auth buttons
+                if (document.getElementById('showLoginBtn')) {
+                    document.getElementById('showLoginBtn').addEventListener('click', () => {
+                        this.showModal('loginModal');
+                    });
+                }
+
+                if (document.getElementById('logoutBtn')) {
+                    document.getElementById('logoutBtn').addEventListener('click', () => {
+                        this.logout();
+                    });
+                }
+
+                // Login form
+                if (document.getElementById('submitLogin')) {
+                    document.getElementById('submitLogin').addEventListener('click', async () => {
+                        const username = document.getElementById('loginUsername').value;
+                        const password = document.getElementById('loginPassword').value;
+                        
+                        if (!username || !password) {
+                            this.showError('loginError', 'Please enter both username and password');
+                            return;
+                        }
+
+                        const success = await this.login(username, password);
+                        if (success) {
+                            this.hideModal('loginModal');
+                            await this.fetchData();
+                        } else {
+                            this.showError('loginError', 'Invalid credentials');
+                        }
+                    });
+                }
+
+                // Admin controls
+                if (document.getElementById('addProjectBtn')) {
+                    document.getElementById('addProjectBtn').addEventListener('click', () => {
+                        this.showModal('addProjectModal');
+                    });
+                }
+
+                if (document.getElementById('addToolBtn')) {
+                    document.getElementById('addToolBtn').addEventListener('click', () => {
+                        this.showModal('addToolModal');
+                    });
+                }
+
+                // Save project
+                if (document.getElementById('saveProjectBtn')) {
+                    document.getElementById('saveProjectBtn').addEventListener('click', async () => {
+                        const projectData = {
+                            name: document.getElementById('projectName').value,
+                            description: document.getElementById('projectDescription').value,
+                            status: document.getElementById('projectStatus').value,
+                            progress: parseInt(document.getElementById('projectProgress').value),
+                            needs_feedback: false,
+                            last_updated: new Date().toISOString()
+                        };
+
+                        if (!projectData.name) {
+                            alert('Project name is required');
+                            return;
+                        }
+
+                        const result = await this.addProject(projectData);
+                        if (result.success) {
+                            this.hideModal('addProjectModal');
+                            alert('Project added successfully!');
+                        } else {
+                            alert('Failed to add project: ' + result.error);
+                        }
+                    });
+                }
+
+                // Save tool
+                if (document.getElementById('saveToolBtn')) {
+                    document.getElementById('saveToolBtn').addEventListener('click', async () => {
+                        const toolData = {
+                            name: document.getElementById('toolName').value,
+                            description: document.getElementById('toolDescription').value,
+                            url: document.getElementById('toolUrl').value,
+                            status: 'operational',
+                            last_checked: new Date().toISOString()
+                        };
+
+                        if (!toolData.name || !toolData.url) {
+                            alert('Tool name and URL are required');
+                            return;
+                        }
+
+                        // In a real app, you'd have an addTool method
+                        alert('Add tool functionality would be implemented here');
+                        this.hideModal('addToolModal');
+                    });
+                }
+
+                // Refresh data
+                if (document.getElementById('refreshData')) {
+                    document.getElementById('refreshData').addEventListener('click', async () => {
+                        await this.fetchData();
+                    });
+                }
+
+                // Modal close buttons
+                document.querySelectorAll('.modal-close').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.hideModal(e.target.closest('.modal-overlay').id);
+                    });
+                });
+
+                // Close modal on overlay click
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            this.hideModal(modal.id);
+                        }
+                    });
+                });
+
+                // Edit/Delete project buttons
+                document.querySelectorAll('.edit-project-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const projectId = e.target.dataset.id;
+                        alert(`Edit project ${projectId} - Implement edit modal`);
+                    });
+                });
+
+                document.querySelectorAll('.delete-project-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const projectId = e.target.dataset.id;
+                        if (confirm('Are you sure you want to delete this project?')) {
+                            const result = await this.deleteProject(projectId);
+                            if (result.success) {
+                                alert('Project deleted successfully');
+                            } else {
+                                alert('Failed to delete project');
+                            }
+                        }
+                    });
+                });
+
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Implement filtering logic
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
+            }
+
+            showError(elementId, message) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = message;
+                    element.style.display = 'block';
+                }
             }
         }
 
-        // Call setupAutoRefresh after login
-        // Update your login success handler to include:
-        // setupAutoRefresh();
+        // ========== INITIALIZE APP ==========
+        const app = new AppState();
+
+        // Auto-refresh every 5 minutes if logged in
+        setInterval(() => {
+            if (app.currentUser && app.currentUser.role !== 'viewer') {
+                app.fetchData();
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
