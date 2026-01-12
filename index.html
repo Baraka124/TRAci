@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* ==== YOUR EXISTING CSS WITH IMPROVEMENTS ==== */
+        /* ==== CSS VARIABLES ==== */
         :root {
             --primary: #4f46e5;
             --primary-dark: #4338ca;
@@ -29,6 +29,7 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
+        /* ==== RESET & BASE ==== */
         * {
             margin: 0;
             padding: 0;
@@ -49,7 +50,7 @@
             margin: 0 auto;
         }
 
-        /* ==== IMPROVED HEADER WITH TRACI ==== */
+        /* ==== HEADER WITH AUTH ==== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -77,7 +78,6 @@
             gap: 15px;
         }
 
-        /* TRAci Logo Rectangle */
         .logo {
             width: 100px;
             height: 50px;
@@ -117,6 +117,12 @@
             font-weight: 500;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .last-updated {
             background: var(--card-bg);
             padding: 10px 20px;
@@ -151,7 +157,226 @@
             50% { opacity: 0.5; }
         }
 
-        /* ==== IMPROVED STATS CARDS ==== */
+        /* ==== AUTH SECTION STYLES ==== */
+        .auth-section {
+            margin-left: auto;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .auth-btn.logout {
+            background: var(--gray-light);
+            color: var(--dark);
+            padding: 8px 12px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .user-avatar {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .role-badge.viewer { 
+            background: var(--gray-light); 
+            color: var(--gray); 
+        }
+        .role-badge.user { 
+            background: var(--primary-light); 
+            color: var(--primary); 
+        }
+        .role-badge.admin { 
+            background: linear-gradient(135deg, var(--success), #10b981); 
+            color: white; 
+        }
+
+        /* ==== MODAL STYLES ==== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .form-footer .hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .error-message {
+            background: #fee;
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        /* ==== STATS CARDS ==== */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -195,28 +420,6 @@
             border-color: var(--primary-light);
         }
 
-        /* Make feedback card stand out */
-        .stat-card:nth-child(3) {
-            position: relative;
-        }
-
-        .stat-card:nth-child(3)::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 10px;
-            height: 10px;
-            background: var(--warning);
-            border-radius: 50%;
-            animation: gentlePulse 2s infinite;
-        }
-
-        @keyframes gentlePulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .stat-icon {
             width: 50px;
             height: 50px;
@@ -249,7 +452,7 @@
             font-family: 'Space Grotesk', sans-serif;
         }
 
-        /* ==== IMPROVED FILTER CONTROLS ==== */
+        /* ==== FILTER CONTROLS ==== */
         .filter-controls {
             display: flex;
             gap: 10px;
@@ -287,56 +490,7 @@
             box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
         }
 
-        /* Skeleton Loading - Improved */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        .skeleton-card {
-            height: 160px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Mobile responsive - Keep your existing */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .last-updated {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-controls {
-                justify-content: center;
-            }
-        }
-
-        /* ==== REST OF YOUR ORIGINAL CSS ==== */
+        /* ==== CONTENT GRID ==== */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -350,6 +504,7 @@
             }
         }
 
+        /* ==== SECTION STYLES ==== */
         .section {
             background: var(--card-bg);
             border-radius: 16px;
@@ -392,6 +547,7 @@
             padding: 25px;
         }
 
+        /* ==== TOOLS GRID ==== */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -456,12 +612,12 @@
         }
 
         .status-operational {
-            background-color: var(--success-light);
+            background-color: #d1fae5;
             color: var(--success);
         }
 
         .status-warning {
-            background-color: var(--warning-light);
+            background-color: #fef3c7;
             color: var(--warning);
         }
 
@@ -497,6 +653,7 @@
             color: var(--primary-dark);
         }
 
+        /* ==== PROJECTS LIST ==== */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -515,7 +672,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* IMPROVED: Make feedback cards REALLY stand out */
         .project-card.needs-feedback {
             border: 2px solid var(--warning);
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
@@ -536,7 +692,6 @@
             }
         }
 
-        /* Add urgent badge */
         .project-card.needs-feedback::before {
             content: 'URGENT';
             position: absolute;
@@ -615,7 +770,6 @@
             overflow: hidden;
         }
 
-        /* Add progress bar shimmer */
         .progress-fill::after {
             content: '';
             position: absolute;
@@ -719,6 +873,7 @@
         .github { background-color: var(--dark); }
         .slack { background-color: #4A154B; }
 
+        /* ==== UPDATES SECTION ==== */
         .updates-section {
             margin-top: 40px;
         }
@@ -803,6 +958,7 @@
             text-decoration: underline;
         }
 
+        /* ==== UTILITY CLASSES ==== */
         .loading {
             text-align: center;
             padding: 40px;
@@ -824,6 +980,35 @@
             100% { transform: rotate(360deg); }
         }
 
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--gray-light);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-card {
+            height: 160px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ==== FOOTER ==== */
         .footer {
             text-align: center;
             padding: 25px;
@@ -843,22 +1028,64 @@
             text-decoration: underline;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+        /* ==== MOBILE RESPONSIVE ==== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .last-updated {
+                width: auto;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-profile {
+                padding: 6px 12px;
+            }
+            
+            .username {
+                font-size: 13px;
+            }
         }
 
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: var(--gray-light);
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-controls {
+                justify-content: center;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            .auth-section {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header with TRAci -->
+        <!-- Header with Auth -->
         <header class="header">
             <div class="logo-section">
                 <div class="logo">TRAci</div>
@@ -867,17 +1094,46 @@
                     <p>Real-time status of all development projects & tools</p>
                 </div>
             </div>
-            <div class="last-updated">
-                <i class="fas fa-sync-alt"></i>
-                <span>Last updated: <strong id="lastUpdatedTime">Loading...</strong></span>
-                <span class="live-indicator">
-                    <span class="live-dot"></span> LIVE
-                </span>
+            
+            <div class="header-right">
+                <div class="last-updated">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Last updated: <strong id="lastUpdatedTime">Loading...</strong></span>
+                    <span class="live-indicator">
+                        <span class="live-dot"></span> LIVE
+                    </span>
+                </div>
+                
+                <!-- User Auth Section -->
+                <div class="auth-section" id="authSection">
+                    <!-- When NOT logged in -->
+                    <div id="guestView">
+                        <button id="loginBtn" class="auth-btn">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                    
+                    <!-- When logged in -->
+                    <div id="userView" style="display: none;">
+                        <div class="user-profile">
+                            <span class="user-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </span>
+                            <div class="user-info">
+                                <span id="currentUsername" class="username"></span>
+                                <span id="currentUserRole" class="role-badge"></span>
+                            </div>
+                            <button id="logoutBtn" class="auth-btn logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <!-- Stats Overview -->
-        <div class="stats-container">
+        <!-- Stats Overview (Only visible when logged in) -->
+        <div class="stats-container" id="statsContainer" style="display: none;">
             <div class="stat-card">
                 <div class="stat-icon tools">
                     <i class="fas fa-toolbox"></i>
@@ -916,8 +1172,8 @@
             </div>
         </div>
 
-        <!-- Filter Controls -->
-        <div class="filter-controls" id="filterControls">
+        <!-- Filter Controls (Only visible when logged in) -->
+        <div class="filter-controls" id="filterControls" style="display: none;">
             <button class="filter-btn active" data-filter="all">All Projects</button>
             <button class="filter-btn" data-filter="needs_feedback">Needs Feedback</button>
             <button class="filter-btn" data-filter="development">In Development</button>
@@ -925,8 +1181,8 @@
             <button class="filter-btn" data-filter="production">Production</button>
         </div>
 
-        <!-- Main Content -->
-        <div class="content-grid">
+        <!-- Main Content (Only visible when logged in) -->
+        <div class="content-grid" id="contentGrid" style="display: none;">
             <!-- Tools Section -->
             <div class="section">
                 <div class="section-header">
@@ -959,8 +1215,8 @@
             </div>
         </div>
 
-        <!-- Recent Updates -->
-        <div class="section updates-section">
+        <!-- Recent Updates (Only visible when logged in) -->
+        <div class="section updates-section" id="updatesSection" style="display: none;">
             <div class="section-header">
                 <h2><i class="fas fa-history"></i> Recent Updates & Shipments</h2>
             </div>
@@ -972,6 +1228,24 @@
                         <div class="skeleton skeleton-text" style="width: 100%; height: 60px;"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Login Required Message -->
+        <div class="section" id="loginRequiredSection">
+            <div class="section-content" style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 72px; color: var(--primary-light); margin-bottom: 20px;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px;">
+                    Secure Innovation Dashboard
+                </h2>
+                <p style="color: var(--gray); max-width: 500px; margin: 0 auto 30px;">
+                    This dashboard contains sensitive project information. Please login with your authorized credentials to access the platform.
+                </p>
+                <button id="loginRequiredBtn" class="auth-btn" style="margin: 0 auto;">
+                    <i class="fas fa-sign-in-alt"></i> Login to Continue
+                </button>
             </div>
         </div>
 
@@ -988,457 +1262,662 @@
         </footer>
     </div>
 
-    <!-- ==== YOUR EXACT SAME JAVASCRIPT ==== -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-lock"></i> TRAci Secure Access</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="loginUsername"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-key"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <button id="submitLogin" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <div class="form-footer">
+                    <p class="hint"><i class="fas fa-info-circle"></i> Authorized personnel only</p>
+                </div>
+                <div id="loginError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
-const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-// ========== SUPABASE INITIALIZATION ==========
-// Create client with unique name
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ========== SUPABASE INITIALIZATION ==========
+        // Use unique variable name to avoid conflicts
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ========== STATE MANAGEMENT ==========
-let dashboardData = {
-    projects: [],
-    tools: [],
-    updates: [],
-    lastUpdated: new Date(),
-    filteredProjects: []
-};
+        // ========== AUTHENTICATION STATE ==========
+        let currentUser = null;
+        let authToken = localStorage.getItem('traci_auth_token');
 
-// ========== ADD LOGIN FUNCTION ==========
-async function login() {
-    console.log('Login function called');
-    alert('Login functionality to be implemented');
-}
+        // ========== DASHBOARD DATA ==========
+        let dashboardData = {
+            projects: [],
+            tools: [],
+            updates: [],
+            lastUpdated: new Date(),
+            filteredProjects: []
+        };
 
-// ========== MAIN FUNCTIONS ==========
-async function initDashboard() {
-    showLoadingState();
-    
-    try {
-        await Promise.all([
-            fetchProjects(),
-            fetchTools(),
-            fetchUpdates()
-        ]);
-        
-        updateStats();
-        renderDashboard();
-        updateTimestamp();
-        
-    } catch (error) {
-        console.error('Error loading dashboard:', error);
-        showErrorState();
-    }
-}
-
-async function fetchProjects() {
-    const { data, error } = await supabaseClient
-        .from('projects')
-        .select(`
-            *,
-            feedback_channels (*)
-        `)
-        .order('needs_feedback', { ascending: false })
-        .order('status', { ascending: true });
-    
-    if (error) {
-        console.error('Error fetching projects:', error);
-        dashboardData.projects = [];
-        return;
-    }
-    
-    dashboardData.projects = data || [];
-    dashboardData.filteredProjects = [...dashboardData.projects];
-}
-
-async function fetchTools() {
-    const { data, error } = await supabaseClient
-        .from('tools')
-        .select('*')
-        .order('created_at', { ascending: false });
-    
-    if (error) {
-        console.error('Error fetching tools:', error);
-        dashboardData.tools = [];
-        return;
-    }
-    
-    dashboardData.tools = data || [];
-}
-
-async function fetchUpdates() {
-    const { data, error } = await supabaseClient
-        .from('updates')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-    
-    if (error) {
-        console.error('Error fetching updates:', error);
-        dashboardData.updates = [];
-        return;
-    }
-    
-    dashboardData.updates = data || [];
-}
-
-// ========== FILTERING FUNCTION ==========
-function filterProjects(filterType) {
-    document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === filterType);
-    });
-    
-    if (filterType === 'all') {
-        dashboardData.filteredProjects = [...dashboardData.projects];
-    } else {
-        dashboardData.filteredProjects = dashboardData.projects.filter(project => {
-            if (filterType === 'needs_feedback') return project.needs_feedback;
-            return project.status === filterType;
-        });
-    }
-    
-    renderProjects();
-}
-
-function updateStats() {
-    const toolsCount = dashboardData.tools.length;
-    const projectsCount = dashboardData.projects.length;
-    const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-    const activeCount = dashboardData.projects.filter(p => 
-        p.status === 'development' || p.status === 'testing'
-    ).length;
-
-    document.getElementById('toolsCount').textContent = toolsCount;
-    document.getElementById('projectsCount').textContent = projectsCount;
-    document.getElementById('feedbackCount').textContent = feedbackCount;
-    document.getElementById('activeCount').textContent = activeCount;
-
-    const feedbackBadge = document.getElementById('feedbackBadge');
-    if (feedbackCount > 0) {
-        feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
-        feedbackBadge.style.display = 'block';
-    } else {
-        feedbackBadge.style.display = 'none';
-    }
-
-    const toolsStatus = document.getElementById('toolsStatus');
-    const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
-    if (hasWarning) {
-        toolsStatus.textContent = 'Needs Attention';
-        toolsStatus.className = 'tool-status status-warning';
-    } else {
-        toolsStatus.textContent = 'All Systems Operational';
-        toolsStatus.className = 'tool-status status-operational';
-    }
-}
-
-function renderDashboard() {
-    renderTools();
-    renderProjects();
-    renderUpdates();
-}
-
-function renderTools() {
-    const toolsGrid = document.getElementById('toolsGrid');
-    
-    if (dashboardData.tools.length === 0) {
-        toolsGrid.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-toolbox"></i>
-                <p>No tools found. Add some in Supabase.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let toolsHTML = '';
-    
-    dashboardData.tools.forEach(tool => {
-        const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
-        const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
-        
-        const lastChecked = tool.last_checked ? 
-            new Date(tool.last_checked).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) : 'Never';
-        
-        toolsHTML += `
-            <div class="tool-card ${tool.status}">
-                <div class="tool-header">
-                    <div class="tool-name">
-                        <div class="tool-icon">${tool.icon || '🛠️'}</div>
-                        <span>${tool.name}</span>
-                    </div>
-                    <span class="tool-status ${statusClass}">${statusText}</span>
-                </div>
-                <p class="tool-description">${tool.description || 'No description available'}</p>
-                <div class="tool-footer">
-                    <span class="tool-updated">Last checked: ${lastChecked}</span>
-                    <a href="${tool.url}" target="_blank" class="tool-link">
-                        Access <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-            </div>
-        `;
-    });
-    
-    toolsGrid.innerHTML = toolsHTML;
-}
-
-function renderProjects() {
-    const projectsList = document.getElementById('projectsList');
-    const projectsToRender = dashboardData.filteredProjects.length > 0 
-        ? dashboardData.filteredProjects 
-        : dashboardData.projects;
-    
-    if (projectsToRender.length === 0) {
-        projectsList.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-code-branch"></i>
-                <p>No projects found. Add some in Supabase.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let projectsHTML = '';
-    
-    projectsToRender.forEach(project => {
-        const statusClass = `status-${project.status}`;
-        const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-        
-        const lastUpdated = project.last_updated ? 
-            new Date(project.last_updated).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric'
-            }) : 'Never';
-        
-        let feedbackChannelsHTML = '';
-        if (project.needs_feedback && project.feedback_channels) {
-            project.feedback_channels.forEach(channel => {
-                let icon = 'fas fa-comment';
-                let className = 'message';
-                let link = channel.action_url || '#';
+        // ========== AUTHENTICATION FUNCTIONS ==========
+        async function loginUser(username, password) {
+            showLoginError('');
+            
+            // Simple authentication (in production, use proper hashing)
+            try {
+                // Query dashboard_users table for matching user
+                const { data, error } = await supabaseClient
+                    .from('dashboard_users')
+                    .select('username, role, password_hash')
+                    .eq('username', username)
+                    .single();
                 
-                if (channel.channel === 'whatsapp') {
-                    icon = 'fab fa-whatsapp';
-                    className = 'whatsapp';
-                    link = `${link}${encodeURIComponent(project.name)}`;
-                } else if (channel.channel === 'email') {
-                    icon = 'fas fa-envelope';
-                    className = 'email';
-                } else if (channel.channel === 'github') {
-                    icon = 'fab fa-github';
-                    className = 'github';
-                } else if (channel.channel === 'slack') {
-                    icon = 'fab fa-slack';
-                    className = 'slack';
+                if (error || !data) {
+                    showLoginError('Invalid username or password');
+                    return false;
                 }
                 
-                feedbackChannelsHTML += `
-                    <a href="${link}" target="_blank" class="channel-btn ${className}" 
-                       title="${channel.label || `Send ${channel.channel} feedback`}">
-                        <i class="${icon}"></i>
-                    </a>
+                // Check password (plain text for demo - should be hashed in production)
+                if (data.password_hash !== password) {
+                    showLoginError('Invalid username or password');
+                    return false;
+                }
+                
+                // Success - store user info
+                currentUser = {
+                    username: data.username,
+                    role: data.role
+                };
+                
+                // Create simple token (in production, use JWT)
+                authToken = btoa(JSON.stringify(currentUser));
+                localStorage.setItem('traci_auth_token', authToken);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError('Login failed. Please try again.');
+                return false;
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            authToken = null;
+            localStorage.removeItem('traci_auth_token');
+            updateAuthUI();
+            showLoginRequired();
+        }
+
+        function loadStoredUser() {
+            if (authToken) {
+                try {
+                    const userData = JSON.parse(atob(authToken));
+                    currentUser = userData;
+                } catch (e) {
+                    localStorage.removeItem('traci_auth_token');
+                }
+            }
+        }
+
+        function showLoginError(message) {
+            const errorEl = document.getElementById('loginError');
+            if (message) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            } else {
+                errorEl.style.display = 'none';
+            }
+        }
+
+        // ========== UI MANAGEMENT ==========
+        function updateAuthUI() {
+            const guestView = document.getElementById('guestView');
+            const userView = document.getElementById('userView');
+            const loginRequiredSection = document.getElementById('loginRequiredSection');
+            const dashboardSections = document.getElementById('statsContainer');
+            
+            if (currentUser) {
+                // User is logged in
+                guestView.style.display = 'none';
+                userView.style.display = 'block';
+                loginRequiredSection.style.display = 'none';
+                
+                // Show dashboard sections based on role
+                if (currentUser.role !== 'viewer') {
+                    dashboardSections.style.display = 'grid';
+                    document.getElementById('filterControls').style.display = 'flex';
+                    document.getElementById('contentGrid').style.display = 'grid';
+                    document.getElementById('updatesSection').style.display = 'block';
+                }
+                
+                // Update user info
+                document.getElementById('currentUsername').textContent = currentUser.username;
+                const roleBadge = document.getElementById('currentUserRole');
+                roleBadge.textContent = currentUser.role;
+                roleBadge.className = `role-badge ${currentUser.role}`;
+                
+                // Load dashboard data
+                if (currentUser.role !== 'viewer') {
+                    initDashboard();
+                }
+                
+            } else {
+                // User is not logged in
+                guestView.style.display = 'block';
+                userView.style.display = 'none';
+                showLoginRequired();
+            }
+        }
+
+        function showLoginRequired() {
+            document.getElementById('loginRequiredSection').style.display = 'block';
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('filterControls').style.display = 'none';
+            document.getElementById('contentGrid').style.display = 'none';
+            document.getElementById('updatesSection').style.display = 'none';
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginUsername').focus();
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            showLoginError('');
+        }
+
+        // ========== DASHBOARD FUNCTIONS ==========
+        async function initDashboard() {
+            showLoadingState();
+            
+            try {
+                await Promise.all([
+                    fetchProjects(),
+                    fetchTools(),
+                    fetchUpdates()
+                ]);
+                
+                updateStats();
+                renderDashboard();
+                updateTimestamp();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showErrorState();
+            }
+        }
+
+        async function fetchProjects() {
+            const { data, error } = await supabaseClient
+                .from('projects')
+                .select(`
+                    *,
+                    feedback_channels (*)
+                `)
+                .order('needs_feedback', { ascending: false })
+                .order('status', { ascending: true });
+            
+            if (error) {
+                console.error('Error fetching projects:', error);
+                dashboardData.projects = [];
+                return;
+            }
+            
+            dashboardData.projects = data || [];
+            dashboardData.filteredProjects = [...dashboardData.projects];
+        }
+
+        async function fetchTools() {
+            const { data, error } = await supabaseClient
+                .from('tools')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching tools:', error);
+                dashboardData.tools = [];
+                return;
+            }
+            
+            dashboardData.tools = data || [];
+        }
+
+        async function fetchUpdates() {
+            const { data, error } = await supabaseClient
+                .from('updates')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            if (error) {
+                console.error('Error fetching updates:', error);
+                dashboardData.updates = [];
+                return;
+            }
+            
+            dashboardData.updates = data || [];
+        }
+
+        function filterProjects(filterType) {
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filterType);
+            });
+            
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else {
+                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+                    if (filterType === 'needs_feedback') return project.needs_feedback;
+                    return project.status === filterType;
+                });
+            }
+            
+            renderProjects();
+        }
+
+        function updateStats() {
+            const toolsCount = dashboardData.tools.length;
+            const projectsCount = dashboardData.projects.length;
+            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+            const activeCount = dashboardData.projects.filter(p => 
+                p.status === 'development' || p.status === 'testing'
+            ).length;
+
+            document.getElementById('toolsCount').textContent = toolsCount;
+            document.getElementById('projectsCount').textContent = projectsCount;
+            document.getElementById('feedbackCount').textContent = feedbackCount;
+            document.getElementById('activeCount').textContent = activeCount;
+
+            const feedbackBadge = document.getElementById('feedbackBadge');
+            if (feedbackCount > 0) {
+                feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
+                feedbackBadge.style.display = 'block';
+            } else {
+                feedbackBadge.style.display = 'none';
+            }
+
+            const toolsStatus = document.getElementById('toolsStatus');
+            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+            if (hasWarning) {
+                toolsStatus.textContent = 'Needs Attention';
+                toolsStatus.className = 'tool-status status-warning';
+            } else {
+                toolsStatus.textContent = 'All Systems Operational';
+                toolsStatus.className = 'tool-status status-operational';
+            }
+        }
+
+        function renderDashboard() {
+            renderTools();
+            renderProjects();
+            renderUpdates();
+        }
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
+            
+            if (dashboardData.tools.length === 0) {
+                toolsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-toolbox"></i>
+                        <p>No tools found. Add some in Supabase.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let toolsHTML = '';
+            
+            dashboardData.tools.forEach(tool => {
+                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+                
+                const lastChecked = tool.last_checked ? 
+                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Never';
+                
+                toolsHTML += `
+                    <div class="tool-card ${tool.status}">
+                        <div class="tool-header">
+                            <div class="tool-name">
+                                <div class="tool-icon">${tool.icon || '🛠️'}</div>
+                                <span>${tool.name}</span>
+                            </div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="tool-description">${tool.description || 'No description available'}</p>
+                        <div class="tool-footer">
+                            <span class="tool-updated">Last checked: ${lastChecked}</span>
+                            <a href="${tool.url}" target="_blank" class="tool-link">
+                                Access <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
                 `;
             });
+            
+            toolsGrid.innerHTML = toolsHTML;
         }
-        
-        let feedbackSection = '';
-        if (project.needs_feedback) {
-            feedbackSection = `
-                <div class="feedback-section">
-                    <span class="feedback-badge">Ready for review</span>
-                    <div class="feedback-channels">
-                        ${feedbackChannelsHTML}
-                    </div>
-                </div>
-            `;
-        }
-        
-        let projectLinks = '';
-        if (project.github_url) {
-            projectLinks += `
-                <a href="${project.github_url}" target="_blank" class="project-link">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-            `;
-        }
-        if (project.live_url) {
-            projectLinks += `
-                <a href="${project.live_url}" target="_blank" class="project-link">
-                    <i class="fas fa-external-link-alt"></i> Live Demo
-                </a>
-            `;
-        }
-        
-        projectsHTML += `
-            <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
-                <div class="project-header">
-                    <div class="project-title">
-                        <i class="fas fa-code"></i>
-                        ${project.name}
-                    </div>
-                    <span class="project-status ${statusClass}">${statusText}</span>
-                </div>
-                <p class="project-description">${project.description || 'No description available'}</p>
-                
-                <div class="project-progress">
-                    <div class="progress-label">
-                        <span>Progress</span>
-                        <span>${project.progress || 0}%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                    </div>
-                </div>
-                
-                ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
-                
-                <div class="project-footer">
-                    <div class="last-commit">
-                        <i class="fas fa-calendar"></i>
-                        <span>Last updated: ${lastUpdated}</span>
-                    </div>
-                    ${feedbackSection}
-                </div>
-            </div>
-        `;
-    });
-    
-    projectsList.innerHTML = projectsHTML;
-}
 
-function renderUpdates() {
-    const timeline = document.getElementById('timeline');
-    
-    if (dashboardData.updates.length === 0) {
-        timeline.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-history"></i>
-                <p>No updates yet. Add some in Supabase.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let updatesHTML = '';
-    
-    dashboardData.updates.forEach(update => {
-        const date = update.created_at ? 
-            new Date(update.created_at).toLocaleDateString('en-US', { 
-                weekday: 'short',
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) : 'Recently';
-        
-        updatesHTML += `
-            <div class="timeline-item">
-                <div class="timeline-date">
-                    <i class="far fa-clock"></i> ${date}
-                </div>
-                <div class="timeline-content">
-                    <h4>${update.title}</h4>
-                    <p>${update.content || ''}</p>
-                    ${update.link ? `
-                        <a href="${update.link}" target="_blank" class="timeline-link">
-                            <i class="fas fa-external-link-alt"></i> View Details
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            const projectsToRender = dashboardData.filteredProjects.length > 0 
+                ? dashboardData.filteredProjects 
+                : dashboardData.projects;
+            
+            if (projectsToRender.length === 0) {
+                projectsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-code-branch"></i>
+                        <p>No projects found. Add some in Supabase.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let projectsHTML = '';
+            
+            projectsToRender.forEach(project => {
+                const statusClass = `status-${project.status}`;
+                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+                
+                const lastUpdated = project.last_updated ? 
+                    new Date(project.last_updated).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric'
+                    }) : 'Never';
+                
+                let feedbackChannelsHTML = '';
+                if (project.needs_feedback && project.feedback_channels) {
+                    project.feedback_channels.forEach(channel => {
+                        let icon = 'fas fa-comment';
+                        let className = 'message';
+                        let link = channel.action_url || '#';
+                        
+                        if (channel.channel === 'whatsapp') {
+                            icon = 'fab fa-whatsapp';
+                            className = 'whatsapp';
+                            link = `${link}${encodeURIComponent(project.name)}`;
+                        } else if (channel.channel === 'email') {
+                            icon = 'fas fa-envelope';
+                            className = 'email';
+                        } else if (channel.channel === 'github') {
+                            icon = 'fab fa-github';
+                            className = 'github';
+                        } else if (channel.channel === 'slack') {
+                            icon = 'fab fa-slack';
+                            className = 'slack';
+                        }
+                        
+                        feedbackChannelsHTML += `
+                            <a href="${link}" target="_blank" class="channel-btn ${className}" 
+                               title="${channel.label || `Send ${channel.channel} feedback`}">
+                                <i class="${icon}"></i>
+                            </a>
+                        `;
+                    });
+                }
+                
+                let feedbackSection = '';
+                if (project.needs_feedback) {
+                    feedbackSection = `
+                        <div class="feedback-section">
+                            <span class="feedback-badge">Ready for review</span>
+                            <div class="feedback-channels">
+                                ${feedbackChannelsHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                let projectLinks = '';
+                if (project.github_url) {
+                    projectLinks += `
+                        <a href="${project.github_url}" target="_blank" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
                         </a>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    });
-    
-    timeline.innerHTML = updatesHTML;
-}
-
-function updateTimestamp() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: '2-digit'
-    });
-    const dateString = now.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
-    });
-    
-    document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
-    document.getElementById('syncTime').textContent = timeString;
-    
-    dashboardData.lastUpdated = now;
-}
-
-// ========== UI STATE FUNCTIONS ==========
-function showLoadingState() {
-    document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-}
-
-function showErrorState() {
-    document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
-    
-    const sections = ['toolsGrid', 'projectsList', 'timeline'];
-    sections.forEach(sectionId => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
-                    <p>Failed to load data. Check Supabase connection.</p>
-                    <button onclick="initDashboard()" style="
-                        margin-top: 10px;
-                        padding: 8px 16px;
-                        background: var(--primary);
-                        color: white;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                    ">Retry</button>
-                </div>
-            `;
+                    `;
+                }
+                if (project.live_url) {
+                    projectLinks += `
+                        <a href="${project.live_url}" target="_blank" class="project-link">
+                            <i class="fas fa-external-link-alt"></i> Live Demo
+                        </a>
+                    `;
+                }
+                
+                projectsHTML += `
+                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <i class="fas fa-code"></i>
+                                ${project.name}
+                            </div>
+                            <span class="project-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="project-description">${project.description || 'No description available'}</p>
+                        
+                        <div class="project-progress">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>${project.progress || 0}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                            </div>
+                        </div>
+                        
+                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                        
+                        <div class="project-footer">
+                            <div class="last-commit">
+                                <i class="fas fa-calendar"></i>
+                                <span>Last updated: ${lastUpdated}</span>
+                            </div>
+                            ${feedbackSection}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            projectsList.innerHTML = projectsHTML;
         }
-    });
-}
 
-// ========== EVENT LISTENERS ==========
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(initDashboard, 100);
-    
-    document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-    });
-    
-    document.getElementById('refreshLink').addEventListener('click', async function(e) {
-        e.preventDefault();
-        
-        const lastUpdated = document.getElementById('lastUpdatedTime');
-        lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-        
-        await initDashboard();
-        
-        lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
-        setTimeout(() => updateTimestamp(), 2000);
-    });
+        function renderUpdates() {
+            const timeline = document.getElementById('timeline');
+            
+            if (dashboardData.updates.length === 0) {
+                timeline.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <p>No updates yet. Add some in Supabase.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let updatesHTML = '';
+            
+            dashboardData.updates.forEach(update => {
+                const date = update.created_at ? 
+                    new Date(update.created_at).toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Recently';
+                
+                updatesHTML += `
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <i class="far fa-clock"></i> ${date}
+                        </div>
+                        <div class="timeline-content">
+                            <h4>${update.title}</h4>
+                            <p>${update.content || ''}</p>
+                            ${update.link ? `
+                                <a href="${update.link}" target="_blank" class="timeline-link">
+                                    <i class="fas fa-external-link-alt"></i> View Details
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            timeline.innerHTML = updatesHTML;
+        }
 
-    setInterval(async () => {
-        console.log('Auto-refreshing dashboard...');
-        await initDashboard();
-    }, 5 * 60 * 1000);
-});
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+            document.getElementById('syncTime').textContent = timeString;
+            
+            dashboardData.lastUpdated = now;
+        }
 
-// Make login function globally available
-window.login = login;
+        function showLoadingState() {
+            document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        }
+
+        function showErrorState() {
+            document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
+            
+            const sections = ['toolsGrid', 'projectsList', 'timeline'];
+            sections.forEach(sectionId => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                            <p>Failed to load data. Check Supabase connection.</p>
+                            <button onclick="initDashboard()" style="
+                                margin-top: 10px;
+                                padding: 8px 16px;
+                                background: var(--primary);
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                            ">Retry</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load stored user
+            loadStoredUser();
+            updateAuthUI();
+            
+            // Login button events
+            document.getElementById('loginBtn').addEventListener('click', showLoginModal);
+            document.getElementById('loginRequiredBtn').addEventListener('click', showLoginModal);
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Modal events
+            document.querySelector('.modal-close').addEventListener('click', hideLoginModal);
+            document.getElementById('loginModal').addEventListener('click', function(e) {
+                if (e.target === this) hideLoginModal();
+            });
+            
+            // Login form submission
+            document.getElementById('submitLogin').addEventListener('click', async function() {
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!username || !password) {
+                    showLoginError('Please enter both username and password');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                this.disabled = true;
+                
+                const success = await loginUser(username, password);
+                
+                this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                this.disabled = false;
+                
+                if (success) {
+                    hideLoginModal();
+                    updateAuthUI();
+                }
+            });
+            
+            // Allow Enter key in login form
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submitLogin').click();
+                }
+            });
+            
+            // Dashboard refresh
+            document.getElementById('refreshLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                if (!currentUser) return;
+                
+                const lastUpdated = document.getElementById('lastUpdatedTime');
+                lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                
+                await initDashboard();
+                
+                lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
+                setTimeout(() => updateTimestamp(), 2000);
+            });
+
+            // Filter buttons
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
+            });
+
+            // Auto-refresh for logged-in users
+            setInterval(async () => {
+                if (currentUser && currentUser.role !== 'viewer') {
+                    console.log('Auto-refreshing dashboard...');
+                    await initDashboard();
+                }
+            }, 5 * 60 * 1000);
+        });
     </script>
 </body>
 </html>
