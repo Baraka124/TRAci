@@ -257,9 +257,11 @@
             background: var(--card-bg);
             border-radius: 16px;
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             box-shadow: var(--shadow-lg);
             animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes modalSlide {
@@ -273,6 +275,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 1;
         }
 
         .modal-header h3 {
@@ -291,10 +297,17 @@
             cursor: pointer;
             color: var(--gray);
             transition: color 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
         .modal-close:hover {
             color: var(--dark);
+            background: var(--gray-light);
         }
 
         .modal-body {
@@ -315,19 +328,30 @@
             gap: 8px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--border);
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
         .btn-primary {
@@ -344,11 +368,16 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-top: 10px;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
         }
 
         .form-footer {
@@ -374,6 +403,17 @@
             font-size: 14px;
             display: none;
             border-left: 4px solid var(--danger);
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: var(--success);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid var(--success);
         }
 
         /* ==== STATS CARDS ==== */
@@ -450,6 +490,42 @@
             color: var(--dark);
             line-height: 1;
             font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* ==== ADMIN CONTROL PANEL ==== */
+        .admin-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .admin-btn.delete {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+        }
+
+        .admin-btn.edit {
+            background: linear-gradient(135deg, var(--warning), #f59e0b);
         }
 
         /* ==== FILTER CONTROLS ==== */
@@ -665,6 +741,7 @@
             border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .project-card:hover {
@@ -821,12 +898,49 @@
             align-items: center;
             font-size: 13px;
             color: var(--gray);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
         }
 
         .last-commit {
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .delete-btn {
+            background: #fee;
+            color: var(--danger);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         .feedback-section {
@@ -1060,6 +1174,14 @@
             .username {
                 font-size: 13px;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-controls {
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1079,6 +1201,10 @@
             
             .auth-section {
                 margin-left: 0;
+            }
+            
+            .project-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -1132,7 +1258,20 @@
             </div>
         </header>
 
-        <!-- Stats Overview (Only visible when logged in) -->
+        <!-- Admin Controls (Only visible to admin) -->
+        <div class="admin-controls" id="adminControls" style="display: none;">
+            <button class="admin-btn" id="addProjectBtn">
+                <i class="fas fa-plus-circle"></i> Add Project
+            </button>
+            <button class="admin-btn" id="addToolBtn">
+                <i class="fas fa-toolbox"></i> Add Tool
+            </button>
+            <button class="admin-btn" id="addUpdateBtn">
+                <i class="fas fa-bullhorn"></i> Add Update
+            </button>
+        </div>
+
+        <!-- Stats Overview -->
         <div class="stats-container" id="statsContainer" style="display: none;">
             <div class="stat-card">
                 <div class="stat-icon tools">
@@ -1172,7 +1311,7 @@
             </div>
         </div>
 
-        <!-- Filter Controls (Only visible when logged in) -->
+        <!-- Filter Controls -->
         <div class="filter-controls" id="filterControls" style="display: none;">
             <button class="filter-btn active" data-filter="all">All Projects</button>
             <button class="filter-btn" data-filter="needs_feedback">Needs Feedback</button>
@@ -1181,7 +1320,7 @@
             <button class="filter-btn" data-filter="production">Production</button>
         </div>
 
-        <!-- Main Content (Only visible when logged in) -->
+        <!-- Main Content -->
         <div class="content-grid" id="contentGrid" style="display: none;">
             <!-- Tools Section -->
             <div class="section">
@@ -1191,10 +1330,7 @@
                 </div>
                 <div class="section-content">
                     <div class="tools-grid" id="toolsGrid">
-                        <!-- Skeleton loading -->
-                        <div class="tool-card skeleton skeleton-card"></div>
-                        <div class="tool-card skeleton skeleton-card"></div>
-                        <div class="tool-card skeleton skeleton-card"></div>
+                        <!-- Content loaded dynamically -->
                     </div>
                 </div>
             </div>
@@ -1207,26 +1343,20 @@
                 </div>
                 <div class="section-content">
                     <div class="projects-list" id="projectsList">
-                        <!-- Skeleton loading -->
-                        <div class="project-card skeleton skeleton-card"></div>
-                        <div class="project-card skeleton skeleton-card"></div>
+                        <!-- Content loaded dynamically -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Updates (Only visible when logged in) -->
+        <!-- Recent Updates -->
         <div class="section updates-section" id="updatesSection" style="display: none;">
             <div class="section-header">
                 <h2><i class="fas fa-history"></i> Recent Updates & Shipments</h2>
             </div>
             <div class="section-content">
                 <div class="timeline" id="timeline">
-                    <!-- Skeleton loading -->
-                    <div class="timeline-item">
-                        <div class="skeleton skeleton-text" style="width: 100px; margin-bottom: 10px;"></div>
-                        <div class="skeleton skeleton-text" style="width: 100%; height: 60px;"></div>
-                    </div>
+                    <!-- Content loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -1289,6 +1419,168 @@
         </div>
     </div>
 
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Project Name *</label>
+                    <input type="text" id="projectName" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="projectDescription" placeholder="Project description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="projectStatus">
+                            <option value="planning">Planning</option>
+                            <option value="development" selected>Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="staging">Staging</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Progress (%)</label>
+                        <input type="number" id="projectProgress" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="projectNeedsFeedback">
+                        Needs Feedback?
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>GitHub URL</label>
+                    <input type="url" id="projectGithubUrl" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Live URL</label>
+                    <input type="url" id="projectLiveUrl" placeholder="https://demo.example.com">
+                </div>
+                <button id="saveProjectBtn" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Project
+                </button>
+                <div id="projectError" class="error-message"></div>
+                <div id="projectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editProjectId">
+                <div class="form-group">
+                    <label>Project Name *</label>
+                    <input type="text" id="editProjectName" placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editProjectDescription" placeholder="Project description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editProjectStatus">
+                            <option value="planning">Planning</option>
+                            <option value="development">Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="staging">Staging</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Progress (%)</label>
+                        <input type="number" id="editProjectProgress" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="editProjectNeedsFeedback">
+                        Needs Feedback?
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>GitHub URL</label>
+                    <input type="url" id="editProjectGithubUrl" placeholder="https://github.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Live URL</label>
+                    <input type="url" id="editProjectLiveUrl" placeholder="https://demo.example.com">
+                </div>
+                <div class="form-row">
+                    <button id="updateProjectBtn" class="btn-primary">
+                        <i class="fas fa-save"></i> Update Project
+                    </button>
+                    <button id="deleteProjectBtn" class="btn-primary btn-danger">
+                        <i class="fas fa-trash"></i> Delete Project
+                    </button>
+                </div>
+                <div id="editProjectError" class="error-message"></div>
+                <div id="editProjectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tool Modal -->
+    <div id="addToolModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-toolbox"></i> Add New Tool</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Tool Name *</label>
+                    <input type="text" id="toolName" placeholder="Enter tool name">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="toolDescription" placeholder="Tool description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>URL *</label>
+                    <input type="url" id="toolUrl" placeholder="https://tool.example.com">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="toolStatus">
+                            <option value="operational" selected>Operational</option>
+                            <option value="warning">Needs Attention</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <input type="text" id="toolIcon" placeholder="🛠️ or fontawesome class">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="toolCategory" placeholder="Development, Design, etc.">
+                </div>
+                <button id="saveToolBtn" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Tool
+                </button>
+                <div id="toolError" class="error-message"></div>
+                <div id="toolSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
@@ -1296,7 +1588,6 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
         // ========== SUPABASE INITIALIZATION ==========
-        // Use unique variable name to avoid conflicts
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========== AUTHENTICATION STATE ==========
@@ -1312,13 +1603,38 @@
             filteredProjects: []
         };
 
+        // ========== MODAL MANAGEMENT ==========
+        const modals = {
+            login: document.getElementById('loginModal'),
+            addProject: document.getElementById('addProjectModal'),
+            editProject: document.getElementById('editProjectModal'),
+            addTool: document.getElementById('addToolModal')
+        };
+
+        function showModal(modalName) {
+            Object.values(modals).forEach(modal => modal.style.display = 'none');
+            if (modals[modalName]) {
+                modals[modalName].style.display = 'flex';
+            }
+        }
+
+        function hideAllModals() {
+            Object.values(modals).forEach(modal => modal.style.display = 'none');
+            clearFormMessages();
+        }
+
+        function clearFormMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+        }
+
         // ========== AUTHENTICATION FUNCTIONS ==========
         async function loginUser(username, password) {
             showLoginError('');
             
-            // Simple authentication (in production, use proper hashing)
             try {
-                // Query dashboard_users table for matching user
                 const { data, error } = await supabaseClient
                     .from('dashboard_users')
                     .select('username, role, password_hash')
@@ -1330,19 +1646,16 @@
                     return false;
                 }
                 
-                // Check password (plain text for demo - should be hashed in production)
                 if (data.password_hash !== password) {
                     showLoginError('Invalid username or password');
                     return false;
                 }
                 
-                // Success - store user info
                 currentUser = {
                     username: data.username,
                     role: data.role
                 };
                 
-                // Create simple token (in production, use JWT)
                 authToken = btoa(JSON.stringify(currentUser));
                 localStorage.setItem('traci_auth_token', authToken);
                 
@@ -1390,14 +1703,13 @@
             const userView = document.getElementById('userView');
             const loginRequiredSection = document.getElementById('loginRequiredSection');
             const dashboardSections = document.getElementById('statsContainer');
+            const adminControls = document.getElementById('adminControls');
             
             if (currentUser) {
-                // User is logged in
                 guestView.style.display = 'none';
                 userView.style.display = 'block';
                 loginRequiredSection.style.display = 'none';
                 
-                // Show dashboard sections based on role
                 if (currentUser.role !== 'viewer') {
                     dashboardSections.style.display = 'grid';
                     document.getElementById('filterControls').style.display = 'flex';
@@ -1405,21 +1717,25 @@
                     document.getElementById('updatesSection').style.display = 'block';
                 }
                 
-                // Update user info
+                if (currentUser.role === 'admin') {
+                    adminControls.style.display = 'flex';
+                } else {
+                    adminControls.style.display = 'none';
+                }
+                
                 document.getElementById('currentUsername').textContent = currentUser.username;
                 const roleBadge = document.getElementById('currentUserRole');
                 roleBadge.textContent = currentUser.role;
                 roleBadge.className = `role-badge ${currentUser.role}`;
                 
-                // Load dashboard data
                 if (currentUser.role !== 'viewer') {
                     initDashboard();
                 }
                 
             } else {
-                // User is not logged in
                 guestView.style.display = 'block';
                 userView.style.display = 'none';
+                adminControls.style.display = 'none';
                 showLoginRequired();
             }
         }
@@ -1427,21 +1743,10 @@
         function showLoginRequired() {
             document.getElementById('loginRequiredSection').style.display = 'block';
             document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('adminControls').style.display = 'none';
             document.getElementById('filterControls').style.display = 'none';
             document.getElementById('contentGrid').style.display = 'none';
             document.getElementById('updatesSection').style.display = 'none';
-        }
-
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-            document.getElementById('loginUsername').focus();
-        }
-
-        function hideLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            showLoginError('');
         }
 
         // ========== DASHBOARD FUNCTIONS ==========
@@ -1516,23 +1821,116 @@
             dashboardData.updates = data || [];
         }
 
-        function filterProjects(filterType) {
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filterType);
-            });
-            
-            if (filterType === 'all') {
-                dashboardData.filteredProjects = [...dashboardData.projects];
-            } else {
-                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
-                    if (filterType === 'needs_feedback') return project.needs_feedback;
-                    return project.status === filterType;
-                });
+        // ========== PROJECT CRUD OPERATIONS ==========
+        async function addProject(projectData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([{
+                        ...projectData,
+                        last_updated: new Date().toISOString()
+                    }])
+                    .select();
+                
+                if (error) throw error;
+                
+                showSuccess('projectSuccess', 'Project added successfully!');
+                setTimeout(() => {
+                    hideAllModals();
+                    initDashboard();
+                }, 1500);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error adding project:', error);
+                showError('projectError', 'Failed to add project: ' + error.message);
+                return false;
             }
-            
-            renderProjects();
         }
 
+        async function updateProject(projectId, projectData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .update({
+                        ...projectData,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId)
+                    .select();
+                
+                if (error) throw error;
+                
+                showSuccess('editProjectSuccess', 'Project updated successfully!');
+                setTimeout(() => {
+                    hideAllModals();
+                    initDashboard();
+                }, 1500);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error updating project:', error);
+                showError('editProjectError', 'Failed to update project: ' + error.message);
+                return false;
+            }
+        }
+
+        async function deleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return false;
+            }
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert('Project deleted successfully!');
+                hideAllModals();
+                await initDashboard();
+                return true;
+                
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Failed to delete project: ' + error.message);
+                return false;
+            }
+        }
+
+        // ========== TOOL CRUD OPERATIONS ==========
+        async function addTool(toolData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([{
+                        ...toolData,
+                        last_checked: new Date().toISOString()
+                    }])
+                    .select();
+                
+                if (error) throw error;
+                
+                showSuccess('toolSuccess', 'Tool added successfully!');
+                setTimeout(() => {
+                    hideAllModals();
+                    initDashboard();
+                }, 1500);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error adding tool:', error);
+                showError('toolError', 'Failed to add tool: ' + error.message);
+                return false;
+            }
+        }
+
+        // ========== RENDER FUNCTIONS ==========
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
@@ -1578,7 +1976,7 @@
                 toolsGrid.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-toolbox"></i>
-                        <p>No tools found. Add some in Supabase.</p>
+                        <p>No tools found. ${currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
                     </div>
                 `;
                 return;
@@ -1631,7 +2029,7 @@
                 projectsList.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-code-branch"></i>
-                        <p>No projects found. Add some in Supabase.</p>
+                        <p>No projects found. ${currentUser.role === 'admin' ? 'Click "Add Project" to create one.' : ''}</p>
                     </div>
                 `;
                 return;
@@ -1708,6 +2106,20 @@
                     `;
                 }
                 
+                let adminActions = '';
+                if (currentUser && currentUser.role === 'admin') {
+                    adminActions = `
+                        <div class="project-actions">
+                            <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn delete-btn" data-project-id="${project.id}" data-project-name="${project.name}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                }
+                
                 projectsHTML += `
                     <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
                         <div class="project-header">
@@ -1738,11 +2150,47 @@
                             </div>
                             ${feedbackSection}
                         </div>
+                        ${adminActions}
                     </div>
                 `;
             });
             
             projectsList.innerHTML = projectsHTML;
+            
+            // Add event listeners for edit/delete buttons
+            if (currentUser && currentUser.role === 'admin') {
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.dataset.projectId;
+                        const project = dashboardData.projects.find(p => p.id === projectId);
+                        if (project) {
+                            loadProjectForEdit(project);
+                            showModal('editProject');
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const projectId = this.dataset.projectId;
+                        const projectName = this.dataset.projectName;
+                        if (confirm(`Are you sure you want to delete "${projectName}"?`)) {
+                            deleteProject(projectId);
+                        }
+                    });
+                });
+            }
+        }
+
+        function loadProjectForEdit(project) {
+            document.getElementById('editProjectId').value = project.id;
+            document.getElementById('editProjectName').value = project.name || '';
+            document.getElementById('editProjectDescription').value = project.description || '';
+            document.getElementById('editProjectStatus').value = project.status || 'development';
+            document.getElementById('editProjectProgress').value = project.progress || 0;
+            document.getElementById('editProjectNeedsFeedback').checked = project.needs_feedback || false;
+            document.getElementById('editProjectGithubUrl').value = project.github_url || '';
+            document.getElementById('editProjectLiveUrl').value = project.live_url || '';
         }
 
         function renderUpdates() {
@@ -1752,7 +2200,7 @@
                 timeline.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-history"></i>
-                        <p>No updates yet. Add some in Supabase.</p>
+                        <p>No updates yet.</p>
                     </div>
                 `;
                 return;
@@ -1789,6 +2237,23 @@
             });
             
             timeline.innerHTML = updatesHTML;
+        }
+
+        function filterProjects(filterType) {
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filterType);
+            });
+            
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else {
+                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+                    if (filterType === 'needs_feedback') return project.needs_feedback;
+                    return project.status === filterType;
+                });
+            }
+            
+            renderProjects();
         }
 
         function updateTimestamp() {
@@ -1840,23 +2305,44 @@
             });
         }
 
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+                el.style.display = 'block';
+            }
+        }
+
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+                el.style.display = 'block';
+            }
+        }
+
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
-            // Load stored user
             loadStoredUser();
             updateAuthUI();
             
             // Login button events
-            document.getElementById('loginBtn').addEventListener('click', showLoginModal);
-            document.getElementById('loginRequiredBtn').addEventListener('click', showLoginModal);
+            document.getElementById('loginBtn').addEventListener('click', () => showModal('login'));
+            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('login'));
             
             // Logout button
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modal events
-            document.querySelector('.modal-close').addEventListener('click', hideLoginModal);
-            document.getElementById('loginModal').addEventListener('click', function(e) {
-                if (e.target === this) hideLoginModal();
+            // Modal close buttons
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', hideAllModals);
+            });
+            
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) hideAllModals();
+                });
             });
             
             // Login form submission
@@ -1878,7 +2364,7 @@
                 this.disabled = false;
                 
                 if (success) {
-                    hideLoginModal();
+                    hideAllModals();
                     updateAuthUI();
                 }
             });
@@ -1888,6 +2374,94 @@
                 if (e.key === 'Enter') {
                     document.getElementById('submitLogin').click();
                 }
+            });
+            
+            // Admin buttons
+            document.getElementById('addProjectBtn').addEventListener('click', () => showModal('addProject'));
+            document.getElementById('addToolBtn').addEventListener('click', () => showModal('addTool'));
+            
+            // Save project
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
+                    github_url: document.getElementById('projectGithubUrl').value.trim() || null,
+                    live_url: document.getElementById('projectLiveUrl').value.trim() || null
+                };
+                
+                if (!projectData.name) {
+                    showError('projectError', 'Project name is required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addProject(projectData);
+                
+                this.innerHTML = '<i class="fas fa-save"></i> Save Project';
+                this.disabled = false;
+            });
+            
+            // Update project
+            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                const projectData = {
+                    name: document.getElementById('editProjectName').value.trim(),
+                    description: document.getElementById('editProjectDescription').value.trim(),
+                    status: document.getElementById('editProjectStatus').value,
+                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
+                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked,
+                    github_url: document.getElementById('editProjectGithubUrl').value.trim() || null,
+                    live_url: document.getElementById('editProjectLiveUrl').value.trim() || null
+                };
+                
+                if (!projectData.name) {
+                    showError('editProjectError', 'Project name is required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                this.disabled = true;
+                
+                await updateProject(projectId, projectData);
+                
+                this.innerHTML = '<i class="fas fa-save"></i> Update Project';
+                this.disabled = false;
+            });
+            
+            // Delete project from edit modal
+            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                await deleteProject(projectId);
+            });
+            
+            // Save tool
+            document.getElementById('saveToolBtn').addEventListener('click', async function() {
+                const toolData = {
+                    name: document.getElementById('toolName').value.trim(),
+                    description: document.getElementById('toolDescription').value.trim(),
+                    url: document.getElementById('toolUrl').value.trim(),
+                    status: document.getElementById('toolStatus').value,
+                    icon: document.getElementById('toolIcon').value.trim() || '🛠️',
+                    category: document.getElementById('toolCategory').value.trim() || 'General'
+                };
+                
+                if (!toolData.name || !toolData.url) {
+                    showError('toolError', 'Tool name and URL are required');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addTool(toolData);
+                
+                this.innerHTML = '<i class="fas fa-save"></i> Save Tool';
+                this.disabled = false;
             });
             
             // Dashboard refresh
