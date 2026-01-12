@@ -5,1803 +5,281 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>TRAci | Pneumology Innovation Dashboard</title>
     
-    <!-- QR Code Library -->
+    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    
-    <!-- Professional Medical Icons -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css">
-    
-    <!-- Professional Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-    
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ===== PROFESSIONAL MEDICAL THEME ===== */
+        /* ===== PROFESSIONAL THEME ===== */
         :root {
-            /* Primary Medical Colors */
-            --primary-50: #f0f9ff;
-            --primary-100: #e0f2fe;
-            --primary-200: #bae6fd;
-            --primary-300: #7dd3fc;
-            --primary-400: #38bdf8;
-            --primary-500: #0ea5e9;
-            --primary-600: #0284c7;
-            --primary-700: #0369a1;
-            --primary-800: #075985;
+            --primary-50: #f0f9ff; --primary-100: #e0f2fe; --primary-200: #bae6fd;
+            --primary-300: #7dd3fc; --primary-400: #38bdf8; --primary-500: #0ea5e9;
+            --primary-600: #0284c7; --primary-700: #0369a1; --primary-800: #075985;
             --primary-900: #0c4a6e;
-            
-            /* Medical Accent Colors */
-            --medical-teal: #0d9488;
-            --medical-green: #059669;
-            --medical-purple: #7c3aed;
-            --medical-cyan: #0891b2;
-            
-            /* Status Colors */
-            --success: #10b981;
-            --success-light: #d1fae5;
-            --warning: #f59e0b;
-            --warning-light: #fef3c7;
-            --danger: #ef4444;
-            --danger-light: #fee2e2;
-            --info: #3b82f6;
-            --info-light: #dbeafe;
-            
-            /* Neutral Colors */
-            --white: #ffffff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-            
-            /* Backgrounds */
-            --bg-primary: #f8fafc;
-            --bg-secondary: #f1f5f9;
-            --bg-card: #ffffff;
-            
-            /* Borders */
-            --border-light: #e2e8f0;
-            --border: #cbd5e1;
-            
-            /* Typography */
-            --font-sans: 'Inter', sans-serif;
-            --font-heading: 'Space Grotesk', sans-serif;
-            
-            /* Spacing */
-            --space-1: 0.25rem;
-            --space-2: 0.5rem;
-            --space-3: 0.75rem;
-            --space-4: 1rem;
-            --space-5: 1.25rem;
-            --space-6: 1.5rem;
-            --space-8: 2rem;
-            --space-12: 3rem;
-            --space-16: 4rem;
-            
-            /* Border Radius */
-            --radius-sm: 0.25rem;
-            --radius: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-full: 9999px;
-            
-            /* Shadows */
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-            
-            /* Transitions */
-            --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --medical-teal: #0d9488; --medical-green: #059669; --medical-purple: #7c3aed;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
+            --white: #ffffff; --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+            --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280; --gray-600: #4b5563;
+            --gray-700: #374151; --gray-800: #1f2937; --gray-900: #111827;
+            --bg-primary: #f8fafc; --bg-card: #ffffff; --border: #cbd5e1;
+            --font-sans: 'Inter', sans-serif; --font-heading: 'Space Grotesk', sans-serif;
+            --radius: 0.375rem; --radius-lg: 0.75rem; --radius-full: 9999px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1); --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1); --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Dark Mode */
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-primary: #0f172a;
-                --bg-secondary: #1e293b;
-                --bg-card: #1e293b;
-                --white: #f1f5f9;
-                --gray-50: #1e293b;
-                --gray-100: #334155;
-                --gray-200: #475569;
-                --gray-300: #64748b;
-                --gray-400: #94a3b8;
-                --gray-500: #cbd5e1;
-                --border-light: #334155;
+                --bg-primary: #0f172a; --bg-card: #1e293b; --white: #f1f5f9;
+                --gray-50: #1e293b; --gray-100: #334155; --gray-200: #475569;
                 --border: #475569;
             }
-            
-            /* Fix text visibility in dark mode */
-            .form-control, input, textarea, select {
-                background-color: var(--gray-900);
-                color: var(--white);
-                border-color: var(--gray-700);
-            }
-            
-            .form-control:focus {
-                background-color: var(--gray-800);
-                color: var(--white);
-            }
-            
-            /* Fix login input text */
-            #loginUsername, #loginPassword {
-                color: var(--white) !important;
-                background-color: var(--gray-800) !important;
-            }
         }
 
-        /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-primary);
-            color: var(--gray-700);
-            line-height: 1.6;
-            padding: var(--space-4);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* ===== UTILITY CLASSES ===== */
+        /* ===== BASE STYLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--gray-700); line-height: 1.6; padding: 1rem; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .hidden { display: none !important; }
         .text-center { text-align: center; }
         .text-muted { color: var(--gray-500); }
-        .hidden { display: none !important; }
 
         /* ===== HEADER ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-6) 0;
-            margin-bottom: var(--space-8);
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: var(--space-4);
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
+        .logo-section { display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1; }
+        
+        /* Microsoft-style logo */
+        .logo { width: 56px; height: 56px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #00A4EF, #7FBA00); box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+        .windows-grid { width: 32px; height: 32px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
+        .window-pane { border-radius: 3px; transition: transform 0.3s ease; }
+        .pane1 { background: #00A4EF; } /* Microsoft blue */
+        .pane2 { background: #7FBA00; } /* Microsoft green */
+        .pane3 { background: #FFB900; } /* Microsoft yellow */
+        .pane4 { background: #F25022; } /* Microsoft orange */
+        .logo:hover .window-pane { transform: scale(1.1); }
+        .logo:hover .pane1 { transform: translate(-2px, -2px); }
+        .logo:hover .pane2 { transform: translate(2px, -2px); }
+        .logo:hover .pane3 { transform: translate(-2px, 2px); }
+        .logo:hover .pane4 { transform: translate(2px, 2px); }
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            min-width: 0;
-            flex: 1;
-        }
+        .platform-info { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+        .platform-name { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; color: var(--primary-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .department-name { font-size: 0.8125rem; color: var(--gray-600); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
+        
+        .header-right { display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; }
+        .status-panel { display: flex; align-items: center; gap: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 0.5rem 1rem; box-shadow: var(--shadow); white-space: nowrap; }
+        .live-indicator { display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 600; color: var(--success); }
+        .live-dot { width: 6px; height: 6px; background-color: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .logo {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--primary-600), var(--medical-teal));
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: var(--font-heading);
-            box-shadow: var(--shadow-md);
-            flex-shrink: 0;
-        }
-
-        .platform-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-1);
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .platform-name {
-            font-family: var(--font-heading);
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-700);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .department-name {
-            font-size: 0.8125rem;
-            color: var(--gray-600);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-6);
-            flex-shrink: 0;
-        }
-
-        /* Status Panel */
-        .status-panel {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            padding: var(--space-2) var(--space-4);
-            box-shadow: var(--shadow-sm);
-            white-space: nowrap;
-        }
-
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: var(--space-1);
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--success);
-        }
-
-        .live-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* ===== AUTH SECTION ===== */
-        .auth-section {
-            display: flex;
-            align-items: center;
-        }
-
-        .auth-btn {
-            padding: var(--space-3) var(--space-6);
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            color: var(--white);
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            white-space: nowrap;
-        }
-
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .auth-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* User Profile */
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            padding: var(--space-2) var(--space-3);
-            box-shadow: var(--shadow-sm);
-            max-width: 300px;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-500), var(--medical-teal));
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--gray-800);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
-            width: fit-content;
-        }
-
-        .user-role.admin {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .user-role.doctor {
-            background: var(--primary-100);
-            color: var(--primary-700);
-        }
-
-        .user-role.guest {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: none;
-            color: var(--gray-500);
-            cursor: pointer;
-            padding: var(--space-2);
-            border-radius: var(--radius);
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
-
-        .logout-btn:hover {
-            background: var(--gray-100);
-            color: var(--danger);
-        }
+        /* ===== AUTH ===== */
+        .auth-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: var(--white); border: none; border-radius: var(--radius); font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .user-profile { display: flex; align-items: center; gap: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 0.5rem 0.75rem; box-shadow: var(--shadow); max-width: 300px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-500), var(--medical-teal)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem; }
+        .user-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 0.875rem; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); width: fit-content; }
+        .user-role.admin { background: #fee2e2; color: #dc2626; }
+        .user-role.doctor { background: #dbeafe; color: #1d4ed8; }
+        .user-role.guest { background: #f3f4f6; color: #4b5563; }
+        .logout-btn { background: transparent; border: none; color: var(--gray-500); cursor: pointer; padding: 0.5rem; border-radius: var(--radius); transition: var(--transition); }
+        .logout-btn:hover { background: var(--gray-100); color: var(--danger); }
 
         /* ===== ADMIN CONTROLS ===== */
-        .admin-controls {
-            display: flex;
-            gap: var(--space-3);
-            margin-bottom: var(--space-8);
-            flex-wrap: wrap;
-        }
+        .admin-controls { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .admin-btn { padding: 0.75rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+        .admin-btn:hover { border-color: var(--primary-500); color: var(--primary-600); transform: translateY(-2px); box-shadow: var(--shadow); }
 
-        .admin-btn {
-            padding: var(--space-3) var(--space-5);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--gray-700);
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            white-space: nowrap;
-        }
+        /* ===== GUEST WELCOME ===== */
+        .guest-welcome { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+        .guest-welcome-content { display: flex; align-items: flex-start; gap: 1.5rem; }
+        .guest-welcome-icon { flex-shrink: 0; font-size: 2.5rem; color: var(--primary-400); }
+        .guest-welcome-text h3 { font-family: var(--font-heading); color: var(--primary-700); margin-bottom: 0.5rem; }
+        .guest-welcome-text p { color: var(--gray-600); margin-bottom: 1rem; }
+        .guest-welcome-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .welcome-btn { padding: 0.5rem 1rem; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: var(--transition); }
+        .welcome-btn.primary { background: var(--primary-600); color: white; border: none; }
+        .welcome-btn.secondary { background: transparent; color: var(--primary-600); border: 1px solid var(--primary-400); }
+        .guest-welcome-corner { position: absolute; top: 0; right: 0; width: 100px; height: 100px; background: linear-gradient(135deg, transparent 50%, rgba(14, 165, 233, 0.1) 50%); }
 
-        .admin-btn:hover {
-            border-color: var(--primary-500);
-            color: var(--primary-600);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
+        /* ===== GUEST COMMENT SYSTEM ===== */
+        .comment-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .comment-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .comment-icon { font-size: 1.5rem; color: var(--primary-500); }
+        .comment-header h3 { font-family: var(--font-heading); color: var(--gray-800); }
+        .comment-textarea { width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-family: var(--font-sans); resize: vertical; min-height: 100px; font-size: 0.9375rem; }
+        .comment-textarea:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .comment-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+        .comment-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .comment-btn { padding: 0.75rem 1.5rem; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: var(--transition); border: none; }
+        .comment-btn.primary { background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: white; }
+        .comment-btn.secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--border); }
+        .comment-success { background: #d1fae5; color: #065f46; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; border-left: 4px solid #10b981; display: none; }
 
-        /* ===== STATS CARDS ===== */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: var(--space-4);
-            margin-bottom: var(--space-8);
-        }
+        /* ===== STATS ===== */
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; transition: var(--transition); min-height: 120px; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-200); }
+        .stat-icon { width: 56px; height: 56px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--white); box-shadow: var(--shadow-md); }
+        .stat-icon.tools { background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); }
+        .stat-icon.projects { background: linear-gradient(135deg, var(--medical-teal), #0891b2); }
+        .stat-icon.feedback { background: linear-gradient(135deg, var(--warning), #f59e0b); }
+        .stat-icon.comments { background: linear-gradient(135deg, var(--medical-purple), #8b5cf6); }
+        .stat-info h3 { font-size: 0.8125rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--gray-900); font-family: var(--font-heading); line-height: 1; }
 
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            display: flex;
-            align-items: center;
-            gap: var(--space-5);
-            transition: var(--transition);
-            min-height: 120px;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-200);
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--white);
-            box-shadow: var(--shadow-md);
-            flex-shrink: 0;
-        }
-
-        .stat-icon.tools {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        }
-
-        .stat-icon.projects {
-            background: linear-gradient(135deg, var(--medical-teal), var(--medical-cyan));
-        }
-
-        .stat-icon.feedback {
-            background: linear-gradient(135deg, var(--warning), #f59e0b);
-        }
-
-        .stat-icon.active {
-            background: linear-gradient(135deg, var(--success), var(--medical-green));
-        }
-
-        .stat-info h3 {
-            font-size: 0.8125rem;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: var(--space-1);
-            white-space: nowrap;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            font-family: var(--font-heading);
-            line-height: 1;
-        }
-
-        /* ===== FILTER CONTROLS ===== */
-        .filter-controls {
-            display: flex;
-            gap: var(--space-2);
-            margin-bottom: var(--space-6);
-            flex-wrap: wrap;
-            background: var(--bg-card);
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-        }
-
-        .filter-btn {
-            padding: var(--space-2) var(--space-4);
-            background: var(--gray-50);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            color: var(--gray-600);
-            font-size: 0.8125rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .filter-btn:hover {
-            background: var(--primary-50);
-            color: var(--primary-600);
-            border-color: var(--primary-300);
-        }
-
-        .filter-btn.active {
-            background: var(--primary-600);
-            color: var(--white);
-            border-color: var(--primary-600);
-            box-shadow: var(--shadow-sm);
-        }
+        /* ===== FILTERS ===== */
+        .filter-controls { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; background: var(--bg-card); padding: 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+        .filter-btn { padding: 0.5rem 1rem; background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-full); color: var(--gray-600); font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+        .filter-btn:hover { background: var(--primary-50); color: var(--primary-600); border-color: var(--primary-300); }
+        .filter-btn.active { background: var(--primary-600); color: var(--white); border-color: var(--primary-600); box-shadow: var(--shadow); }
 
         /* ===== CONTENT GRID ===== */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-6);
-            margin-bottom: var(--space-8);
-        }
-
-        @media (min-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        .content-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (min-width: 1024px) { .content-grid { grid-template-columns: 1fr 1fr; } }
 
         /* ===== SECTIONS ===== */
-        .section {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: var(--shadow);
-        }
-
-        .section-header {
-            padding: var(--space-5) var(--space-6);
-            background: linear-gradient(90deg, var(--primary-50) 0%, transparent 100%);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-3);
-        }
-
-        .section-header h2 {
-            font-family: var(--font-heading);
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            white-space: nowrap;
-        }
-
-        .section-content {
-            padding: var(--space-6);
-        }
+        .section { background: var(--bg-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); transition: var(--transition); }
+        .section:hover { box-shadow: var(--shadow-md); }
+        .section-header { padding: 1.25rem 1.5rem; background: linear-gradient(90deg, var(--primary-50) 0%, transparent 100%); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+        .section-header h2 { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
+        .section-content { padding: 1.5rem; }
 
         /* ===== TOOLS GRID ===== */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--space-4);
-        }
-
-        .tool-card {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            transition: var(--transition);
-            min-height: 180px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tool-card:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow);
-            transform: translateY(-2px);
-        }
-
-        .tool-card.operational {
-            border-left: 4px solid var(--success);
-        }
-
-        .tool-card.warning {
-            border-left: 4px solid var(--warning);
-        }
-
-        .tool-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--space-3);
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .tool-name {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--gray-900);
-            min-width: 0;
-        }
-
-        .tool-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius);
-            background: linear-gradient(135deg, var(--primary-500), var(--medical-teal));
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.125rem;
-            flex-shrink: 0;
-        }
-
-        .tool-status {
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .status-operational {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .status-warning {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
-
-        .tool-description {
-            color: var(--gray-600);
-            font-size: 0.875rem;
-            margin-bottom: var(--space-4);
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-
-        .tool-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8125rem;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .tool-updated {
-            color: var(--gray-500);
-            white-space: nowrap;
-        }
-
-        .tool-link {
-            color: var(--primary-600);
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: var(--space-1);
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .tool-link:hover {
-            color: var(--primary-700);
-        }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .tool-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; transition: var(--transition); min-height: 180px; display: flex; flex-direction: column; }
+        .tool-card:hover { border-color: var(--primary-300); box-shadow: var(--shadow); transform: translateY(-2px); }
+        .tool-card.operational { border-left: 4px solid var(--success); }
+        .tool-card.warning { border-left: 4px solid var(--warning); }
+        .tool-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+        .tool-name { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; font-size: 1rem; color: var(--gray-900); min-width: 0; }
+        .tool-icon { width: 40px; height: 40px; border-radius: var(--radius); background: linear-gradient(135deg, var(--primary-500), var(--medical-teal)); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.125rem; }
+        .tool-status { font-size: 0.75rem; padding: 3px 8px; border-radius: var(--radius-full); font-weight: 600; white-space: nowrap; }
+        .status-operational { background: #d1fae5; color: #065f46; }
+        .status-warning { background: #fef3c7; color: #92400e; }
+        .tool-description { color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.5; flex-grow: 1; }
+        .tool-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8125rem; flex-wrap: wrap; gap: 0.5rem; }
+        .tool-link { color: var(--primary-600); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; transition: var(--transition); }
+        .tool-link:hover { color: var(--primary-700); }
 
         /* ===== PROJECTS LIST ===== */
-        .projects-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-4);
-        }
-
-        .project-card {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .project-card:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow);
-        }
-
-        .project-card.needs-feedback {
-            border: 2px solid var(--warning);
-            background: linear-gradient(to right, var(--warning-light) 0%, transparent 100%);
-        }
-
-        /* Visibility Badges */
-        .visibility-badge {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            margin-left: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .visibility-badge.private {
-            background: var(--warning-light);
-            color: var(--warning);
-            border: 1px solid var(--warning);
-        }
-
-        .visibility-badge.public {
-            background: var(--success-light);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        /* Doctor Badge */
-        .doctor-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--primary-100);
-            color: var(--primary-700);
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: var(--space-3);
-            white-space: nowrap;
-        }
-
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--space-3);
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .project-title {
-            font-weight: 600;
-            font-size: 1.125rem;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            min-width: 0;
-        }
-
-        .project-status {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-
-        .status-planning {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
-
-        .status-development {
-            background: var(--primary-100);
-            color: var(--primary-700);
-        }
-
-        .status-testing {
-            background: var(--info-light);
-            color: var(--info);
-        }
-
-        .status-production {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .project-description {
-            color: var(--gray-600);
-            font-size: 0.875rem;
-            margin-bottom: var(--space-4);
-            line-height: 1.5;
-        }
-
-        /* Progress Bar */
-        .project-progress {
-            margin-bottom: var(--space-4);
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--space-1);
-            font-size: 0.875rem;
-            color: var(--gray-600);
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .progress-bar {
-            height: 6px;
-            background-color: var(--gray-200);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: var(--radius-full);
-            background: linear-gradient(90deg, var(--primary-500), var(--medical-teal));
-            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* Project Links */
-        .project-links {
-            display: flex;
-            gap: var(--space-3);
-            margin-bottom: var(--space-4);
-            flex-wrap: wrap;
-        }
-
-        .project-link {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--primary-600);
-            text-decoration: none;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            padding: var(--space-2) var(--space-3);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .project-link:hover {
-            background-color: var(--primary-50);
-            color: var(--primary-700);
-            border-color: var(--primary-300);
-        }
-
-        /* Feedback Section */
-        .feedback-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            margin-top: var(--space-4);
-            padding-top: var(--space-4);
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .feedback-badge {
-            background: linear-gradient(135deg, var(--warning), #f59e0b);
-            color: var(--white);
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            box-shadow: var(--shadow-sm);
-            white-space: nowrap;
-        }
-
-        .feedback-channels {
-            display: flex;
-            gap: var(--space-2);
-            flex-wrap: wrap;
-        }
-
-        .channel-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            flex-shrink: 0;
-        }
-
-        .channel-btn:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow);
-        }
-
+        .projects-list { display: flex; flex-direction: column; gap: 1rem; }
+        .project-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; transition: var(--transition); position: relative; }
+        .project-card:hover { border-color: var(--primary-300); box-shadow: var(--shadow); }
+        .project-card.needs-feedback { border: 2px solid var(--warning); background: linear-gradient(to right, #fef3c7 0%, transparent 100%); }
+        .visibility-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: var(--radius-full); font-weight: 600; margin-left: 8px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .visibility-badge.private { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .visibility-badge.public { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        .doctor-badge { display: inline-flex; align-items: center; gap: 6px; background: #dbeafe; color: #1d4ed8; padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; margin-bottom: 0.75rem; white-space: nowrap; }
+        .project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+        .project-title { font-weight: 600; font-size: 1.125rem; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+        .project-status { font-size: 0.75rem; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+        .status-planning { background: #f3f4f6; color: #4b5563; }
+        .status-development { background: #dbeafe; color: #1d4ed8; }
+        .status-testing { background: #e0f2fe; color: #0369a1; }
+        .status-production { background: #d1fae5; color: #065f46; }
+        .project-description { color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.5; }
+        .project-progress { margin-bottom: 1rem; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.875rem; color: var(--gray-600); flex-wrap: wrap; gap: 0.5rem; }
+        .progress-bar { height: 6px; background-color: var(--gray-200); border-radius: var(--radius-full); overflow: hidden; width: 100%; }
+        .progress-fill { height: 100%; border-radius: var(--radius-full); background: linear-gradient(90deg, var(--primary-500), var(--medical-teal)); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .project-links { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .project-link { display: flex; align-items: center; gap: 0.5rem; color: var(--primary-600); text-decoration: none; font-size: 0.8125rem; font-weight: 500; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); transition: var(--transition); white-space: nowrap; }
+        .project-link:hover { background-color: var(--primary-50); color: var(--primary-700); border-color: var(--primary-300); }
+        .feedback-section { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+        .feedback-badge { background: linear-gradient(135deg, var(--warning), #f59e0b); color: var(--white); font-size: 0.75rem; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700; letter-spacing: 0.3px; box-shadow: var(--shadow); white-space: nowrap; }
+        .feedback-channels { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .channel-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); text-decoration: none; font-size: 0.875rem; transition: var(--transition); box-shadow: var(--shadow); flex-shrink: 0; }
+        .channel-btn:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
         .channel-btn.whatsapp { background-color: #25D366; }
         .channel-btn.email { background-color: var(--primary-600); }
         .channel-btn.github { background-color: var(--gray-800); }
         .channel-btn.slack { background-color: #4A154B; }
-
-        /* Project Actions */
-        .project-actions {
-            display: flex;
-            gap: var(--space-2);
-            margin-top: var(--space-4);
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            border-radius: var(--radius);
-            border: 1px solid;
-            font-family: var(--font-sans);
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .edit-btn {
-            background: var(--primary-50);
-            color: var(--primary-700);
-            border-color: var(--primary-200);
-        }
-
-        .edit-btn:hover {
-            background: var(--primary-100);
-            border-color: var(--primary-300);
-            transform: translateY(-2px);
-        }
-
-        .delete-btn {
-            background: var(--danger-light);
-            color: var(--danger);
-            border-color: var(--danger-light);
-        }
-
-        .delete-btn:hover {
-            background: var(--danger);
-            color: var(--white);
-            border-color: var(--danger);
-            transform: translateY(-2px);
-        }
-
-        .recommend-btn {
-            background: var(--warning-light);
-            color: var(--warning);
-            border-color: var(--warning-light);
-        }
-
-        .recommend-btn:hover {
-            background: var(--warning);
-            color: var(--white);
-            border-color: var(--warning);
-            transform: translateY(-2px);
-        }
-
-        .recommend-btn.recommended {
-            background: var(--warning);
-            color: var(--white);
-            border-color: var(--warning);
-        }
+        .project-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .action-btn { padding: 6px 12px; border-radius: var(--radius); border: 1px solid; font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .edit-btn { background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200); }
+        .edit-btn:hover { background: var(--primary-100); border-color: var(--primary-300); transform: translateY(-2px); }
+        .delete-btn { background: #fee2e2; color: #dc2626; border-color: #fee2e2; }
+        .delete-btn:hover { background: #dc2626; color: white; border-color: #dc2626; transform: translateY(-2px); }
+        .recommend-btn { background: #fef3c7; color: #92400e; border-color: #fef3c7; }
+        .recommend-btn:hover { background: #f59e0b; color: white; border-color: #f59e0b; transform: translateY(-2px); }
+        .recommend-btn.recommended { background: #f59e0b; color: white; border-color: #f59e0b; }
 
         /* ===== MODALS ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: var(--space-4);
-            overflow-y: auto;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; overflow-y: auto; }
+        .modal-content { background: var(--bg-card); border-radius: 1rem; width: 100%; max-width: 500px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; margin: auto; }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+        .modal-header h3 { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 0.75rem; }
+        .modal-close { background: transparent; border: none; font-size: 1.5rem; color: var(--gray-500); cursor: pointer; padding: 0.25rem; border-radius: var(--radius); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: var(--gray-100); color: var(--gray-700); }
+        .modal-body { padding: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-control { width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 0.9375rem; transition: var(--transition); font-family: var(--font-sans); background: var(--bg-card); color: var(--gray-900); }
+        .form-control:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .btn-primary { width: 100%; padding: 0.875rem; background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: var(--white); border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+        .btn-primary:hover { background: linear-gradient(135deg, var(--primary-700), var(--primary-800)); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .error-message { background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; border-left: 4px solid #dc2626; display: none; }
+        .success-message { background: #d1fae5; color: #065f46; padding: 1rem; border-radius: var(--radius); margin-top: 1rem; border-left: 4px solid #10b981; display: none; }
 
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 500px;
-            box-shadow: var(--shadow-xl);
-            max-height: 90vh;
-            overflow-y: auto;
-            margin: auto;
-        }
+        /* ===== CODE MANAGEMENT ===== */
+        .codes-table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; }
+        .codes-table { width: 100%; border-collapse: collapse; }
+        .codes-table th { background: var(--gray-50); position: sticky; top: 0; padding: 0.75rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); }
+        .codes-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .codes-table tr:hover { background: var(--gray-50); }
+        .code-display { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--primary-50); padding: 6px 10px; border-radius: var(--radius); display: inline-block; }
+        .qr-container { text-align: center; padding: 1rem; background: var(--gray-50); border-radius: var(--radius); margin: 1rem 0; border: 1px solid var(--border); }
+        .qr-code { width: 200px; height: 200px; margin: 0 auto 0.75rem; padding: 0.75rem; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
 
-        .modal-header {
-            padding: var(--space-6);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--bg-card);
-            z-index: 1;
-        }
-
-        .modal-header h3 {
-            font-family: var(--font-heading);
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            white-space: nowrap;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--gray-500);
-            cursor: pointer;
-            padding: var(--space-1);
-            border-radius: var(--radius);
-            transition: var(--transition);
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .modal-close:hover {
-            background: var(--gray-100);
-            color: var(--gray-700);
-        }
-
-        .modal-body {
-            padding: var(--space-6);
-        }
-
-        /* Form Styles - FIXED TEXT VISIBILITY */
-        .form-group {
-            margin-bottom: var(--space-5);
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: var(--space-2);
-            font-weight: 500;
-            color: var(--gray-700);
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            transition: var(--transition);
-            font-family: var(--font-sans);
-            background: var(--white);
-            color: var(--gray-900);
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        /* FIX: Ensure text is visible in inputs */
-        .form-control::placeholder {
-            color: var(--gray-400);
-            opacity: 1;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-            background: var(--white);
-            color: var(--gray-900);
-        }
-
-        /* Specific fix for login inputs */
-        #loginUsername, #loginPassword {
-            background: var(--white) !important;
-            color: var(--gray-900) !important;
-            border: 2px solid var(--border) !important;
-        }
-
-        #loginUsername:focus, #loginPassword:focus {
-            background: var(--white) !important;
-            color: var(--gray-900) !important;
-        }
-
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        select.form-control {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.75rem center;
-            background-repeat: no-repeat;
-            background-size: 1.25em 1.25em;
-            padding-right: 2.5rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--space-4);
-            margin-bottom: var(--space-4);
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--gray-700);
-        }
-
-        .checkbox-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            border-radius: var(--radius-sm);
-        }
-
-        /* Edit Code Input */
-        .edit-code-input {
-            font-family: monospace;
-            font-size: 1.25rem;
-            letter-spacing: 8px;
-            text-align: center;
-            padding: 12px;
-            font-weight: 600;
-            color: var(--gray-900) !important;
-            background: var(--white) !important;
-        }
-
-        /* QR Code Container */
-        .qr-container {
-            text-align: center;
-            padding: var(--space-4);
-            background: var(--gray-50);
-            border-radius: var(--radius);
-            margin: var(--space-4) 0;
-            border: 1px solid var(--border);
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto var(--space-3);
-            padding: var(--space-3);
-            background: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            color: var(--white);
-            border: none;
-            border-radius: var(--radius);
-            font-family: var(--font-sans);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-            margin-top: var(--space-4);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-        }
-
-        /* Form Footer */
-        .form-footer {
-            margin-top: var(--space-5);
-            text-align: center;
-            color: var(--gray-500);
-            font-size: 0.8125rem;
-        }
-
-        .hint {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-        }
-
-        /* Messages */
-        .error-message {
-            background: var(--danger-light);
-            color: var(--danger);
-            padding: var(--space-4);
-            border-radius: var(--radius);
-            margin-top: var(--space-4);
-            font-size: 0.875rem;
-            display: none;
-            border-left: 4px solid var(--danger);
-        }
-        .success-message {
-            background: var(--success-light);
-            color: var(--success);
-            padding: var(--space-4);
-            border-radius: var(--radius);
-            margin-top: var(--space-4);
-            font-size: 0.875rem;
-            display: none;
-            border-left: 4px solid var(--success);
-        }
-
-        /* ===== EMPTY STATES ===== */
-        .empty-state {
-            text-align: center;
-            padding: var(--space-16) var(--space-6);
-            color: var(--gray-500);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: var(--space-4);
-            color: var(--gray-300);
-        }
-
-        /* ===== LOADING STATES ===== */
-        .loading {
-            text-align: center;
-            padding: var(--space-16);
-            color: var(--gray-500);
-        }
-
-        .loading-spinner {
-            border: 3px solid var(--gray-200);
-            border-top: 3px solid var(--primary-500);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto var(--space-4);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ===== CODE MANAGEMENT TABLE ===== */
-        .codes-table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: var(--space-4);
-        }
-
-        .codes-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .codes-table th {
-            background: var(--gray-50);
-            position: sticky;
-            top: 0;
-            padding: var(--space-3);
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--gray-700);
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
-        }
-
-        .codes-table td {
-            padding: var(--space-3);
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        .codes-table tr:hover {
-            background: var(--gray-50);
-        }
-
-        .code-display {
-            font-family: monospace;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            background: var(--primary-50);
-            padding: 6px 10px;
-            border-radius: var(--radius);
-            display: inline-block;
-        }
+        /* ===== COMMENTS MODAL ===== */
+        .comments-list { max-height: 400px; overflow-y: auto; margin-bottom: 1rem; }
+        .comment-item { background: var(--gray-50); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; border-left: 4px solid var(--primary-500); }
+        .comment-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.875rem; }
+        .comment-author { font-weight: 600; color: var(--gray-800); }
+        .comment-date { color: var(--gray-500); }
+        .comment-text { color: var(--gray-700); line-height: 1.5; }
+        .comment-status { font-size: 0.75rem; padding: 2px 8px; border-radius: var(--radius-full); margin-left: 0.5rem; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
 
         /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            padding: var(--space-8) 0;
-            color: var(--gray-500);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border);
-            margin-top: var(--space-8);
-        }
+        .footer { text-align: center; padding: 2rem 0; color: var(--gray-500); font-size: 0.875rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+        .footer a { color: var(--primary-600); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .footer a:hover { color: var(--primary-700); text-decoration: underline; }
 
-        .footer a {
-            color: var(--primary-600);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .footer a:hover {
-            color: var(--primary-700);
-            text-decoration: underline;
-        }
-
-        /* ===== MOBILE RESPONSIVE DESIGN ===== */
-        
-        /* Large tablets and small desktops */
-        @media (max-width: 1200px) {
-            .container {
-                padding: 0 var(--space-4);
-            }
-            
-            .platform-name {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Tablets */
-        @media (max-width: 992px) {
-            html {
-                font-size: 15px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: var(--space-4);
-            }
-            
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .status-panel {
-                order: 1;
-            }
-            
-            .auth-section {
-                order: 2;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tools-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-        }
-
-        /* Mobile phones (landscape) */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            body {
-                padding: var(--space-2);
-            }
-            
-            .container {
-                padding: 0 var(--space-2);
-            }
-            
-            .header {
-                padding: var(--space-4) 0;
-                margin-bottom: var(--space-6);
-            }
-            
-            .logo {
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
-            }
-            
-            .platform-name {
-                font-size: 1.25rem;
-            }
-            
-            .header-right {
-                flex-direction: column;
-                gap: var(--space-3);
-            }
-            
-            .status-panel {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .user-profile {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-container {
-                grid-template-columns: 1fr;
-                gap: var(--space-3);
-            }
-            
-            .stat-card {
-                padding: var(--space-4);
-                min-height: auto;
-            }
-            
-            .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
-            }
-            
-            .stat-number {
-                font-size: 1.75rem;
-            }
-            
-            .admin-controls {
-                justify-content: center;
-                gap: var(--space-2);
-                margin-bottom: var(--space-6);
-            }
-            
-            .admin-btn {
-                padding: var(--space-2) var(--space-3);
-                font-size: 0.8125rem;
-            }
-            
-            .filter-controls {
-                padding: var(--space-3);
-                gap: var(--space-2);
-            }
-            
-            .filter-btn {
-                padding: var(--space-1) var(--space-3);
-                font-size: 0.75rem;
-            }
-            
-            .section-header {
-                padding: var(--space-4);
-            }
-            
-            .section-content {
-                padding: var(--space-4);
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tool-card {
-                padding: var(--space-4);
-            }
-            
-            .project-card {
-                padding: var(--space-4);
-            }
-            
-            .project-title {
-                font-size: 1rem;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .project-actions {
-                flex-direction: column;
-            }
-            
-            .action-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .feedback-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-3);
-            }
-            
-            .modal-content {
-                max-width: 95%;
-                margin: var(--space-2);
-            }
-            
-            .modal-header {
-                padding: var(--space-4);
-            }
-            
-            .modal-body {
-                padding: var(--space-4);
-            }
-            
-            .codes-table {
-                font-size: 0.875rem;
-            }
-            
-            .codes-table th,
-            .codes-table td {
-                padding: var(--space-2);
-            }
-            
-            .qr-code {
-                width: 150px;
-                height: 150px;
-            }
+            body { padding: 0.5rem; }
+            .header { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .header-right { flex-direction: column; gap: 1rem; width: 100%; }
+            .status-panel, .user-profile { width: 100%; justify-content: center; }
+            .stats-container { grid-template-columns: 1fr; }
+            .admin-controls { justify-content: center; }
+            .filter-controls { justify-content: center; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .modal-content { max-width: 95%; margin: 0.5rem; }
+            .guest-welcome-content { flex-direction: column; }
+            .guest-welcome-icon { align-self: center; }
+            .content-grid { gap: 1rem; }
         }
 
-        /* Small mobile phones (portrait) */
         @media (max-width: 480px) {
-            html {
-                font-size: 14px;
-            }
-            
-            body {
-                padding: var(--space-1);
-            }
-            
-            .logo-section {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: var(--space-2);
-            }
-            
-            .logo {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-            
-            .platform-name {
-                font-size: 1.125rem;
-            }
-            
-            .department-name {
-                font-size: 0.75rem;
-            }
-            
-            .auth-btn {
-                padding: var(--space-2) var(--space-4);
-                font-size: 0.8125rem;
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .user-profile {
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-2);
-                padding: var(--space-3);
-            }
-            
-            .user-info {
-                align-items: center;
-            }
-            
-            .stat-card {
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-3);
-            }
-            
-            .stat-info h3 {
-                margin-bottom: var(--space-2);
-            }
-            
-            .tool-name {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-2);
-            }
-            
-            .project-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-2);
-            }
-            
-            .project-status {
-                align-self: flex-start;
-            }
-            
-            .form-control {
-                padding: 10px 12px;
-                font-size: 16px; /* Prevents iOS zoom on focus */
-            }
-            
-            .edit-code-input {
-                font-size: 1.125rem;
-                letter-spacing: 6px;
-                padding: 10px;
-            }
-            
-            .qr-code {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .footer {
-                padding: var(--space-6) 0;
-                font-size: 0.8125rem;
-            }
-        }
-
-        /* Extra small devices */
-        @media (max-width: 360px) {
-            .platform-name {
-                font-size: 1rem;
-            }
-            
-            .department-name {
-                font-size: 0.6875rem;
-            }
-            
-            .stats-container {
-                gap: var(--space-2);
-            }
-            
-            .stat-card {
-                padding: var(--space-3);
-            }
-            
-            .admin-controls {
-                gap: var(--space-1);
-            }
-            
-            .admin-btn {
-                padding: var(--space-1) var(--space-2);
-                font-size: 0.75rem;
-            }
-            
-            .tool-footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-2);
-            }
-        }
-
-        /* Fix for iOS Safari input styling */
-        input[type="text"],
-        input[type="password"],
-        input[type="number"],
-        input[type="url"],
-        textarea,
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            border-radius: var(--radius);
-        }
-
-        /* Prevent text size adjustment on mobile */
-        html {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
-
-        /* Improve touch targets */
-        button,
-        .btn-primary,
-        .admin-btn,
-        .filter-btn,
-        .action-btn,
-        .channel-btn {
-            min-height: 44px;
-            min-width: 44px;
-        }
-
-        .logout-btn {
-            min-width: 44px;
-            min-height: 44px;
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Better focus styles for accessibility */
-        *:focus {
-            outline: 2px solid var(--primary-500);
-            outline-offset: 2px;
-        }
-
-        /* Improve readability on mobile */
-        p, li, td, th {
-            line-height: 1.6;
-        }
-
-        /* Modal scroll improvements */
-        .modal-content {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Fix for sticky hover states on mobile */
-        @media (hover: none) and (pointer: coarse) {
-            .auth-btn:hover,
-            .admin-btn:hover,
-            .filter-btn:hover,
-            .action-btn:hover,
-            .channel-btn:hover,
-            .logout-btn:hover,
-            .tool-card:hover,
-            .project-card:hover,
-            .stat-card:hover {
-                transform: none;
-                box-shadow: var(--shadow-sm);
-            }
-            
-            .auth-btn:active,
-            .admin-btn:active,
-            .filter-btn:active,
-            .action-btn:active,
-            .channel-btn:active,
-            .logout-btn:active {
-                transform: scale(0.98);
-            }
+            .platform-name { font-size: 1.25rem; }
+            .logo { width: 48px; height: 48px; }
+            .windows-grid { width: 28px; height: 28px; }
+            .auth-btn { width: 100%; justify-content: center; }
+            .user-profile { flex-direction: column; text-align: center; }
+            .guest-welcome-actions { flex-direction: column; }
+            .welcome-btn { width: 100%; justify-content: center; }
+            .comment-actions { flex-direction: column; }
+            .comment-btn { width: 100%; justify-content: center; }
+            .project-actions { flex-direction: column; }
+            .action-btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -1811,7 +289,12 @@
         <header class="header">
             <div class="logo-section">
                 <div class="logo">
-                    <i class="mdi mdi-flask"></i>
+                    <div class="windows-grid">
+                        <div class="window-pane pane1"></div>
+                        <div class="window-pane pane2"></div>
+                        <div class="window-pane pane3"></div>
+                        <div class="window-pane pane4"></div>
+                    </div>
                 </div>
                 <div class="platform-info">
                     <h1 class="platform-name">TRAci Innovation Dashboard</h1>
@@ -1827,9 +310,7 @@
                     </span>
                 </div>
                 
-                <!-- Authentication Section -->
                 <div class="auth-section" id="authSection">
-                    <!-- Guest View -->
                     <div id="guestView">
                         <button id="loginBtn" class="auth-btn">
                             <i class="mdi mdi-login"></i>
@@ -1837,7 +318,6 @@
                         </button>
                     </div>
                     
-                    <!-- User View -->
                     <div id="userView" class="hidden">
                         <div class="user-profile">
                             <div class="user-avatar" id="userAvatar"></div>
@@ -1845,7 +325,7 @@
                                 <span class="user-name" id="currentUsername"></span>
                                 <span class="user-role" id="currentUserRole"></span>
                             </div>
-                            <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout">
+                            <button class="logout-btn" id="logoutBtn" title="Logout">
                                 <i class="mdi mdi-logout"></i>
                             </button>
                         </div>
@@ -1854,8 +334,77 @@
             </div>
         </header>
 
+        <!-- Guest Welcome -->
+        <div id="guestWelcome" class="hidden guest-welcome">
+            <div class="guest-welcome-content">
+                <div class="guest-welcome-icon">
+                    <i class="mdi mdi-hand-wave"></i>
+                </div>
+                <div class="guest-welcome-text">
+                    <h3>Welcome, Guest!</h3>
+                    <p>
+                        You're viewing our public innovation portfolio. Some projects are private/internal. 
+                        For collaboration inquiries—especially regarding <strong>Pulmonology patient care</strong> 
+                        and <strong>clinical assistive technologies</strong>—please contact our department directly.
+                    </p>
+                    <div class="guest-welcome-actions">
+                        <button id="contactBtn" class="welcome-btn primary">
+                            <i class="mdi mdi-email-send"></i>
+                            Contact Department
+                        </button>
+                        <button id="viewPublicCommentsBtn" class="welcome-btn secondary">
+                            <i class="mdi mdi-comment-multiple"></i>
+                            View Public Comments
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="guest-welcome-corner"></div>
+        </div>
+
+        <!-- Guest Comment System -->
+        <div id="guestCommentSection" class="hidden comment-section">
+            <div class="comment-header">
+                <div class="comment-icon">
+                    <i class="mdi mdi-comment-text-multiple"></i>
+                </div>
+                <h3>Share Your Thoughts</h3>
+            </div>
+            
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">
+                    <i class="mdi mdi-message-text"></i>
+                    Comment (max 150 words)
+                </label>
+                <textarea id="guestComment" class="comment-textarea" placeholder="Share your feedback, questions, or collaboration ideas..."></textarea>
+                <div class="comment-meta">
+                    <small class="text-muted">
+                        <i class="mdi mdi-shield-check"></i>
+                        Comments are moderated before appearing
+                    </small>
+                    <span id="wordCount" style="font-size: 0.875rem; color: var(--gray-500);">0/150 words</span>
+                </div>
+            </div>
+            
+            <div class="comment-actions">
+                <button id="submitCommentBtn" class="comment-btn primary">
+                    <i class="mdi mdi-send"></i>
+                    Submit Comment
+                </button>
+                <button id="viewCommentsBtn" class="comment-btn secondary">
+                    <i class="mdi mdi-eye"></i>
+                    View Public Comments
+                </button>
+            </div>
+            
+            <div id="commentSuccess" class="comment-success">
+                <i class="mdi mdi-check-circle"></i>
+                <span>Comment submitted for moderation. Thank you!</span>
+            </div>
+        </div>
+
         <!-- Admin Controls -->
-        <div class="admin-controls" id="adminControls" class="hidden">
+        <div class="admin-controls hidden" id="adminControls">
             <button class="admin-btn" id="addProjectBtn">
                 <i class="mdi mdi-plus-circle"></i>
                 <span>Add Project</span>
@@ -1872,10 +421,14 @@
                 <i class="mdi mdi-key-change"></i>
                 <span>Reset Code</span>
             </button>
+            <button class="admin-btn" id="manageCommentsBtn">
+                <i class="mdi mdi-comment-processing"></i>
+                <span>Manage Comments</span>
+            </button>
         </div>
 
-        <!-- Stats Overview -->
-        <div class="stats-container" id="statsContainer" class="hidden">
+        <!-- Stats -->
+        <div class="stats-container hidden" id="statsContainer">
             <div class="stat-card">
                 <div class="stat-icon tools">
                     <i class="mdi mdi-toolbox"></i>
@@ -1904,18 +457,18 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon active">
-                    <i class="mdi mdi-chart-timeline-variant"></i>
+                <div class="stat-icon comments">
+                    <i class="mdi mdi-comment-text-multiple"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>Active Development</h3>
-                    <div class="stat-number" id="activeCount">0</div>
+                    <h3>Guest Comments</h3>
+                    <div class="stat-number" id="commentsCount">0</div>
                 </div>
             </div>
         </div>
 
         <!-- Filter Controls -->
-        <div class="filter-controls" id="filterControls" class="hidden">
+        <div class="filter-controls hidden" id="filterControls">
             <button class="filter-btn active" data-filter="all">
                 <i class="mdi mdi-view-grid"></i>
                 <span>All Projects</span>
@@ -1934,9 +487,8 @@
             </button>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="content-grid" id="contentGrid" class="hidden">
-            <!-- Tools Section -->
+        <!-- Main Content -->
+        <div class="content-grid" id="contentGrid">
             <div class="section">
                 <div class="section-header">
                     <h2>
@@ -1946,40 +498,39 @@
                 </div>
                 <div class="section-content">
                     <div class="tools-grid" id="toolsGrid">
-                        <!-- Tools loaded dynamically -->
+                        <!-- Tools loaded here -->
                     </div>
                 </div>
             </div>
 
-            <!-- Projects Section -->
             <div class="section">
                 <div class="section-header">
                     <h2>
                         <i class="mdi mdi-flask"></i>
                         <span>Research Projects</span>
                     </h2>
-                    <div class="feedback-badge" id="feedbackBadge" class="hidden">
-                        <!-- Feedback count loaded dynamically -->
+                    <div class="feedback-badge hidden" id="feedbackBadge">
+                        <!-- Feedback count -->
                     </div>
                 </div>
                 <div class="section-content">
                     <div class="projects-list" id="projectsList">
-                        <!-- Projects loaded dynamically -->
+                        <!-- Projects loaded here -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Login Required Section -->
-        <div class="section" id="loginRequiredSection">
-            <div class="section-content text-center" style="padding: var(--space-16) var(--space-6);">
-                <div style="font-size: 4rem; color: var(--primary-300); margin-bottom: var(--space-6);">
+        <!-- Login Required -->
+        <div class="section hidden" id="loginRequiredSection">
+            <div class="section-content text-center" style="padding: 4rem 1.5rem;">
+                <div style="font-size: 4rem; color: var(--primary-300); margin-bottom: 1.5rem;">
                     <i class="mdi mdi-lock-outline"></i>
                 </div>
-                <h2 style="font-family: var(--font-heading); margin-bottom: var(--space-4);">
+                <h2 style="font-family: var(--font-heading); margin-bottom: 1rem;">
                     Secure Innovation Dashboard
                 </h2>
-                <p class="text-muted" style="max-width: 500px; margin: 0 auto var(--space-8);">
+                <p class="text-muted" style="max-width: 500px; margin: 0 auto 2rem;">
                     Access to the Pneumology Innovation Dashboard is restricted to authorized personnel only. 
                     Please login with your credentials to continue.
                 </p>
@@ -1999,7 +550,7 @@
                     <span>Refresh Data</span>
                 </a>
             </p>
-            <p style="margin-top: var(--space-2); font-size: 0.8125rem;">
+            <p style="margin-top: 0.5rem; font-size: 0.8125rem;">
                 <i class="mdi mdi-shield-check"></i>
                 <span>Secure Platform • </span>
                 <i class="mdi mdi-sync"></i>
@@ -2019,30 +570,22 @@
                     <i class="mdi mdi-shield-lock-outline"></i>
                     <span>Secure Login</span>
                 </h3>
-                <button class="modal-close" aria-label="Close login modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="loginUsername">
-                        <i class="mdi mdi-account"></i>
-                        <span>Username</span>
-                    </label>
-                    <input type="text" id="loginUsername" class="form-control" 
-                           placeholder="Enter username" autocomplete="username" aria-label="Username">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username">
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">
-                        <i class="mdi mdi-key"></i>
-                        <span>Password</span>
-                    </label>
-                    <input type="password" id="loginPassword" class="form-control" 
-                           placeholder="Enter password" autocomplete="current-password" aria-label="Password">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
                 </div>
                 <button id="submitLogin" class="btn-primary">
                     <i class="mdi mdi-login"></i>
                     <span>Sign In</span>
                 </button>
-                <div class="form-footer">
+                <div class="form-footer" style="margin-top: 1.25rem; text-align: center; color: var(--gray-500);">
                     <p class="hint">
                         <i class="mdi mdi-information"></i>
                         <span>Authorized personnel only</span>
@@ -2061,32 +604,21 @@
                     <i class="mdi mdi-plus-circle"></i>
                     <span>Add New Project</span>
                 </h3>
-                <button class="modal-close" aria-label="Close add project modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="projectName">
-                        <i class="mdi mdi-text-box"></i>
-                        <span>Project Name *</span>
-                    </label>
-                    <input type="text" id="projectName" class="form-control" 
-                           placeholder="Enter project name" aria-label="Project name">
+                    <label for="projectName">Project Name *</label>
+                    <input type="text" id="projectName" class="form-control" placeholder="Enter project name">
                 </div>
                 <div class="form-group">
-                    <label for="projectDescription">
-                        <i class="mdi mdi-text"></i>
-                        <span>Description</span>
-                    </label>
-                    <textarea id="projectDescription" class="form-control" 
-                              placeholder="Project description" rows="3" aria-label="Project description"></textarea>
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" class="form-control" placeholder="Project description" rows="3"></textarea>
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div class="form-group">
-                        <label for="projectStatus">
-                            <i class="mdi mdi-state-machine"></i>
-                            <span>Status</span>
-                        </label>
-                        <select id="projectStatus" class="form-control" aria-label="Project status">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus" class="form-control">
                             <option value="planning">Planning</option>
                             <option value="development" selected>Development</option>
                             <option value="testing">Testing</option>
@@ -2094,16 +626,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="projectProgress">
-                            <i class="mdi mdi-progress-clock"></i>
-                            <span>Progress (%)</span>
-                        </label>
-                        <input type="number" id="projectProgress" class="form-control" 
-                               min="0" max="100" value="0" aria-label="Project progress percentage">
+                        <label for="projectProgress">Progress (%)</label>
+                        <input type="number" id="projectProgress" class="form-control" min="0" max="100" value="0">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label" for="projectNeedsFeedback">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
                         <input type="checkbox" id="projectNeedsFeedback">
                         <i class="mdi mdi-alert-circle"></i>
                         <span>Needs Feedback/Review</span>
@@ -2127,49 +655,29 @@
                     <i class="mdi mdi-pencil"></i>
                     <span>Edit Project</span>
                 </h3>
-                <button class="modal-close" aria-label="Close edit project modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editProjectId">
-                
-                <!-- Edit Code Section (for doctors) -->
                 <div id="editCodeSection" class="hidden">
                     <div class="form-group">
-                        <label for="editCodeVerification">
-                            <i class="mdi mdi-lock"></i>
-                            <span>Edit Verification Code *</span>
-                        </label>
-                        <input type="password" id="editCodeVerification" 
-                               class="form-control edit-code-input" 
-                               placeholder="Enter 5-digit code" maxlength="5" 
-                               pattern="\d{5}" inputmode="numeric" aria-label="5-digit edit code">
+                        <label for="editCodeVerification">Edit Verification Code *</label>
+                        <input type="password" id="editCodeVerification" class="form-control edit-code-input" placeholder="Enter 5-digit code" maxlength="5" pattern="\d{5}" style="font-family: monospace; font-size: 1.25rem; letter-spacing: 8px; text-align: center; padding: 12px;">
                         <small class="text-muted">5-digit code required for doctor edits</small>
                     </div>
                 </div>
-                
                 <div class="form-group">
-                    <label for="editProjectName">
-                        <i class="mdi mdi-text-box"></i>
-                        <span>Project Name *</span>
-                    </label>
-                    <input type="text" id="editProjectName" class="form-control" 
-                           placeholder="Enter project name" aria-label="Edit project name">
+                    <label for="editProjectName">Project Name *</label>
+                    <input type="text" id="editProjectName" class="form-control" placeholder="Enter project name">
                 </div>
                 <div class="form-group">
-                    <label for="editProjectDescription">
-                        <i class="mdi mdi-text"></i>
-                        <span>Description</span>
-                    </label>
-                    <textarea id="editProjectDescription" class="form-control" 
-                              placeholder="Project description" rows="3" aria-label="Edit project description"></textarea>
+                    <label for="editProjectDescription">Description</label>
+                    <textarea id="editProjectDescription" class="form-control" placeholder="Project description" rows="3"></textarea>
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div class="form-group">
-                        <label for="editProjectStatus">
-                            <i class="mdi mdi-state-machine"></i>
-                            <span>Status</span>
-                        </label>
-                        <select id="editProjectStatus" class="form-control" aria-label="Edit project status">
+                        <label for="editProjectStatus">Status</label>
+                        <select id="editProjectStatus" class="form-control">
                             <option value="planning">Planning</option>
                             <option value="development">Development</option>
                             <option value="testing">Testing</option>
@@ -2177,42 +685,32 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editProjectProgress">
-                            <i class="mdi mdi-progress-clock"></i>
-                            <span>Progress (%)</span>
-                        </label>
-                        <input type="number" id="editProjectProgress" class="form-control" 
-                               min="0" max="100" value="0" aria-label="Edit project progress">
+                        <label for="editProjectProgress">Progress (%)</label>
+                        <input type="number" id="editProjectProgress" class="form-control" min="0" max="100" value="0">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="checkbox-label" for="editProjectNeedsFeedback">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
                         <input type="checkbox" id="editProjectNeedsFeedback">
                         <i class="mdi mdi-alert-circle"></i>
                         <span>Needs Feedback/Review</span>
                     </label>
                 </div>
-                
-                <!-- Visibility Control (admin only) -->
                 <div id="visibilityControl" class="hidden">
                     <div class="form-group">
-                        <label for="editProjectVisibility">
-                            <i class="mdi mdi-eye"></i>
-                            <span>Visibility</span>
-                        </label>
-                        <select id="editProjectVisibility" class="form-control" aria-label="Project visibility">
+                        <label for="editProjectVisibility">Visibility</label>
+                        <select id="editProjectVisibility" class="form-control">
                             <option value="public">🌍 Public (All users)</option>
                             <option value="private">🔒 Private (Doctors & Admin only)</option>
                         </select>
                     </div>
                 </div>
-                
-                <div class="form-row">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <button id="updateProjectBtn" class="btn-primary">
                         <i class="mdi mdi-content-save"></i>
                         <span>Update Project</span>
                     </button>
-                    <button id="deleteProjectBtn" class="btn-primary btn-danger">
+                    <button id="deleteProjectBtn" class="btn-primary" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
                         <i class="mdi mdi-delete"></i>
                         <span>Delete Project</span>
                     </button>
@@ -2231,60 +729,33 @@
                     <i class="mdi mdi-toolbox"></i>
                     <span>Add New Tool</span>
                 </h3>
-                <button class="modal-close" aria-label="Close add tool modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="toolName">
-                        <i class="mdi mdi-text-box"></i>
-                        <span>Tool Name *</span>
-                    </label>
-                    <input type="text" id="toolName" class="form-control" 
-                           placeholder="Enter tool name" aria-label="Tool name">
+                    <label for="toolName">Tool Name *</label>
+                    <input type="text" id="toolName" class="form-control" placeholder="Enter tool name">
                 </div>
                 <div class="form-group">
-                    <label for="toolDescription">
-                        <i class="mdi mdi-text"></i>
-                        <span>Description</span>
-                    </label>
-                    <textarea id="toolDescription" class="form-control" 
-                              placeholder="Tool description" rows="3" aria-label="Tool description"></textarea>
+                    <label for="toolDescription">Description</label>
+                    <textarea id="toolDescription" class="form-control" placeholder="Tool description" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="toolUrl">
-                        <i class="mdi mdi-link"></i>
-                        <span>URL *</span>
-                    </label>
-                    <input type="url" id="toolUrl" class="form-control" 
-                           placeholder="https://tool.example.com" aria-label="Tool URL">
+                    <label for="toolUrl">URL *</label>
+                    <input type="url" id="toolUrl" class="form-control" placeholder="https://tool.example.com">
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div class="form-group">
-                        <label for="toolStatus">
-                            <i class="mdi mdi-state-machine"></i>
-                            <span>Status</span>
-                        </label>
-                        <select id="toolStatus" class="form-control" aria-label="Tool status">
+                        <label for="toolStatus">Status</label>
+                        <select id="toolStatus" class="form-control">
                             <option value="operational" selected>Operational</option>
                             <option value="warning">Needs Attention</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="toolIcon">
-                            <i class="mdi mdi-image"></i>
-                            <span>Icon Class</span>
-                        </label>
-                        <input type="text" id="toolIcon" class="form-control" 
-                               placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox" aria-label="Tool icon class">
+                        <label for="toolIcon">Icon Class</label>
+                        <input type="text" id="toolIcon" class="form-control" placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="toolCategory">
-                        <i class="mdi mdi-tag"></i>
-                        <span>Category</span>
-                    </label>
-                    <input type="text" id="toolCategory" class="form-control" 
-                           placeholder="Development, Analysis, Research" aria-label="Tool category">
                 </div>
                 <button id="saveToolBtn" class="btn-primary">
                     <i class="mdi mdi-content-save"></i>
@@ -2304,15 +775,12 @@
                     <i class="mdi mdi-key-chain"></i>
                     <span>Project Edit Codes</span>
                 </h3>
-                <button class="modal-close" aria-label="Close codes modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="text" id="codeSearch" class="form-control" 
-                           placeholder="Search projects by name..." 
-                           style="width: 100%;" aria-label="Search projects">
+                    <input type="text" id="codeSearch" class="form-control" placeholder="Search projects by name...">
                 </div>
-                
                 <div class="codes-table-container">
                     <table class="codes-table">
                         <thead>
@@ -2324,12 +792,11 @@
                             </tr>
                         </thead>
                         <tbody id="codesTableBody">
-                            <!-- Codes loaded dynamically -->
+                            <!-- Codes loaded here -->
                         </tbody>
                     </table>
                 </div>
-                
-                <div class="form-footer">
+                <div class="form-footer" style="margin-top: 1.25rem; text-align: center; color: var(--gray-500);">
                     <p class="hint">
                         <i class="mdi mdi-information"></i>
                         <span>Doctors need these 5-digit codes to edit projects</span>
@@ -2339,7 +806,7 @@
         </div>
     </div>
 
-    <!-- Reset Code Modal with QR -->
+    <!-- Reset Code Modal -->
     <div id="resetCodeModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
@@ -2347,60 +814,38 @@
                     <i class="mdi mdi-key-change"></i>
                     <span>Reset Project Code</span>
                 </h3>
-                <button class="modal-close" aria-label="Close reset code modal">&times;</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="resetProjectSelect">
-                        <i class="mdi mdi-flask"></i>
-                        <span>Select Project</span>
-                    </label>
-                    <select id="resetProjectSelect" class="form-control" aria-label="Select project to reset code">
+                    <label for="resetProjectSelect">Select Project</label>
+                    <select id="resetProjectSelect" class="form-control">
                         <option value="">-- Choose a project --</option>
-                        <!-- Projects loaded dynamically -->
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label>
-                        <i class="mdi mdi-key"></i>
-                        <span>Current Code</span>
-                    </label>
-                    <div id="currentCodeDisplay" class="form-control code-display" style="text-align: center; padding: 15px;">
-                        -----
-                    </div>
+                    <label>Current Code</label>
+                    <div id="currentCodeDisplay" class="form-control code-display" style="text-align: center; padding: 15px;">-----</div>
                 </div>
-                
                 <div class="form-group">
-                    <label for="newCodeOption">
-                        <i class="mdi mdi-cog"></i>
-                        <span>New Code Options</span>
-                    </label>
-                    <select id="newCodeOption" class="form-control" aria-label="New code options">
+                    <label for="newCodeOption">New Code Options</label>
+                    <select id="newCodeOption" class="form-control">
                         <option value="random">Generate Random Code</option>
                         <option value="custom">Enter Custom Code</option>
                     </select>
                 </div>
-                
                 <div id="customCodeSection" class="form-group hidden">
-                    <label for="customCode">
-                        <i class="mdi mdi-keyboard"></i>
-                        <span>Custom 5-digit Code</span>
-                    </label>
-                    <input type="text" id="customCode" class="form-control edit-code-input" 
-                           maxlength="5" pattern="\d{5}" placeholder="12345" aria-label="Custom 5-digit code">
+                    <label for="customCode">Custom 5-digit Code</label>
+                    <input type="text" id="customCode" class="form-control edit-code-input" maxlength="5" pattern="\d{5}" placeholder="12345" style="font-family: monospace; font-size: 1.25rem; letter-spacing: 8px; text-align: center; padding: 12px;">
                     <small class="text-muted">Must be exactly 5 digits (0-9)</small>
                 </div>
-                
                 <button id="generateCodeBtn" class="btn-primary">
                     <i class="mdi mdi-refresh"></i>
                     <span>Generate New Code</span>
                 </button>
-                
-                <!-- QR Code Section -->
                 <div id="qrCodeSection" class="hidden">
                     <div class="qr-container">
-                        <h4 style="margin-bottom: var(--space-3); color: var(--gray-700);">
+                        <h4 style="margin-bottom: 0.75rem; color: var(--gray-700);">
                             <i class="mdi mdi-qrcode"></i>
                             Scan to Share
                         </h4>
@@ -2410,24 +855,86 @@
                         </p>
                     </div>
                 </div>
-                
-                <div class="form-row" style="margin-top: 20px;">
+                <div class="form-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1rem;">
                     <button id="copyCodeBtn" class="btn-primary" style="background: var(--medical-teal);">
                         <i class="mdi mdi-content-copy"></i>
                         <span>Copy Code</span>
                     </button>
                     <button id="showQRBtn" class="btn-primary" style="background: var(--medical-purple);">
                         <i class="mdi mdi-qrcode"></i>
-                        <span>Show QR Code</span>
+                        <span>Show QR</span>
                     </button>
-                    <button id="notifyDoctorBtn" class="btn-primary" style="background: var(--primary-600);">
+                    <button id="notifyDoctorBtn" class="btn-primary">
                         <i class="mdi mdi-email-send"></i>
-                        <span>Email Doctor</span>
+                        <span>Email</span>
                     </button>
                 </div>
-                
                 <div id="resetCodeError" class="error-message"></div>
                 <div id="resetCodeSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div id="commentsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-comment-multiple"></i>
+                    <span>Public Comments</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="commentsList" class="comments-list">
+                    <!-- Comments loaded here -->
+                </div>
+                <div class="form-footer" style="margin-top: 1.25rem; text-align: center; color: var(--gray-500);">
+                    <p class="hint">
+                        <i class="mdi mdi-shield-star"></i>
+                        <span>All comments are reviewed before publication</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Comments Modal (Admin) -->
+    <div id="manageCommentsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-comment-processing"></i>
+                    <span>Manage Comments</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="commentSearch" class="form-control" placeholder="Search comments...">
+                </div>
+                <div class="codes-table-container">
+                    <table class="codes-table">
+                        <thead>
+                            <tr>
+                                <th>Comment</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commentsTableBody">
+                            <!-- Comments loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-footer" style="margin-top: 1.25rem; text-align: center; color: var(--gray-500);">
+                    <p class="hint">
+                        <i class="mdi mdi-information"></i>
+                        <span>Approve comments to make them publicly visible</span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -2437,21 +944,72 @@
         // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
-
-        // ========== SUPABASE INITIALIZATION ==========
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== STATE MANAGEMENT ==========
+        // ========== STATE ==========
         let currentUser = null;
         let authToken = localStorage.getItem('traci_auth_token');
-        let dashboardData = {
-            projects: [],
-            tools: [],
-            filteredProjects: [],
-            lastUpdated: new Date()
-        };
+        let dashboardData = { projects: [], tools: [], filteredProjects: [], comments: [], lastUpdated: new Date() };
 
-        // ========== PASSWORD HASHING ==========
+        // ========== DATABASE SCHEMA ==========
+        /*
+        REQUIRED TABLES in Supabase:
+        
+        1. dashboard_users
+           - id (uuid, primary key)
+           - username (text, unique)
+           - password (text) - store SHA256 hash
+           - full_name (text)
+           - role (text) - 'admin', 'doctor', 'guest'
+           - department (text)
+           - created_at (timestamp)
+        
+        2. projects
+           - id (uuid, primary key)
+           - name (text)
+           - description (text)
+           - status (text) - 'planning', 'development', 'testing', 'production'
+           - progress (integer)
+           - needs_feedback (boolean)
+           - visibility (text) - 'public', 'private'
+           - edit_code (text) - 5-digit code
+           - recommended_by (text)
+           - github_url (text)
+           - live_url (text)
+           - last_updated (timestamp)
+           - created_at (timestamp)
+        
+        3. tools
+           - id (uuid, primary key)
+           - name (text)
+           - description (text)
+           - url (text)
+           - status (text) - 'operational', 'warning'
+           - icon (text)
+           - category (text)
+           - last_checked (timestamp)
+           - created_at (timestamp)
+        
+        4. feedback_channels
+           - id (uuid, primary key)
+           - project_id (uuid, foreign key)
+           - channel (text) - 'email', 'whatsapp', 'github', 'slack'
+           - label (text)
+           - action_url (text)
+           - created_at (timestamp)
+        
+        5. guest_comments (NEW TABLE)
+           - id (uuid, primary key)
+           - comment (text, max 150 words)
+           - author_name (text) - optional
+           - author_email (text) - optional
+           - status (text) - 'pending', 'approved', 'rejected'
+           - approved_by (text) - admin who approved
+           - approved_at (timestamp)
+           - created_at (timestamp)
+        */
+
+        // ========== AUTH FUNCTIONS ==========
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -2460,14 +1018,12 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ========== AUTHENTICATION FUNCTIONS ==========
         async function loginUser(username, password) {
             const errorEl = document.getElementById('loginError');
             errorEl.style.display = 'none';
             
             try {
                 const hashedPassword = await hashPassword(password);
-                
                 const { data, error } = await supabaseClient
                     .from('dashboard_users')
                     .select('*')
@@ -2499,7 +1055,6 @@
                 return true;
                 
             } catch (error) {
-                console.error('Login error:', error);
                 errorEl.textContent = 'Login failed. Please try again.';
                 errorEl.style.display = 'block';
                 return false;
@@ -2519,44 +1074,8 @@
                 try {
                     currentUser = JSON.parse(atob(authToken));
                 } catch (e) {
-                    console.error('Failed to parse auth token:', e);
                     localStorage.removeItem('traci_auth_token');
                 }
-            }
-        }
-
-        // ========== AUTO-CREATE FEEDBACK CHANNELS ==========
-        async function autoCreateFeedbackChannels(projectId, projectName) {
-            try {
-                const channels = [
-                    {
-                        project_id: projectId,
-                        channel: 'email',
-                        label: 'Email Feedback',
-                        action_url: `mailto:feedback@pneumology-innovation.com?subject=Feedback on ${encodeURIComponent(projectName)}`
-                    },
-                    {
-                        project_id: projectId,
-                        channel: 'whatsapp',
-                        label: 'WhatsApp Group',
-                        action_url: `https://wa.me/?text=Feedback on ${encodeURIComponent(projectName)} - Pneumology Innovation`
-                    }
-                ];
-                
-                for (const channel of channels) {
-                    const { error } = await supabaseClient
-                        .from('feedback_channels')
-                        .insert([channel]);
-                    
-                    if (error) {
-                        console.error('Error creating feedback channel:', error);
-                    }
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error auto-creating feedback channels:', error);
-                return false;
             }
         }
 
@@ -2569,50 +1088,53 @@
             const adminControls = document.getElementById('adminControls');
             const contentGrid = document.getElementById('contentGrid');
             const filterControls = document.getElementById('filterControls');
+            const guestWelcome = document.getElementById('guestWelcome');
+            const guestCommentSection = document.getElementById('guestCommentSection');
             
             if (currentUser) {
                 guestView.classList.add('hidden');
                 userView.classList.remove('hidden');
                 loginRequiredSection.classList.add('hidden');
                 
-                // Set user avatar initials
+                // Set user info
                 const avatar = document.getElementById('userAvatar');
                 const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 avatar.textContent = initials;
-                avatar.setAttribute('aria-label', `Avatar for ${name}`);
+                document.getElementById('currentUsername').textContent = name;
                 
-                // Set username
-                document.getElementById('currentUsername').textContent = 
-                    currentUser.full_name || currentUser.username;
-                
-                // Set role badge
                 const roleBadge = document.getElementById('currentUserRole');
                 roleBadge.textContent = currentUser.role;
                 roleBadge.className = `user-role ${currentUser.role}`;
                 
-                if (currentUser.role !== 'guest') {
-                    statsContainer.classList.remove('hidden');
-                    filterControls.classList.remove('hidden');
-                    contentGrid.classList.remove('hidden');
-                    initDashboard();
-                } else {
-                    statsContainer.classList.add('hidden');
-                    filterControls.classList.add('hidden');
-                    contentGrid.classList.add('hidden');
-                    initDashboard(); // Guests still need to load projects (filtered)
-                }
+                // Show content based on role
+                statsContainer.classList.remove('hidden');
+                contentGrid.classList.remove('hidden');
+                initDashboard();
                 
-                if (currentUser.role === 'admin') {
-                    adminControls.classList.remove('hidden');
-                } else {
+                if (currentUser.role === 'guest') {
+                    filterControls.classList.add('hidden');
                     adminControls.classList.add('hidden');
+                    guestWelcome.classList.remove('hidden');
+                    guestCommentSection.classList.remove('hidden');
+                } else {
+                    filterControls.classList.remove('hidden');
+                    guestWelcome.classList.add('hidden');
+                    guestCommentSection.classList.add('hidden');
+                    
+                    if (currentUser.role === 'admin') {
+                        adminControls.classList.remove('hidden');
+                    } else {
+                        adminControls.classList.add('hidden');
+                    }
                 }
                 
             } else {
                 guestView.classList.remove('hidden');
                 userView.classList.add('hidden');
                 adminControls.classList.add('hidden');
+                guestWelcome.classList.add('hidden');
+                guestCommentSection.classList.add('hidden');
                 showLoginRequired();
             }
         }
@@ -2632,7 +1154,9 @@
             editProject: document.getElementById('editProjectModal'),
             addTool: document.getElementById('addToolModal'),
             viewCodes: document.getElementById('viewCodesModal'),
-            resetCode: document.getElementById('resetCodeModal')
+            resetCode: document.getElementById('resetCodeModal'),
+            comments: document.getElementById('commentsModal'),
+            manageComments: document.getElementById('manageCommentsModal')
         };
 
         function showModal(modalName) {
@@ -2642,12 +1166,6 @@
             if (modals[modalName]) {
                 modals[modalName].style.display = 'flex';
                 document.body.style.overflow = 'hidden';
-                
-                // Focus on first input if available
-                setTimeout(() => {
-                    const firstInput = modals[modalName].querySelector('input, select, textarea');
-                    if (firstInput) firstInput.focus();
-                }, 100);
             }
         }
 
@@ -2673,7 +1191,8 @@
             try {
                 await Promise.all([
                     fetchProjects(),
-                    fetchTools()
+                    fetchTools(),
+                    fetchComments()
                 ]);
                 
                 updateStats();
@@ -2694,7 +1213,6 @@
                     feedback_channels (*)
                 `);
             
-            // Apply visibility filter based on user role
             if (currentUser && currentUser.role === 'guest') {
                 query = query.eq('visibility', 'public');
             }
@@ -2728,9 +1246,245 @@
             dashboardData.tools = data || [];
         }
 
-        // ========== EDIT CODE MANAGEMENT FUNCTIONS ==========
-        
-        // Load and display edit codes in table
+        async function fetchComments() {
+            const { data, error } = await supabaseClient
+                .from('guest_comments')
+                .select('*')
+                .eq('status', 'approved')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching comments:', error);
+                dashboardData.comments = [];
+                return;
+            }
+            
+            dashboardData.comments = data || [];
+        }
+
+        // ========== COMMENT SYSTEM ==========
+        async function submitGuestComment(commentText) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('guest_comments')
+                    .insert([{
+                        comment: commentText,
+                        status: 'pending',
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('commentSuccess').style.display = 'block';
+                document.getElementById('guestComment').value = '';
+                document.getElementById('wordCount').textContent = '0/150 words';
+                
+                setTimeout(() => {
+                    document.getElementById('commentSuccess').style.display = 'none';
+                }, 3000);
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                alert('Failed to submit comment: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function loadPublicComments() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('guest_comments')
+                    .select('*')
+                    .eq('status', 'approved')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const commentsList = document.getElementById('commentsList');
+                
+                if (!data || data.length === 0) {
+                    commentsList.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: var(--gray-500);">
+                            <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: 0.75rem;"></i>
+                            <p>No public comments yet. Be the first to share!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let commentsHTML = '';
+                data.forEach(comment => {
+                    const date = new Date(comment.created_at);
+                    const dateStr = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    commentsHTML += `
+                        <div class="comment-item">
+                            <div class="comment-meta">
+                                <span class="comment-author">${comment.author_name || 'Anonymous Guest'}</span>
+                                <span class="comment-date">${dateStr}</span>
+                            </div>
+                            <div class="comment-text">${comment.comment}</div>
+                        </div>
+                    `;
+                });
+                
+                commentsList.innerHTML = commentsHTML;
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                document.getElementById('commentsList').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--danger);">
+                        <i class="mdi mdi-alert-circle" style="font-size: 3rem; margin-bottom: 0.75rem;"></i>
+                        <p>Failed to load comments</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function manageComments() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('guest_comments')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const tbody = document.getElementById('commentsTableBody');
+                tbody.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--gray-500);">
+                                No comments to manage
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                data.forEach(comment => {
+                    const date = new Date(comment.created_at);
+                    const dateStr = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    const statusBadge = comment.status === 'approved' 
+                        ? `<span class="comment-status status-approved">Approved</span>`
+                        : comment.status === 'rejected'
+                        ? `<span class="comment-status" style="background: #fee2e2; color: #dc2626;">Rejected</span>`
+                        : `<span class="comment-status status-pending">Pending</span>`;
+                    
+                    const actions = comment.status === 'pending' 
+                        ? `
+                            <button class="action-btn edit-btn" onclick="approveComment('${comment.id}')" style="font-size: 0.75rem;">
+                                <i class="mdi mdi-check"></i> Approve
+                            </button>
+                            <button class="action-btn delete-btn" onclick="rejectComment('${comment.id}')" style="font-size: 0.75rem;">
+                                <i class="mdi mdi-close"></i> Reject
+                            </button>
+                        `
+                        : `
+                            <button class="action-btn delete-btn" onclick="deleteComment('${comment.id}')" style="font-size: 0.75rem;">
+                                <i class="mdi mdi-delete"></i> Delete
+                            </button>
+                        `;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="max-width: 300px; word-wrap: break-word;">
+                            ${comment.comment.substring(0, 100)}${comment.comment.length > 100 ? '...' : ''}
+                        </td>
+                        <td>${comment.author_name || 'Anonymous'}</td>
+                        <td>${dateStr}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actions}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading comments for management:', error);
+                alert('Failed to load comments');
+            }
+        }
+
+        async function approveComment(commentId) {
+            try {
+                const { error } = await supabaseClient
+                    .from('guest_comments')
+                    .update({
+                        status: 'approved',
+                        approved_by: currentUser.full_name || currentUser.username,
+                        approved_at: new Date().toISOString()
+                    })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                alert('Comment approved!');
+                manageComments(); // Refresh the list
+                initDashboard(); // Update stats
+                
+            } catch (error) {
+                console.error('Error approving comment:', error);
+                alert('Failed to approve comment');
+            }
+        }
+
+        async function rejectComment(commentId) {
+            try {
+                const { error } = await supabaseClient
+                    .from('guest_comments')
+                    .update({
+                        status: 'rejected',
+                        approved_by: currentUser.full_name || currentUser.username,
+                        approved_at: new Date().toISOString()
+                    })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                alert('Comment rejected');
+                manageComments(); // Refresh the list
+                
+            } catch (error) {
+                console.error('Error rejecting comment:', error);
+                alert('Failed to reject comment');
+            }
+        }
+
+        async function deleteComment(commentId) {
+            if (!confirm('Delete this comment permanently?')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('guest_comments')
+                    .delete()
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                alert('Comment deleted');
+                manageComments(); // Refresh the list
+                initDashboard(); // Update stats
+                
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                alert('Failed to delete comment');
+            }
+        }
+
+        // ========== EDIT CODE MANAGEMENT ==========
         async function loadEditCodes() {
             try {
                 const { data: projects, error } = await supabaseClient
@@ -2746,8 +1500,8 @@
                 if (projects.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
-                                <i class="mdi mdi-information" style="font-size: 2rem; margin-bottom: var(--space-2);"></i>
+                            <td colspan="4" style="text-align: center; padding: 3rem; color: var(--gray-500);">
+                                <i class="mdi mdi-information" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
                                 <p>No projects found</p>
                             </td>
                         </tr>
@@ -2756,9 +1510,6 @@
                 }
                 
                 projects.forEach(project => {
-                    const row = document.createElement('tr');
-                    
-                    // Format date
                     const createdDate = new Date(project.created_at);
                     const dateStr = createdDate.toLocaleDateString('en-US', { 
                         month: 'short', 
@@ -2766,6 +1517,7 @@
                         year: 'numeric'
                     });
                     
+                    const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>
                             <div style="font-weight: 600;">${project.name}</div>
@@ -2788,40 +1540,28 @@
                             </button>
                         </td>
                     `;
-                    
                     tbody.appendChild(row);
                 });
                 
-                // Setup search functionality
-                setupCodeSearch();
+                // Setup search
+                document.getElementById('codeSearch').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    const rows = tbody.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
+                        row.style.display = projectName.includes(searchTerm) ? '' : 'none';
+                    });
+                });
                 
             } catch (error) {
                 console.error('Error loading edit codes:', error);
-                showMessage('Failed to load edit codes', 'error');
+                alert('Failed to load edit codes');
             }
         }
 
-        // Setup search for codes table
-        function setupCodeSearch() {
-            const searchInput = document.getElementById('codeSearch');
-            if (!searchInput) return;
-            
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                const rows = document.querySelectorAll('#codesTableBody tr');
-                
-                rows.forEach(row => {
-                    const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
-                    row.style.display = projectName.includes(searchTerm) ? '' : 'none';
-                });
-            });
-        }
-
-        // Reset a single project's edit code
         async function resetSingleCode(projectId, projectName) {
-            if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) {
-                return;
-            }
+            if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) return;
             
             try {
                 const newCode = Math.floor(10000 + Math.random() * 90000).toString();
@@ -2841,152 +1581,28 @@
                 
             } catch (error) {
                 console.error('Error resetting code:', error);
-                alert('Failed to reset code: ' + error.message);
+                alert('Failed to reset code');
             }
         }
 
-        // Load projects for reset code modal
-        async function loadProjectsForReset() {
-            try {
-                const { data: projects, error } = await supabaseClient
-                    .from('projects')
-                    .select('id, name')
-                    .order('name');
-                
-                if (error) throw error;
-                
-                const select = document.getElementById('resetProjectSelect');
-                select.innerHTML = '<option value="">-- Choose a project --</option>';
-                
-                projects.forEach(project => {
-                    const option = document.createElement('option');
-                    option.value = project.id;
-                    option.textContent = project.name;
-                    select.appendChild(option);
-                });
-                
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        }
-
-        // Get current code for a project
-        async function getProjectCode(projectId) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('projects')
-                    .select('edit_code, name')
-                    .eq('id', projectId)
-                    .single();
-                
-                if (error) throw error;
-                
-                return { success: true, code: data.edit_code, name: data.name };
-                
-            } catch (error) {
-                console.error('Error getting project code:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Reset project edit code
-        async function resetProjectCode(projectId, newCode = null) {
-            try {
-                // Generate new code if not provided
-                const editCode = newCode || Math.floor(10000 + Math.random() * 90000).toString();
-                
-                const { error } = await supabaseClient
-                    .from('projects')
-                    .update({ 
-                        edit_code: editCode,
-                        last_updated: new Date().toISOString()
-                    })
-                    .eq('id', projectId);
-                
-                if (error) throw error;
-                
-                return { success: true, code: editCode };
-                
-            } catch (error) {
-                console.error('Error resetting code:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Generate QR code for sharing edit code
-        function generateQRCode(projectName, editCode) {
-            const qrContainer = document.getElementById('qrCode');
-            if (!qrContainer) return;
-            
-            // Clear previous QR code
-            qrContainer.innerHTML = '';
-            
-            // Create QR code data
-            const qrData = `TRAci Edit Code\n\nProject: ${projectName}\nCode: ${editCode}\n\nScan this code or enter manually`;
-            
-            // Generate QR code
-            QRCode.toCanvas(qrContainer, qrData, {
-                width: 200,
-                height: 200,
-                margin: 1,
-                color: {
-                    dark: '#0c4a6e',
-                    light: '#ffffff'
-                }
-            }, function(error) {
-                if (error) {
-                    console.error('QR Code generation error:', error);
-                    qrContainer.innerHTML = '<p style="color: var(--danger);">Failed to generate QR code</p>';
-                }
-            });
-        }
-
-        // Copy to clipboard
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showMessage('Code copied to clipboard!', 'success');
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-                showMessage('Failed to copy code', 'error');
-            });
-        }
-
-        // Notify doctor via email
-        function notifyDoctor(projectName, editCode) {
-            const subject = `TRAci Edit Code for ${projectName}`;
-            const body = `Hello Doctor,\n\nYour edit code for project "${projectName}" is:\n\n🔐 **${editCode}**\n\nUse this code to edit the project in the TRAci Innovation Dashboard.\n\nYou can also scan the QR code attached to this email for quick access.\n\nBest regards,\nPneumology Innovation Department`;
-            
-            // Open email client
-            window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
-            
-            return true;
-        }
-
-        // ========== PROJECT CRUD OPERATIONS ==========
+        // ========== PROJECT CRUD ==========
         async function addProject(projectData) {
             try {
-                // Generate a 5-digit edit code
                 const editCode = Math.floor(10000 + Math.random() * 90000).toString();
                 
                 const { data, error } = await supabaseClient
                     .from('projects')
                     .insert([{
                         ...projectData,
+                        edit_code: editCode,
                         last_updated: new Date().toISOString(),
-                        visibility: 'public',
-                        edit_code: editCode
+                        visibility: 'public'
                     }])
                     .select()
                     .single();
                 
                 if (error) throw error;
                 
-                // Auto-create feedback channels if needed
-                if (projectData.needs_feedback) {
-                    await autoCreateFeedbackChannels(data.id, projectData.name);
-                }
-                
-                // SHOW THE CODE TO THE ADMIN!
                 alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
                 
                 showSuccess('projectSuccess', 'Project added successfully!');
@@ -3006,11 +1622,9 @@
 
         async function updateProject(projectId, projectData) {
             try {
-                // Verify edit code for doctors
                 if (currentUser && currentUser.role === 'doctor') {
                     const enteredCode = document.getElementById('editCodeVerification').value;
                     
-                    // Validate 5-digit code
                     if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
                         showError('editProjectError', 'Valid 5-digit edit code required');
                         return { success: false, error: 'Invalid edit code format' };
@@ -3060,113 +1674,17 @@
             }
         }
 
-        async function deleteProject(projectId) {
-            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-                return { success: false, error: 'Cancelled by user' };
-            }
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('projects')
-                    .delete()
-                    .eq('id', projectId);
-                
-                if (error) throw error;
-                
-                alert('Project deleted successfully!');
-                hideAllModals();
-                await initDashboard();
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Error deleting project:', error);
-                alert('Failed to delete project: ' + error.message);
-                return { success: false, error: error.message };
-            }
-        }
-
-        async function recommendProject(projectId) {
-            try {
-                // Get project name first
-                const { data: project, error: fetchError } = await supabaseClient
-                    .from('projects')
-                    .select('name')
-                    .eq('id', projectId)
-                    .single();
-                
-                if (fetchError || !project) {
-                    alert('Project not found');
-                    return { success: false, error: 'Project not found' };
-                }
-                
-                const { error } = await supabaseClient
-                    .from('projects')
-                    .update({
-                        recommended_by: currentUser.full_name || currentUser.username,
-                        needs_feedback: true,
-                        visibility: 'private',
-                        last_updated: new Date().toISOString()
-                    })
-                    .eq('id', projectId);
-                
-                if (error) throw error;
-                
-                // Auto-create feedback channels
-                await autoCreateFeedbackChannels(projectId, project.name);
-                
-                alert('Project recommended for review! Feedback channels have been created.');
-                await initDashboard();
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Error recommending project:', error);
-                alert('Failed to recommend project: ' + error.message);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== TOOL CRUD OPERATIONS ==========
-        async function addTool(toolData) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('tools')
-                    .insert([{
-                        ...toolData,
-                        last_checked: new Date().toISOString()
-                    }])
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                showSuccess('toolSuccess', 'Tool added successfully!');
-                setTimeout(() => {
-                    hideAllModals();
-                    initDashboard();
-                }, 1500);
-                
-                return { success: true, data };
-                
-            } catch (error) {
-                console.error('Error adding tool:', error);
-                showError('toolError', 'Failed to add tool: ' + error.message);
-                return { success: false, error: error.message };
-            }
-        }
-
         // ========== RENDER FUNCTIONS ==========
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
             const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-            const activeCount = dashboardData.projects.filter(p => 
-                p.status === 'development' || p.status === 'testing'
-            ).length;
+            const commentsCount = dashboardData.comments.length;
 
             document.getElementById('toolsCount').textContent = toolsCount;
             document.getElementById('projectsCount').textContent = projectsCount;
             document.getElementById('feedbackCount').textContent = feedbackCount;
-            document.getElementById('activeCount').textContent = activeCount;
+            document.getElementById('commentsCount').textContent = commentsCount;
 
             const feedbackBadge = document.getElementById('feedbackBadge');
             if (feedbackCount > 0) {
@@ -3189,14 +1707,13 @@
                 toolsGrid.innerHTML = `
                     <div class="empty-state">
                         <i class="mdi mdi-toolbox-outline" style="font-size: 3rem;"></i>
-                        <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
+                        <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : 'Contact admin to add tools.'}</p>
                     </div>
                 `;
                 return;
             }
             
             let toolsHTML = '';
-            
             dashboardData.tools.forEach(tool => {
                 const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
                 const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
@@ -3246,19 +1763,17 @@
                 projectsList.innerHTML = `
                     <div class="empty-state">
                         <i class="mdi mdi-flask-outline" style="font-size: 3rem;"></i>
-                        <p>No projects found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Project" to create one.' : ''}</p>
+                        <p>No projects found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Project" to create one.' : 'Contact admin to add public projects.'}</p>
                     </div>
                 `;
                 return;
             }
             
             let projectsHTML = '';
-            
             projectsToRender.forEach(project => {
                 const statusClass = `status-${project.status}`;
                 const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
                 
-                // Visibility badge
                 const visibilityBadge = project.visibility === 'private' 
                     ? `<span class="visibility-badge private" title="Visible to doctors and admin only">
                          <i class="mdi mdi-lock"></i> Private
@@ -3267,63 +1782,16 @@
                          <i class="mdi mdi-earth"></i> Public
                        </span>`;
                 
-                // Feedback channels
-                let feedbackChannelsHTML = '';
-                if (project.needs_feedback && project.feedback_channels && project.feedback_channels.length > 0) {
-                    project.feedback_channels.forEach(channel => {
-                        let icon = 'mdi mdi-email';
-                        let className = 'email';
-                        
-                        if (channel.channel === 'whatsapp') {
-                            icon = 'mdi mdi-whatsapp';
-                            className = 'whatsapp';
-                        } else if (channel.channel === 'github') {
-                            icon = 'mdi mdi-github';
-                            className = 'github';
-                        } else if (channel.channel === 'slack') {
-                            icon = 'mdi mdi-slack';
-                            className = 'slack';
-                        }
-                        
-                        feedbackChannelsHTML += `
-                            <a href="${channel.action_url}" target="_blank" class="channel-btn ${className}" 
-                               title="${channel.label || `Send ${channel.channel} feedback`}" aria-label="${channel.channel} feedback">
-                                <i class="${icon}"></i>
-                            </a>
-                        `;
-                    });
-                }
-                
-                // Project links
-                let projectLinks = '';
-                if (project.github_url) {
-                    projectLinks += `
-                        <a href="${project.github_url}" target="_blank" class="project-link">
-                            <i class="mdi mdi-github"></i>
-                            GitHub
-                        </a>
-                    `;
-                }
-                if (project.live_url) {
-                    projectLinks += `
-                        <a href="${project.live_url}" target="_blank" class="project-link">
-                            <i class="mdi mdi-web"></i>
-                            Live Demo
-                        </a>
-                    `;
-                }
-                
-                // Admin/Doctor actions
                 let actionButtons = '';
-                if (currentUser) {
+                if (currentUser && currentUser.role !== 'guest') {
                     if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
-                                <button class="action-btn edit-btn" data-project-id="${project.id}" aria-label="Edit project">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-pencil"></i>
                                     Edit
                                 </button>
-                                <button class="action-btn delete-btn" data-project-id="${project.id}" aria-label="Delete project">
+                                <button class="action-btn delete-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
@@ -3334,46 +1802,17 @@
                         actionButtons = `
                             <div class="project-actions">
                                 <button class="action-btn recommend-btn ${isRecommended ? 'recommended' : ''}" 
-                                        data-project-id="${project.id}" aria-label="Recommend project">
+                                        data-project-id="${project.id}">
                                     <i class="mdi mdi-star${isRecommended ? '' : '-outline'}"></i>
                                     ${isRecommended ? 'Recommended' : 'Recommend'}
                                 </button>
-                                <button class="action-btn edit-btn" data-project-id="${project.id}" aria-label="Edit project with code">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-pencil"></i>
                                     Edit (with code)
                                 </button>
                             </div>
                         `;
                     }
-                }
-                
-                // Feedback section
-                let feedbackSection = '';
-                if (project.needs_feedback) {
-                    feedbackSection = `
-                        <div class="feedback-section">
-                            <span class="feedback-badge">
-                                <i class="mdi mdi-alert"></i>
-                                Ready for review
-                            </span>
-                            ${feedbackChannelsHTML ? `
-                                <div class="feedback-channels">
-                                    ${feedbackChannelsHTML}
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                }
-                
-                // Doctor recommendation badge
-                let doctorBadge = '';
-                if (project.recommended_by) {
-                    doctorBadge = `
-                        <div class="doctor-badge">
-                            <i class="mdi mdi-doctor"></i>
-                            Recommended by ${project.recommended_by}
-                        </div>
-                    `;
                 }
                 
                 projectsHTML += `
@@ -3389,8 +1828,6 @@
                         
                         <p class="project-description">${project.description || 'No description available'}</p>
                         
-                        ${doctorBadge}
-                        
                         <div class="project-progress">
                             <div class="progress-label">
                                 <span>Progress</span>
@@ -3401,10 +1838,6 @@
                             </div>
                         </div>
                         
-                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
-                        
-                        ${feedbackSection}
-                        
                         ${actionButtons}
                     </div>
                 `;
@@ -3412,9 +1845,8 @@
             
             projectsList.innerHTML = projectsHTML;
             
-            // Add event listeners to action buttons
-            if (currentUser) {
-                // Edit buttons
+            // Add event listeners
+            if (currentUser && currentUser.role !== 'guest') {
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const projectId = this.dataset.projectId;
@@ -3425,69 +1857,7 @@
                         }
                     });
                 });
-                
-                // Delete buttons (admin only)
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const projectId = this.dataset.projectId;
-                        deleteProject(projectId);
-                    });
-                });
-                
-                // Recommend buttons (doctors only)
-                document.querySelectorAll('.recommend-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const projectId = this.dataset.projectId;
-                        recommendProject(projectId);
-                    });
-                });
             }
-        }
-
-        function loadProjectForEdit(project) {
-            document.getElementById('editProjectId').value = project.id;
-            document.getElementById('editProjectName').value = project.name || '';
-            document.getElementById('editProjectDescription').value = project.description || '';
-            document.getElementById('editProjectStatus').value = project.status || 'development';
-            document.getElementById('editProjectProgress').value = project.progress || 0;
-            document.getElementById('editProjectNeedsFeedback').checked = project.needs_feedback || false;
-            
-            // Show/hide edit code section based on role
-            const editCodeSection = document.getElementById('editCodeSection');
-            const visibilityControl = document.getElementById('visibilityControl');
-            
-            if (currentUser && currentUser.role === 'doctor') {
-                editCodeSection.classList.remove('hidden');
-                visibilityControl.classList.add('hidden');
-                document.getElementById('editCodeVerification').value = '';
-            } else if (currentUser && currentUser.role === 'admin') {
-                editCodeSection.classList.add('hidden');
-                visibilityControl.classList.remove('hidden');
-                document.getElementById('editProjectVisibility').value = project.visibility || 'public';
-            } else {
-                editCodeSection.classList.add('hidden');
-                visibilityControl.classList.add('hidden');
-            }
-        }
-
-        // ========== FILTER FUNCTIONS ==========
-        function filterProjects(filterType) {
-            // Update active filter button
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filterType);
-            });
-            
-            if (filterType === 'all') {
-                dashboardData.filteredProjects = [...dashboardData.projects];
-            } else if (filterType === 'needs_feedback') {
-                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.needs_feedback);
-            } else if (filterType === 'private') {
-                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
-            } else if (filterType === 'public') {
-                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
-            }
-            
-            renderProjects();
         }
 
         // ========== HELPER FUNCTIONS ==========
@@ -3506,7 +1876,6 @@
             
             document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
             document.getElementById('syncTime').textContent = timeString;
-            
             dashboardData.lastUpdated = now;
         }
 
@@ -3537,35 +1906,27 @@
             }
         }
 
-        function showMessage(message, type = 'info') {
-            alert(message); // For now, use alert. You could create a toast notification system.
-        }
-
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredUser();
             updateAuthUI();
             
-            // Login button events
+            // Login
             document.getElementById('loginBtn').addEventListener('click', () => showModal('login'));
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('login'));
-            
-            // Logout button
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modal close buttons
+            // Modal close
             document.querySelectorAll('.modal-close').forEach(btn => {
                 btn.addEventListener('click', hideAllModals);
             });
-            
-            // Close modal on overlay click
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) hideAllModals();
                 });
             });
             
-            // Login form submission
+            // Login form
             document.getElementById('submitLogin').addEventListener('click', async function() {
                 const username = document.getElementById('loginUsername').value.trim();
                 const password = document.getElementById('loginPassword').value.trim();
@@ -3589,16 +1950,8 @@
                 }
             });
             
-            // Allow Enter key in login form
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('submitLogin').click();
-                }
-            });
-            
             // Admin buttons
             document.getElementById('addProjectBtn').addEventListener('click', () => {
-                // Reset form
                 document.getElementById('projectName').value = '';
                 document.getElementById('projectDescription').value = '';
                 document.getElementById('projectStatus').value = 'development';
@@ -3608,17 +1961,14 @@
             });
             
             document.getElementById('addToolBtn').addEventListener('click', () => {
-                // Reset form
                 document.getElementById('toolName').value = '';
                 document.getElementById('toolDescription').value = '';
                 document.getElementById('toolUrl').value = '';
                 document.getElementById('toolStatus').value = 'operational';
                 document.getElementById('toolIcon').value = 'mdi mdi-toolbox';
-                document.getElementById('toolCategory').value = '';
                 showModal('addTool');
             });
             
-            // Edit Code Management buttons
             document.getElementById('viewCodesBtn').addEventListener('click', () => {
                 loadEditCodes();
                 showModal('viewCodes');
@@ -3630,99 +1980,64 @@
                 showModal('resetCode');
             });
             
-            // Save project
-            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
-                const projectData = {
-                    name: document.getElementById('projectName').value.trim(),
-                    description: document.getElementById('projectDescription').value.trim(),
-                    status: document.getElementById('projectStatus').value,
-                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
-                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
-                    github_url: null,
-                    live_url: null
-                };
+            document.getElementById('manageCommentsBtn').addEventListener('click', () => {
+                manageComments();
+                showModal('manageComments');
+            });
+            
+            // Guest buttons
+            document.getElementById('contactBtn').addEventListener('click', () => {
+                window.open('mailto:pneumology-innovation@hospital.com?subject=Collaboration Inquiry');
+            });
+            
+            document.getElementById('viewPublicCommentsBtn').addEventListener('click', () => {
+                loadPublicComments();
+                showModal('comments');
+            });
+            
+            document.getElementById('viewCommentsBtn').addEventListener('click', () => {
+                loadPublicComments();
+                showModal('comments');
+            });
+            
+            // Comment system
+            document.getElementById('guestComment').addEventListener('input', function() {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+                document.getElementById('wordCount').textContent = `${words}/150 words`;
                 
-                if (!projectData.name) {
-                    showError('projectError', 'Project name is required');
+                if (words > 150) {
+                    this.value = text.split(/\s+/).slice(0, 150).join(' ');
+                    document.getElementById('wordCount').textContent = '150/150 words';
+                }
+            });
+            
+            document.getElementById('submitCommentBtn').addEventListener('click', async function() {
+                const commentText = document.getElementById('guestComment').value.trim();
+                
+                if (!commentText) {
+                    alert('Please enter a comment');
                     return;
                 }
                 
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
-                this.disabled = true;
-                
-                await addProject(projectData);
-                
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
-                this.disabled = false;
-            });
-            
-            // Update project
-            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('editProjectId').value;
-                const projectData = {
-                    name: document.getElementById('editProjectName').value.trim(),
-                    description: document.getElementById('editProjectDescription').value.trim(),
-                    status: document.getElementById('editProjectStatus').value,
-                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
-                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked,
-                    github_url: null,
-                    live_url: null
-                };
-                
-                // Add visibility if admin
-                if (currentUser && currentUser.role === 'admin') {
-                    projectData.visibility = document.getElementById('editProjectVisibility').value;
-                }
-                
-                if (!projectData.name) {
-                    showError('editProjectError', 'Project name is required');
+                const words = commentText.split(/\s+/).filter(word => word.length > 0).length;
+                if (words > 150) {
+                    alert('Comment must be 150 words or less');
                     return;
                 }
                 
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Updating...';
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Submitting...';
                 this.disabled = true;
                 
-                await updateProject(projectId, projectData);
+                await submitGuestComment(commentText);
                 
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Update Project';
+                this.innerHTML = '<i class="mdi mdi-send"></i> Submit Comment';
                 this.disabled = false;
             });
             
-            // Delete project
-            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('editProjectId').value;
-                await deleteProject(projectId);
-            });
-            
-            // Save tool
-            document.getElementById('saveToolBtn').addEventListener('click', async function() {
-                const toolData = {
-                    name: document.getElementById('toolName').value.trim(),
-                    description: document.getElementById('toolDescription').value.trim(),
-                    url: document.getElementById('toolUrl').value.trim(),
-                    status: document.getElementById('toolStatus').value,
-                    icon: document.getElementById('toolIcon').value.trim() || 'mdi mdi-toolbox',
-                    category: document.getElementById('toolCategory').value.trim() || 'General'
-                };
-                
-                if (!toolData.name || !toolData.url) {
-                    showError('toolError', 'Tool name and URL are required');
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
-                this.disabled = true;
-                
-                await addTool(toolData);
-                
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Tool';
-                this.disabled = false;
-            });
-            
-            // Dashboard refresh
+            // Refresh
             document.getElementById('refreshLink').addEventListener('click', async function(e) {
                 e.preventDefault();
-                
                 if (!currentUser) return;
                 
                 const lastUpdated = document.getElementById('lastUpdatedTime');
@@ -3734,139 +2049,41 @@
                 setTimeout(() => updateTimestamp(), 2000);
             });
 
-            // Filter buttons
+            // Filters
             document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-            });
-
-            // Reset Code Modal Events
-            document.getElementById('resetProjectSelect').addEventListener('change', async function() {
-                const projectId = this.value;
-                if (!projectId) {
-                    document.getElementById('currentCodeDisplay').textContent = '-----';
-                    return;
-                }
-                
-                const result = await getProjectCode(projectId);
-                if (result.success) {
-                    document.getElementById('currentCodeDisplay').textContent = result.code || 'Not set';
-                }
-            });
-            
-            document.getElementById('newCodeOption').addEventListener('change', function() {
-                const customSection = document.getElementById('customCodeSection');
-                customSection.classList.toggle('hidden', this.value !== 'custom');
-            });
-            
-            document.getElementById('generateCodeBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('resetProjectSelect').value;
-                const option = document.getElementById('newCodeOption').value;
-                
-                if (!projectId) {
-                    showError('resetCodeError', 'Please select a project first');
-                    return;
-                }
-                
-                let newCode;
-                if (option === 'custom') {
-                    newCode = document.getElementById('customCode').value;
-                    if (!/^\d{5}$/.test(newCode)) {
-                        showError('resetCodeError', 'Please enter a valid 5-digit code (numbers only)');
-                        return;
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+                    document.querySelectorAll('#filterControls .filter-btn').forEach(b => {
+                        b.classList.toggle('active', b === btn);
+                    });
+                    
+                    if (filter === 'all') {
+                        dashboardData.filteredProjects = [...dashboardData.projects];
+                    } else if (filter === 'needs_feedback') {
+                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.needs_feedback);
+                    } else if (filter === 'private') {
+                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
+                    } else if (filter === 'public') {
+                        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
                     }
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating...';
-                this.disabled = true;
-                
-                const result = await resetProjectCode(projectId, newCode);
-                
-                this.innerHTML = '<i class="mdi mdi-refresh"></i> Generate New Code';
-                this.disabled = false;
-                
-                if (result.success) {
-                    showSuccess('resetCodeSuccess', `New code generated: ${result.code}`);
-                    document.getElementById('currentCodeDisplay').textContent = result.code;
-                    document.getElementById('customCode').value = '';
                     
-                    // Get project name for QR code
-                    const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
-                    
-                    // Show QR code section
-                    document.getElementById('qrCodeSection').classList.remove('hidden');
-                    generateQRCode(projectName, result.code);
-                } else {
-                    showError('resetCodeError', `Failed: ${result.error}`);
-                }
-            });
-            
-            document.getElementById('copyCodeBtn').addEventListener('click', function() {
-                const code = document.getElementById('currentCodeDisplay').textContent.trim();
-                if (code && code !== '-----') {
-                    copyToClipboard(code);
-                } else {
-                    showMessage('No code to copy', 'error');
-                }
-            });
-            
-            document.getElementById('showQRBtn').addEventListener('click', function() {
-                const projectId = document.getElementById('resetProjectSelect').value;
-                const code = document.getElementById('currentCodeDisplay').textContent.trim();
-                
-                if (!projectId || !code || code === '-----') {
-                    showMessage('Please generate a code first', 'error');
-                    return;
-                }
-                
-                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
-                document.getElementById('qrCodeSection').classList.remove('hidden');
-                generateQRCode(projectName, code);
-            });
-            
-            document.getElementById('notifyDoctorBtn').addEventListener('click', function() {
-                const projectId = document.getElementById('resetProjectSelect').value;
-                const code = document.getElementById('currentCodeDisplay').textContent.trim();
-                
-                if (!projectId || !code || code === '-----') {
-                    showMessage('Please generate a code first', 'error');
-                    return;
-                }
-                
-                const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
-                notifyDoctor(projectName, code);
+                    renderProjects();
+                });
             });
 
-            // Auto-refresh every 5 minutes for logged-in users
+            // Auto-refresh
             setInterval(async () => {
-                if (currentUser && currentUser.role !== 'guest') {
-                    console.log('Auto-refreshing dashboard...');
+                if (currentUser) {
                     await initDashboard();
                 }
-            }, 5 * 60 * 1000); // 5 minutes
-
-            // Handle browser back button for modals
-            window.addEventListener('popstate', function() {
-                hideAllModals();
-            });
-
-            // Close modals with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    hideAllModals();
-                }
-            });
-
-            // Initialize with focus on login if no user
-            if (!currentUser) {
-                setTimeout(() => {
-                    document.getElementById('loginUsername')?.focus();
-                }, 300);
-            }
+            }, 5 * 60 * 1000);
         });
 
-        // Make functions available globally for inline onclick handlers
+        // Make functions available globally
         window.resetSingleCode = resetSingleCode;
+        window.approveComment = approveComment;
+        window.rejectComment = rejectComment;
+        window.deleteComment = deleteComment;
     </script>
 </body>
 </html>
-       
