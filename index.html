@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neumology Innovation Project Dashboard</title>
+    <title>Neumology Innovation Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Only ONE Supabase script -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* [KEEP ALL YOUR ORIGINAL CSS - it's fine] */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -44,12 +42,334 @@
             padding: 20px;
         }
 
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .login-box p {
+            color: var(--gray);
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-error {
+            color: var(--danger);
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* User Info Bar */
+        .user-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            border: 2px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Admin Controls */
+        .admin-controls {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-controls h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* CRUD Modals */
+        .crud-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            backdrop-filter: blur(5px);
+        }
+
+        .crud-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: var(--gray-light);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .save-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .save-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .cancel-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--gray-light);
+            color: var(--gray);
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .cancel-btn:hover {
+            background: var(--border);
+        }
+
+        /* Main Dashboard Styles */
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* [KEEP ALL OTHER CSS - IT'S FINE] */
         .header {
             display: flex;
             justify-content: space-between;
@@ -57,6 +377,8 @@
             padding: 20px 0;
             margin-bottom: 30px;
             border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .logo-section {
@@ -157,10 +479,7 @@
             line-height: 1;
         }
 
-        /* [KEEP ALL THE REST OF YOUR CSS...] */
-        /* ... ALL YOUR EXISTING CSS STAYS THE SAME ... */
-        
-        /* Filter Controls - NEW IMPROVEMENT */
+        /* Filter Controls */
         .filter-controls {
             display: flex;
             gap: 10px;
@@ -190,78 +509,7 @@
             border-color: var(--primary);
         }
 
-        /* Skeleton Loading - NEW IMPROVEMENT */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Live Indicator - NEW IMPROVEMENT */
-        .live-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Mobile responsive - NEW IMPROVEMENT */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .last-updated {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-controls {
-                justify-content: center;
-            }
-        }
-
-        /* [CONTINUE WITH ALL YOUR EXISTING CSS - 
-           .content-grid, .section, .tools-grid, .tool-card, 
-           .projects-list, .project-card, .timeline, .footer, etc.] */
-           
+        /* Content Grid */
         .content-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -275,6 +523,7 @@
             }
         }
 
+        /* Sections */
         .section {
             background: var(--card-bg);
             border-radius: 16px;
@@ -300,14 +549,11 @@
             gap: 10px;
         }
 
-        .section-header h2 i {
-            font-size: 22px;
-        }
-
         .section-content {
             padding: 25px;
         }
 
+        /* Tools Grid */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -326,14 +572,6 @@
             border-color: var(--primary);
             box-shadow: var(--shadow-lg);
             transform: translateY(-3px);
-        }
-
-        .tool-card.operational {
-            border-left: 4px solid var(--success);
-        }
-
-        .tool-card.warning {
-            border-left: 4px solid var(--warning);
         }
 
         .tool-header {
@@ -413,6 +651,7 @@
             color: var(--primary-dark);
         }
 
+        /* Projects List */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -508,6 +747,7 @@
             display: flex;
             gap: 15px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .project-link {
@@ -586,6 +826,7 @@
         .github { background-color: var(--dark); }
         .slack { background-color: #4A154B; }
 
+        /* Updates Section */
         .updates-section {
             margin-top: 40px;
         }
@@ -665,6 +906,27 @@
             text-decoration: underline;
         }
 
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading States */
         .loading {
             text-align: center;
             padding: 40px;
@@ -686,25 +948,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .footer {
-            text-align: center;
-            padding: 25px;
-            color: var(--gray);
-            font-size: 14px;
-            border-top: 1px solid var(--border);
-            margin-top: 40px;
-        }
-
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -716,559 +960,1155 @@
             margin-bottom: 15px;
             color: var(--gray-light);
         }
+
+        /* Admin Action Buttons */
+        .admin-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .admin-action-btn:hover {
+            opacity: 1;
+        }
+
+        .edit-btn {
+            color: var(--primary);
+        }
+
+        .delete-btn {
+            color: var(--danger);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .last-updated {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .user-bar {
+                position: static;
+                margin-bottom: 20px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .admin-buttons {
+                justify-content: center;
+            }
+            
+            .admin-btn {
+                flex: 1;
+                min-width: 140px;
+                justify-content: center;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-btn {
+                min-width: 100%;
+            }
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-section">
-                <div class="logo">NIP</div>
-                <div class="title">
-                    <h1>Neumology Innovation Project Dashboard</h1>
-                    <p>Real-time status of all development projects & tools</p>
-                </div>
-            </div>
-            <div class="last-updated">
-                <i class="fas fa-sync-alt"></i>
-                <span>Last updated: <strong id="lastUpdatedTime">Loading...</strong></span>
-                <span class="live-indicator">
-                    <span class="live-dot"></span> LIVE
-                </span>
-            </div>
-        </header>
-
-        <!-- Stats Overview -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon tools">
-                    <i class="fas fa-toolbox"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Active Tools</h3>
-                    <div class="number" id="toolsCount">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon projects">
-                    <i class="fas fa-code-branch"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>GitHub Projects</h3>
-                    <div class="number" id="projectsCount">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon feedback">
-                    <i class="fas fa-comment-dots"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Awaiting Feedback</h3>
-                    <div class="number" id="feedbackCount">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon active">
-                    <i class="fas fa-rocket"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Active Development</h3>
-                    <div class="number" id="activeCount">0</div>
-                </div>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-box">
+            <h2>Neumology Innovation Dashboard</h2>
+            <p>Sign in to access the dashboard</p>
+            <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+            <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            <button class="login-btn" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            <div id="loginError" class="login-error">
+                <i class="fas fa-exclamation-circle"></i> Invalid username or password
             </div>
         </div>
-
-        <!-- Filter Controls - NEW IMPROVEMENT -->
-        <div class="filter-controls" id="filterControls">
-            <button class="filter-btn active" data-filter="all">All Projects</button>
-            <button class="filter-btn" data-filter="needs_feedback">Needs Feedback</button>
-            <button class="filter-btn" data-filter="development">In Development</button>
-            <button class="filter-btn" data-filter="testing">Testing</button>
-            <button class="filter-btn" data-filter="production">Production</button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="content-grid">
-            <!-- Tools Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-toolbox"></i> Live Tools & Resources</h2>
-                    <span class="status-operational tool-status" id="toolsStatus">Loading...</span>
-                </div>
-                <div class="section-content">
-                    <div class="tools-grid" id="toolsGrid">
-                        <!-- Skeleton loading - NEW IMPROVEMENT -->
-                        <div class="tool-card skeleton skeleton-card"></div>
-                        <div class="tool-card skeleton skeleton-card"></div>
-                        <div class="tool-card skeleton skeleton-card"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Projects Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2><i class="fas fa-code-branch"></i> Active Development</h2>
-                    <div class="feedback-badge" id="feedbackBadge" style="display: none;">0 projects need feedback</div>
-                </div>
-                <div class="section-content">
-                    <div class="projects-list" id="projectsList">
-                        <!-- Skeleton loading - NEW IMPROVEMENT -->
-                        <div class="project-card skeleton skeleton-card"></div>
-                        <div class="project-card skeleton skeleton-card"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Updates -->
-        <div class="section updates-section">
-            <div class="section-header">
-                <h2><i class="fas fa-history"></i> Recent Updates & Shipments</h2>
-            </div>
-            <div class="section-content">
-                <div class="timeline" id="timeline">
-                    <!-- Skeleton loading - NEW IMPROVEMENT -->
-                    <div class="timeline-item">
-                        <div class="skeleton skeleton-text" style="width: 100px; margin-bottom: 10px;"></div>
-                        <div class="skeleton skeleton-text" style="width: 100%; height: 60px;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Neumology Innovation Project Dashboard • Powered by Supabase • 
-                <a href="#" id="refreshLink">Refresh Data</a> • 
-                <a href="https://github.com" target="_blank">GitHub Organization</a>
-            </p>
-            <p style="margin-top: 10px; font-size: 13px;">
-                <i class="fas fa-mobile-alt"></i> Bookmark this page for quick access • 
-                Auto-sync: <span id="syncTime">Offline</span>
-            </p>
-        </footer>
     </div>
 
-    <!-- ==== ONLY ONE SCRIPT TAG - NO DUPLICATES ==== -->
-  
-<script>
-    // ========== CONFIGURATION ==========
-    const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+    <!-- User Info Bar -->
+    <div id="userBar" class="user-bar" style="display: none;">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">Admin User</div>
+                <div class="user-role" id="userRole">Administrator</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
 
-    // ========== SINGLE SUPABASE INITIALIZATION ==========
-    // IMPORTANT: Use var instead of const to allow re-declaration
-    var supabase;
-    
-    // Initialize only if not already initialized
-    if (!window._supabaseInitialized) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window._supabaseInitialized = true;
-        console.log('Supabase client initialized');
-    } else {
-        // If somehow we get here again, just use the global
-        supabase = window.supabase;
-    }
+    <!-- Main Dashboard (Hidden until login) -->
+    <div id="dashboardContent" style="display: none;">
+        <div class="container">
+            <!-- Admin Controls (Only for admin users) -->
+            <div id="adminControls" class="admin-controls" style="display: none;">
+                <h3><i class="fas fa-user-shield"></i> Admin Controls</h3>
+                <div class="admin-buttons">
+                    <button class="admin-btn" onclick="showAddProjectModal()">
+                        <i class="fas fa-plus"></i> Add Project
+                    </button>
+                    <button class="admin-btn" onclick="showAddToolModal()">
+                        <i class="fas fa-toolbox"></i> Add Tool
+                    </button>
+                    <button class="admin-btn" onclick="showAddUpdateModal()">
+                        <i class="fas fa-history"></i> Add Update
+                    </button>
+                    <button class="admin-btn" onclick="showManageUsersModal()">
+                        <i class="fas fa-users"></i> Manage Users
+                    </button>
+                </div>
+            </div>
 
-    // ========== STATE MANAGEMENT ==========
-    let dashboardData = {
-        projects: [],
-        tools: [],
-        updates: [],
-        lastUpdated: new Date(),
-        filteredProjects: []
-    };
-
-    // ========== ADD LOGIN FUNCTION ==========
-    async function login() {
-        console.log('Login function called');
-        alert('Login functionality to be implemented');
-    }
-
-    // ========== MAIN FUNCTIONS ==========
-    async function initDashboard() {
-        showLoadingState();
-        
-        try {
-            await Promise.all([
-                fetchProjects(),
-                fetchTools(),
-                fetchUpdates()
-            ]);
-            
-            updateStats();
-            renderDashboard();
-            updateTimestamp();
-            
-        } catch (error) {
-            console.error('Error loading dashboard:', error);
-            showErrorState();
-        }
-    }
-
-    async function fetchProjects() {
-        const { data, error } = await supabase
-            .from('projects')
-            .select(`
-                *,
-                feedback_channels (*)
-            `)
-            .order('needs_feedback', { ascending: false })
-            .order('status', { ascending: true });
-        
-        if (error) {
-            console.error('Error fetching projects:', error);
-            dashboardData.projects = [];
-            return;
-        }
-        
-        dashboardData.projects = data || [];
-        dashboardData.filteredProjects = [...dashboardData.projects];
-    }
-
-    async function fetchTools() {
-        const { data, error } = await supabase
-            .from('tools')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (error) {
-            console.error('Error fetching tools:', error);
-            dashboardData.tools = [];
-            return;
-        }
-        
-        dashboardData.tools = data || [];
-    }
-
-    async function fetchUpdates() {
-        const { data, error } = await supabase
-            .from('updates')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(10);
-        
-        if (error) {
-            console.error('Error fetching updates:', error);
-            dashboardData.updates = [];
-            return;
-        }
-        
-        dashboardData.updates = data || [];
-    }
-
-    function filterProjects(filterType) {
-        document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === filterType);
-        });
-        
-        if (filterType === 'all') {
-            dashboardData.filteredProjects = [...dashboardData.projects];
-        } else {
-            dashboardData.filteredProjects = dashboardData.projects.filter(project => {
-                if (filterType === 'needs_feedback') return project.needs_feedback;
-                return project.status === filterType;
-            });
-        }
-        
-        renderProjects();
-    }
-
-    function updateStats() {
-        const toolsCount = dashboardData.tools.length;
-        const projectsCount = dashboardData.projects.length;
-        const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-        const activeCount = dashboardData.projects.filter(p => 
-            p.status === 'development' || p.status === 'testing'
-        ).length;
-
-        document.getElementById('toolsCount').textContent = toolsCount;
-        document.getElementById('projectsCount').textContent = projectsCount;
-        document.getElementById('feedbackCount').textContent = feedbackCount;
-        document.getElementById('activeCount').textContent = activeCount;
-
-        const feedbackBadge = document.getElementById('feedbackBadge');
-        if (feedbackCount > 0) {
-            feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
-            feedbackBadge.style.display = 'block';
-        } else {
-            feedbackBadge.style.display = 'none';
-        }
-
-        const toolsStatus = document.getElementById('toolsStatus');
-        const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
-        if (hasWarning) {
-            toolsStatus.textContent = 'Needs Attention';
-            toolsStatus.className = 'tool-status status-warning';
-        } else {
-            toolsStatus.textContent = 'All Systems Operational';
-            toolsStatus.className = 'tool-status status-operational';
-        }
-    }
-
-    function renderDashboard() {
-        renderTools();
-        renderProjects();
-        renderUpdates();
-    }
-
-    function renderTools() {
-        const toolsGrid = document.getElementById('toolsGrid');
-        
-        if (dashboardData.tools.length === 0) {
-            toolsGrid.innerHTML = '<div class="empty-state"><i class="fas fa-toolbox"></i><p>No tools found.</p></div>';
-            return;
-        }
-        
-        let toolsHTML = '';
-        
-        dashboardData.tools.forEach(tool => {
-            const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
-            const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
-            
-            const lastChecked = tool.last_checked ? 
-                new Date(tool.last_checked).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }) : 'Never';
-            
-            toolsHTML += `
-                <div class="tool-card ${tool.status}">
-                    <div class="tool-header">
-                        <div class="tool-name">
-                            <div class="tool-icon">${tool.icon || '🛠️'}</div>
-                            <span>${tool.name}</span>
-                        </div>
-                        <span class="tool-status ${statusClass}">${statusText}</span>
-                    </div>
-                    <p class="tool-description">${tool.description || 'No description available'}</p>
-                    <div class="tool-footer">
-                        <span class="tool-updated">Last checked: ${lastChecked}</span>
-                        <a href="${tool.url}" target="_blank" class="tool-link">
-                            Access <i class="fas fa-external-link-alt"></i>
-                        </a>
+            <!-- Header -->
+            <header class="header">
+                <div class="logo-section">
+                    <div class="logo">NIP</div>
+                    <div class="title">
+                        <h1>Neumology Innovation Project Dashboard</h1>
+                        <p>Real-time status of all development projects & tools</p>
                     </div>
                 </div>
-            `;
-        });
-        
-        toolsGrid.innerHTML = toolsHTML;
-    }
+                <div class="last-updated">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Last updated: <strong id="lastUpdatedTime">Just now</strong></span>
+                </div>
+            </header>
 
-    function renderProjects() {
-        const projectsList = document.getElementById('projectsList');
-        const projectsToRender = dashboardData.filteredProjects.length > 0 
-            ? dashboardData.filteredProjects 
-            : dashboardData.projects;
-        
-        if (projectsToRender.length === 0) {
-            projectsList.innerHTML = '<div class="empty-state"><i class="fas fa-code-branch"></i><p>No projects found.</p></div>';
-            return;
+            <!-- Stats Overview -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon tools">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Tools</h3>
+                        <div class="number" id="toolsCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon projects">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>GitHub Projects</h3>
+                        <div class="number" id="projectsCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon feedback">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Awaiting Feedback</h3>
+                        <div class="number" id="feedbackCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon active">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Development</h3>
+                        <div class="number" id="activeCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-controls" id="filterControls">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="needs_feedback">Needs Feedback</button>
+                <button class="filter-btn" data-filter="development">In Development</button>
+                <button class="filter-btn" data-filter="testing">Testing</button>
+                <button class="filter-btn" data-filter="production">Production</button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content-grid">
+                <!-- Tools Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-toolbox"></i> Live Tools & Resources</h2>
+                        <span class="tool-status status-operational" id="toolsStatus">All Systems Operational</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="tools-grid" id="toolsGrid">
+                            <div class="tool-card skeleton" style="height: 150px;"></div>
+                            <div class="tool-card skeleton" style="height: 150px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-code-branch"></i> Active Development</h2>
+                        <div class="feedback-badge" id="feedbackBadge" style="display: none;">0 projects need feedback</div>
+                    </div>
+                    <div class="section-content">
+                        <div class="projects-list" id="projectsList">
+                            <div class="project-card skeleton" style="height: 200px;"></div>
+                            <div class="project-card skeleton" style="height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Updates -->
+            <div class="section updates-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Recent Updates & Shipments</h2>
+                </div>
+                <div class="section-content">
+                    <div class="timeline" id="timeline">
+                        <div class="timeline-item">
+                            <div class="skeleton" style="width: 100px; height: 15px; margin-bottom: 10px;"></div>
+                            <div class="skeleton" style="width: 100%; height: 80px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>Neumology Innovation Project Dashboard • Powered by Supabase • 
+                    <a href="#" id="refreshLink">Refresh Data</a> • 
+                    <a href="https://github.com" target="_blank">GitHub Organization</a>
+                </p>
+                <p style="margin-top: 10px; font-size: 13px;">
+                    <i class="fas fa-user"></i> Logged in as: <span id="currentUserDisplay">Loading...</span> • 
+                    Auto-sync: <span id="syncTime">Online</span>
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- CRUD Modals -->
+    <div id="addProjectModal" class="crud-modal">
+        <div class="crud-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Add New Project</h3>
+                <button class="close-modal" onclick="closeModal('addProjectModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" id="projectName" placeholder="Enter project name">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="projectDescription" placeholder="Describe the project"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="projectStatus">
+                    <option value="planning">Planning</option>
+                    <option value="development" selected>Development</option>
+                    <option value="testing">Testing</option>
+                    <option value="production">Production</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Progress (%)</label>
+                <input type="number" id="projectProgress" min="0" max="100" value="0">
+            </div>
+            <div class="form-group">
+                <label>GitHub URL (optional)</label>
+                <input type="url" id="projectGithubUrl" placeholder="https://github.com/username/project">
+            </div>
+            <div class="form-group">
+                <label>Live Demo URL (optional)</label>
+                <input type="url" id="projectLiveUrl" placeholder="https://demo.example.com">
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal('addProjectModal')">Cancel</button>
+                <button class="save-btn" onclick="saveProject()">Save Project</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addToolModal" class="crud-modal">
+        <div class="crud-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-toolbox"></i> Add New Tool</h3>
+                <button class="close-modal" onclick="closeModal('addToolModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Tool Name</label>
+                <input type="text" id="toolName" placeholder="Enter tool name">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="toolDescription" placeholder="Describe the tool"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="toolStatus">
+                    <option value="operational" selected>Operational</option>
+                    <option value="warning">Needs Attention</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>URL</label>
+                <input type="url" id="toolUrl" placeholder="https://tool.example.com">
+            </div>
+            <div class="form-group">
+                <label>Icon (Font Awesome class)</label>
+                <input type="text" id="toolIcon" placeholder="fas fa-tools" value="fas fa-tools">
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal('addToolModal')">Cancel</button>
+                <button class="save-btn" onclick="saveTool()">Save Tool</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addUpdateModal" class="crud-modal">
+        <div class="crud-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Add New Update</h3>
+                <button class="close-modal" onclick="closeModal('addUpdateModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Update Title</label>
+                <input type="text" id="updateTitle" placeholder="Enter update title">
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea id="updateContent" placeholder="Describe the update"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Link (optional)</label>
+                <input type="url" id="updateLink" placeholder="https://example.com/details">
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal('addUpdateModal')">Cancel</button>
+                <button class="save-btn" onclick="saveUpdate()">Save Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- The COMPLETE JavaScript Code -->
+    <script>
+        // ========== CONFIGURATION ==========
+        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+
+        // ========== SINGLE SUPABASE INITIALIZATION ==========
+        var supabase;
+        if (!window._supabaseInitialized) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window._supabaseInitialized = true;
+        } else {
+            supabase = window.supabase;
         }
-        
-        let projectsHTML = '';
-        
-        projectsToRender.forEach(project => {
-            const statusClass = `status-${project.status}`;
-            const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+
+        // ========== APPLICATION STATE ==========
+        let currentUser = null;
+        let userRole = 'user'; // 'admin' or 'user'
+        let dashboardData = {
+            projects: [],
+            tools: [],
+            updates: [],
+            filteredProjects: []
+        };
+
+        // ========== AUTHENTICATION ==========
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
             
-            const lastUpdated = project.last_updated ? 
-                new Date(project.last_updated).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric'
-                }) : 'Never';
+            errorEl.style.display = 'none';
             
-            let feedbackChannelsHTML = '';
-            if (project.needs_feedback && project.feedback_channels) {
-                project.feedback_channels.forEach(channel => {
-                    let icon = 'fas fa-comment';
-                    let className = 'message';
-                    let link = channel.action_url || '#';
+            if (!username || !password) {
+                errorEl.textContent = 'Please enter username and password';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // Query the dashboard_users table
+                const { data, error } = await supabase
+                    .from('dashboard_users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+                
+                if (error || !data) {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                // IMPORTANT: In production, use proper password hashing!
+                // This demo uses plain text for simplicity
+                if (data.password_hash === password) {
+                    currentUser = data;
+                    userRole = data.role || 'user';
                     
-                    if (channel.channel === 'whatsapp') {
-                        icon = 'fab fa-whatsapp';
-                        className = 'whatsapp';
-                        link = `${link}${encodeURIComponent(project.name)}`;
-                    } else if (channel.channel === 'email') {
-                        icon = 'fas fa-envelope';
-                        className = 'email';
-                    } else if (channel.channel === 'github') {
-                        icon = 'fab fa-github';
-                        className = 'github';
-                    } else if (channel.channel === 'slack') {
-                        icon = 'fab fa-slack';
-                        className = 'slack';
-                    }
+                    // Update last login
+                    await supabase
+                        .from('dashboard_users')
+                        .update({ 
+                            last_login: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', data.id);
                     
-                    feedbackChannelsHTML += `<a href="${link}" target="_blank" class="channel-btn ${className}" title="${channel.label || `Send ${channel.channel} feedback`}"><i class="${icon}"></i></a>`;
+                    // Save to localStorage
+                    localStorage.setItem('dashboard_user', JSON.stringify({
+                        id: data.id,
+                        username: data.username,
+                        full_name: data.full_name,
+                        role: data.role,
+                        avatar: data.avatar
+                    }));
+                    
+                    showDashboard();
+                } else {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorEl.textContent = 'Login failed. Please try again.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function showDashboard() {
+            // Hide login, show dashboard
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+            
+            // Update user info
+            document.getElementById('userBar').style.display = 'flex';
+            document.getElementById('userName').textContent = currentUser.full_name;
+            document.getElementById('userAvatar').textContent = currentUser.full_name.charAt(0).toUpperCase();
+            document.getElementById('userRole').textContent = userRole === 'admin' ? 'Administrator' : 'User';
+            document.getElementById('currentUserDisplay').textContent = `${currentUser.full_name} (${userRole})`;
+            
+            // Show admin controls if admin
+            if (userRole === 'admin') {
+                document.getElementById('adminControls').style.display = 'block';
+            }
+            
+            // Load initial data
+            loadDashboardData();
+            
+            // Setup auto-refresh (every 2 minutes)
+            setInterval(loadDashboardData, 2 * 60 * 1000);
+        }
+
+        function logout() {
+            currentUser = null;
+            userRole = 'user';
+            localStorage.removeItem('dashboard_user');
+            
+            // Reset UI
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('userBar').style.display = 'none';
+            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // ========== DASHBOARD DATA FUNCTIONS ==========
+        async function loadDashboardData() {
+            try {
+                await Promise.all([
+                    fetchProjects(),
+                    fetchTools(),
+                    fetchUpdates()
+                ]);
+                updateStats();
+                renderTools();
+                renderProjects();
+                renderUpdates();
+                updateTimestamp();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        async function fetchProjects() {
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*, feedback_channels(*)')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                dashboardData.projects = data || [];
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+                dashboardData.projects = [];
+                dashboardData.filteredProjects = [];
+            }
+        }
+
+        async function fetchTools() {
+            try {
+                const { data, error } = await supabase
+                    .from('tools')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                dashboardData.tools = data || [];
+            } catch (error) {
+                console.error('Error fetching tools:', error);
+                dashboardData.tools = [];
+            }
+        }
+
+        async function fetchUpdates() {
+            try {
+                const { data, error } = await supabase
+                    .from('updates')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                dashboardData.updates = data || [];
+            } catch (error) {
+                console.error('Error fetching updates:', error);
+                dashboardData.updates = [];
+            }
+        }
+
+        function updateStats() {
+            const toolsCount = dashboardData.tools.length;
+            const projectsCount = dashboardData.projects.length;
+            const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
+            const activeCount = dashboardData.projects.filter(p => 
+                p.status === 'development' || p.status === 'testing'
+            ).length;
+
+            document.getElementById('toolsCount').textContent = toolsCount;
+            document.getElementById('projectsCount').textContent = projectsCount;
+            document.getElementById('feedbackCount').textContent = feedbackCount;
+            document.getElementById('activeCount').textContent = activeCount;
+
+            // Update feedback badge
+            const feedbackBadge = document.getElementById('feedbackBadge');
+            if (feedbackCount > 0) {
+                feedbackBadge.textContent = `${feedbackCount} project${feedbackCount > 1 ? 's' : ''} need${feedbackCount > 1 ? '' : 's'} feedback`;
+                feedbackBadge.style.display = 'block';
+            } else {
+                feedbackBadge.style.display = 'none';
+            }
+
+            // Update tools status
+            const toolsStatus = document.getElementById('toolsStatus');
+            const hasWarning = dashboardData.tools.some(t => t.status === 'warning');
+            if (hasWarning) {
+                toolsStatus.textContent = 'Needs Attention';
+                toolsStatus.className = 'tool-status status-warning';
+            } else {
+                toolsStatus.textContent = 'All Systems Operational';
+                toolsStatus.className = 'tool-status status-operational';
+            }
+        }
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
+            
+            if (dashboardData.tools.length === 0) {
+                toolsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-toolbox" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <p>No tools found.</p>
+                        ${userRole === 'admin' ? '<p>Click "Add Tool" above to add your first tool.</p>' : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            const toolsHTML = dashboardData.tools.map(tool => {
+                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+                const lastChecked = tool.last_checked ? 
+                    new Date(tool.last_checked).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Never';
+                
+                return `
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-name">
+                                <div class="tool-icon">
+                                    <i class="${tool.icon || 'fas fa-tools'}"></i>
+                                </div>
+                                <span>${tool.name}</span>
+                            </div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="tool-description">${tool.description || 'No description available'}</p>
+                        <div class="tool-footer">
+                            <span class="tool-updated">Last checked: ${lastChecked}</span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                ${tool.url ? `
+                                    <a href="${tool.url}" target="_blank" class="tool-link">
+                                        Access <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                ` : ''}
+                                ${userRole === 'admin' ? `
+                                    <button class="admin-action-btn edit-btn" onclick="editTool('${tool.id}')" title="Edit Tool">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="admin-action-btn delete-btn" onclick="deleteTool('${tool.id}')" title="Delete Tool">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            toolsGrid.innerHTML = toolsHTML;
+        }
+
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            const projectsToRender = dashboardData.filteredProjects.length > 0 
+                ? dashboardData.filteredProjects 
+                : dashboardData.projects;
+            
+            if (projectsToRender.length === 0) {
+                projectsList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-code-branch" style="font-size: 48px; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <p>No projects found.</p>
+                        ${userRole === 'admin' ? '<p>Click "Add Project" above to add your first project.</p>' : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            const projectsHTML = projectsToRender.map(project => {
+                const statusClass = `status-${project.status}`;
+                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+                const lastUpdated = project.updated_at ? 
+                    new Date(project.updated_at).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric'
+                    }) : 'Never';
+                
+                // Build feedback channels
+                let feedbackChannelsHTML = '';
+                if (project.needs_feedback && project.feedback_channels) {
+                    project.feedback_channels.forEach(channel => {
+                        let icon = 'fas fa-comment';
+                        let className = 'email';
+                        
+                        if (channel.channel === 'whatsapp') icon = 'fab fa-whatsapp';
+                        else if (channel.channel === 'github') icon = 'fab fa-github';
+                        else if (channel.channel === 'slack') icon = 'fab fa-slack';
+                        
+                        feedbackChannelsHTML += `
+                            <a href="${channel.action_url || '#'}" target="_blank" class="channel-btn ${className}" 
+                               title="${channel.label || `Send ${channel.channel} feedback`}">
+                                <i class="${icon}"></i>
+                            </a>
+                        `;
+                    });
+                }
+                
+                // Build feedback section
+                let feedbackSection = '';
+                if (project.needs_feedback) {
+                    feedbackSection = `
+                        <div class="feedback-section">
+                            <span class="feedback-badge">Ready for review</span>
+                            <div class="feedback-channels">
+                                ${feedbackChannelsHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Build project links
+                let projectLinks = '';
+                if (project.github_url) {
+                    projectLinks += `
+                        <a href="${project.github_url}" target="_blank" class="project-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    `;
+                }
+                if (project.live_url) {
+                    projectLinks += `
+                        <a href="${project.live_url}" target="_blank" class="project-link">
+                            <i class="fas fa-external-link-alt"></i> Live Demo
+                        </a>
+                    `;
+                }
+                
+                // Admin actions
+                let adminActions = '';
+                if (userRole === 'admin') {
+                    adminActions = `
+                        <button class="admin-action-btn edit-btn" onclick="editProject('${project.id}')" title="Edit Project">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="admin-action-btn delete-btn" onclick="deleteProject('${project.id}')" title="Delete Project">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                }
+                
+                return `
+                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <i class="fas fa-code"></i>
+                                ${project.name}
+                                ${adminActions}
+                            </div>
+                            <span class="project-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="project-description">${project.description || 'No description available'}</p>
+                        
+                        <div class="project-progress">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>${project.progress || 0}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                            </div>
+                        </div>
+                        
+                        ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
+                        
+                        <div class="project-footer">
+                            <div class="last-commit">
+                                <i class="fas fa-calendar"></i>
+                                <span>Last updated: ${lastUpdated}</span>
+                            </div>
+                            ${feedbackSection}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            projectsList.innerHTML = projectsHTML;
+        }
+
+        function renderUpdates() {
+            const timeline = document.getElementById('timeline');
+            
+            if (dashboardData.updates.length === 0) {
+                timeline.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray);">
+                        <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No updates yet.</p>
+                        ${userRole === 'admin' ? '<p>Click "Add Update" above to add your first update.</p>' : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            const updatesHTML = dashboardData.updates.map(update => {
+                const date = update.created_at ? 
+                    new Date(update.created_at).toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Recently';
+                
+                // Admin actions
+                let adminActions = '';
+                if (userRole === 'admin') {
+                    adminActions = `
+                        <button class="admin-action-btn delete-btn" onclick="deleteUpdate('${update.id}')" 
+                                style="margin-left: 10px; font-size: 12px;" title="Delete Update">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                }
+                
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            <i class="far fa-clock"></i> ${date}
+                            ${adminActions}
+                        </div>
+                        <div class="timeline-content">
+                            <h4>${update.title}</h4>
+                            <p>${update.content || ''}</p>
+                            ${update.link ? `
+                                <a href="${update.link}" target="_blank" class="timeline-link">
+                                    <i class="fas fa-external-link-alt"></i> View Details
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            timeline.innerHTML = updatesHTML;
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+            document.getElementById('syncTime').textContent = timeString;
+        }
+
+        // ========== FILTERING ==========
+        function filterProjects(filterType) {
+            // Update active button
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filterType);
+            });
+            
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else {
+                dashboardData.filteredProjects = dashboardData.projects.filter(project => {
+                    if (filterType === 'needs_feedback') return project.needs_feedback;
+                    return project.status === filterType;
                 });
             }
             
-            let feedbackSection = '';
-            if (project.needs_feedback) {
-                feedbackSection = `<div class="feedback-section"><span class="feedback-badge">Ready for review</span><div class="feedback-channels">${feedbackChannelsHTML}</div></div>`;
-            }
-            
-            let projectLinks = '';
-            if (project.github_url) {
-                projectLinks += `<a href="${project.github_url}" target="_blank" class="project-link"><i class="fab fa-github"></i> GitHub</a>`;
-            }
-            if (project.live_url) {
-                projectLinks += `<a href="${project.live_url}" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Live Demo</a>`;
-            }
-            
-            projectsHTML += `
-                <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
-                    <div class="project-header">
-                        <div class="project-title">
-                            <i class="fas fa-code"></i>
-                            ${project.name}
-                        </div>
-                        <span class="project-status ${statusClass}">${statusText}</span>
-                    </div>
-                    <p class="project-description">${project.description || 'No description available'}</p>
-                    
-                    <div class="project-progress">
-                        <div class="progress-label">
-                            <span>Progress</span>
-                            <span>${project.progress || 0}%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                        </div>
-                    </div>
-                    
-                    ${projectLinks ? `<div class="project-links">${projectLinks}</div>` : ''}
-                    
-                    <div class="project-footer">
-                        <div class="last-commit">
-                            <i class="fas fa-calendar"></i>
-                            <span>Last updated: ${lastUpdated}</span>
-                        </div>
-                        ${feedbackSection}
-                    </div>
-                </div>
-            `;
-        });
-        
-        projectsList.innerHTML = projectsHTML;
-    }
-
-    function renderUpdates() {
-        const timeline = document.getElementById('timeline');
-        
-        if (dashboardData.updates.length === 0) {
-            timeline.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No updates yet.</p></div>';
-            return;
+            renderProjects();
         }
-        
-        let updatesHTML = '';
-        
-        dashboardData.updates.forEach(update => {
-            const date = update.created_at ? 
-                new Date(update.created_at).toLocaleDateString('en-US', { 
-                    weekday: 'short',
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }) : 'Recently';
-            
-            updatesHTML += `
-                <div class="timeline-item">
-                    <div class="timeline-date">
-                        <i class="far fa-clock"></i> ${date}
-                    </div>
-                    <div class="timeline-content">
-                        <h4>${update.title}</h4>
-                        <p>${update.content || ''}</p>
-                        ${update.link ? `<a href="${update.link}" target="_blank" class="timeline-link"><i class="fas fa-external-link-alt"></i> View Details</a>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        
-        timeline.innerHTML = updatesHTML;
-    }
 
-    function updateTimestamp() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            second: '2-digit'
-        });
-        const dateString = now.toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric'
-        });
-        
-        document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
-        document.getElementById('syncTime').textContent = timeString;
-        
-        dashboardData.lastUpdated = now;
-    }
+        // ========== ADMIN CRUD OPERATIONS ==========
+        function showAddProjectModal() {
+            if (userRole !== 'admin') return;
+            document.getElementById('addProjectModal').style.display = 'flex';
+        }
 
-    function showLoadingState() {
-        document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-    }
+        function showAddToolModal() {
+            if (userRole !== 'admin') return;
+            document.getElementById('addToolModal').style.display = 'flex';
+        }
 
-    function showErrorState() {
-        document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
-        
-        const sections = ['toolsGrid', 'projectsList', 'timeline'];
-        sections.forEach(sectionId => {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
-                        <p>Failed to load data. Check Supabase connection.</p>
-                        <button onclick="initDashboard()" style="
-                            margin-top: 10px;
-                            padding: 8px 16px;
-                            background: var(--primary);
-                            color: white;
-                            border: none;
-                            border-radius: 6px;
-                            cursor: pointer;
-                        ">Retry</button>
-                    </div>
-                `;
+        function showAddUpdateModal() {
+            if (userRole !== 'admin') return;
+            document.getElementById('addUpdateModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Clear form fields
+            if (modalId === 'addProjectModal') {
+                document.getElementById('projectName').value = '';
+                document.getElementById('projectDescription').value = '';
+                document.getElementById('projectStatus').value = 'development';
+                document.getElementById('projectProgress').value = '0';
+                document.getElementById('projectGithubUrl').value = '';
+                document.getElementById('projectLiveUrl').value = '';
+            } else if (modalId === 'addToolModal') {
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolDescription').value = '';
+                document.getElementById('toolStatus').value = 'operational';
+                document.getElementById('toolUrl').value = '';
+                document.getElementById('toolIcon').value = 'fas fa-tools';
+            } else if (modalId === 'addUpdateModal') {
+                document.getElementById('updateTitle').value = '';
+                document.getElementById('updateContent').value = '';
+                document.getElementById('updateLink').value = '';
             }
-        });
-    }
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(initDashboard, 100);
-        
-        document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-        });
-        
-        document.getElementById('refreshLink').addEventListener('click', async function(e) {
-            e.preventDefault();
+        async function saveProject() {
+            if (userRole !== 'admin') {
+                alert('Admin access required');
+                return;
+            }
             
-            const lastUpdated = document.getElementById('lastUpdatedTime');
-            lastUpdated.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            const projectData = {
+                name: document.getElementById('projectName').value.trim(),
+                description: document.getElementById('projectDescription').value.trim(),
+                status: document.getElementById('projectStatus').value,
+                progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                github_url: document.getElementById('projectGithubUrl').value.trim() || null,
+                live_url: document.getElementById('projectLiveUrl').value.trim() || null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
             
-            await initDashboard();
+            if (!projectData.name) {
+                alert('Please enter a project name');
+                return;
+            }
             
-            lastUpdated.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
-            setTimeout(() => updateTimestamp(), 2000);
-        });
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .insert([projectData]);
+                
+                if (error) throw error;
+                
+                alert('Project added successfully!');
+                closeModal('addProjectModal');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error saving project:', error);
+                alert('Failed to save project: ' + error.message);
+            }
+        }
 
-        setInterval(async () => {
-            console.log('Auto-refreshing dashboard...');
-            await initDashboard();
-        }, 5 * 60 * 1000);
-    });
+        async function saveTool() {
+            if (userRole !== 'admin') {
+                alert('Admin access required');
+                return;
+            }
+            
+            const toolData = {
+                name: document.getElementById('toolName').value.trim(),
+                description: document.getElementById('toolDescription').value.trim(),
+                status: document.getElementById('toolStatus').value,
+                url: document.getElementById('toolUrl').value.trim(),
+                icon: document.getElementById('toolIcon').value.trim(),
+                last_checked: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            if (!toolData.name) {
+                alert('Please enter a tool name');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('tools')
+                    .insert([toolData]);
+                
+                if (error) throw error;
+                
+                alert('Tool added successfully!');
+                closeModal('addToolModal');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error saving tool:', error);
+                alert('Failed to save tool: ' + error.message);
+            }
+        }
 
-    window.login = login;
-</script>
+        async function saveUpdate() {
+            if (userRole !== 'admin') {
+                alert('Admin access required');
+                return;
+            }
+            
+            const updateData = {
+                title: document.getElementById('updateTitle').value.trim(),
+                content: document.getElementById('updateContent').value.trim(),
+                link: document.getElementById('updateLink').value.trim() || null,
+                created_at: new Date().toISOString()
+            };
+            
+            if (!updateData.title) {
+                alert('Please enter an update title');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('updates')
+                    .insert([updateData]);
+                
+                if (error) throw error;
+                
+                alert('Update added successfully!');
+                closeModal('addUpdateModal');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error saving update:', error);
+                alert('Failed to save update: ' + error.message);
+            }
+        }
+
+        async function editProject(projectId) {
+            if (userRole !== 'admin') return;
+            alert('Edit project ' + projectId + ' - To be implemented');
+            // Implementation for editing projects
+        }
+
+        async function editTool(toolId) {
+            if (userRole !== 'admin') return;
+            alert('Edit tool ' + toolId + ' - To be implemented');
+            // Implementation for editing tools
+        }
+
+        async function deleteProject(projectId) {
+            if (userRole !== 'admin') return;
+            
+            if (!confirm('Are you sure you want to delete this project?')) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert('Project deleted successfully!');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Failed to delete project: ' + error.message);
+            }
+        }
+
+        async function deleteTool(toolId) {
+            if (userRole !== 'admin') return;
+            
+            if (!confirm('Are you sure you want to delete this tool?')) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('tools')
+                    .delete()
+                    .eq('id', toolId);
+                
+                if (error) throw error;
+                
+                alert('Tool deleted successfully!');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error deleting tool:', error);
+                alert('Failed to delete tool: ' + error.message);
+            }
+        }
+
+        async function deleteUpdate(updateId) {
+            if (userRole !== 'admin') return;
+            
+            if (!confirm('Are you sure you want to delete this update?')) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('updates')
+                    .delete()
+                    .eq('id', updateId);
+                
+                if (error) throw error;
+                
+                alert('Update deleted successfully!');
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Error deleting update:', error);
+                alert('Failed to delete update: ' + error.message);
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved user session
+            const savedUser = localStorage.getItem('dashboard_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    userRole = currentUser.role || 'user';
+                    showDashboard();
+                } catch (e) {
+                    localStorage.removeItem('dashboard_user');
+                }
+            }
+            
+            // Setup filter buttons
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
+            });
+            
+            // Setup refresh button
+            document.getElementById('refreshLink').addEventListener('click', async (e) => {
+                e.preventDefault();
+                await loadDashboardData();
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Updated just now';
+                setTimeout(updateTimestamp, 2000);
+            });
+            
+            // Enter key in login
+            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+            
+            // Close modals on outside click
+            document.querySelectorAll('.crud-modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
