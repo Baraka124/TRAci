@@ -2739,76 +2739,63 @@ async function getProjectCode(projectId) {
 
         // ========== IMPROVEMENT #2: UPVOTE SYSTEM ==========
         async function upvoteComment(commentId) {
-            try {
-                if (!currentUser) {
-                    throw new Error('You must be logged in to upvote');
-                }
-                
-                // Check if user already upvoted
-                const { data: existing, error: checkError } = await supabaseClient
-                    .from('comment_interactions')
-                    .select('*')
-                    .eq('comment_id', commentId)
-                    .eq('user_id', currentUser.id)
-                    .eq('interaction_type', 'upvote')
-                    .single();
-                
-                if (checkError && checkError.code !== 'PGRST116') {
-                    throw checkError;
-                }
-                
-                if (existing) {
-                    // Remove upvote
-                    const { error } = await supabaseClient
-                        .from('comment_interactions')
-                        .delete()
-                        .eq('id', existing.id);
-                    
-                    if (error) throw error;
-                    
-                    // Decrement upvote count
-                    await supabaseClient.rpc('decrement_upvote', { comment_id: commentId });
-                    
-                    return { success: true, action: 'removed' };
-                } else {
-                    // Add upvote
-                    const { error } = await supabaseClient
-                        .from('comment_interactions')
-                        .insert([{
-                            comment_id: commentId,
-                            user_id: currentUser.id,
-                            interaction_type: 'upvote',
-                            created_at: new Date().toISOString()
-                        }]);
-                    
-                    if (error) throw error;
-                    
-                    // Increment upvote count
-                    await supabaseClient.rpc('increment_upvote', { comment_id: commentId });
-                    
-                    return { success: true, action: 'added' };
-                }
-            } catch (error) {
-                console.error('Error upvoting comment:', error);
-                return { success: false, error: error.message };
-            }
+    try {
+        if (!currentUser) {
+            throw new Error('You must be logged in to upvote');
         }
+        
+        // Get current upvote count
+        const { data: comment, error: fetchError } = await supabaseClient
+            .from('project_comments')
+            .select('upvotes')
+            .eq('id', commentId)
+            .single();
+        
+        if (fetchError) throw fetchError;
+        
+        // Simple increment for now (you can enhance with user tracking later)
+        const newUpvotes = (comment.upvotes || 0) + 1;
+        
+        const { error } = await supabaseClient
+            .from('project_comments')
+            .update({ upvotes: newUpvotes })
+            .eq('id', commentId);
+        
+        if (error) throw error;
+        
+        // Also record in comment_interactions for tracking
+        await supabaseClient
+            .from('comment_interactions')
+            .insert([{
+                comment_id: commentId,
+                user_id: currentUser.id,
+                interaction_type: 'upvote',
+                created_at: new Date().toISOString()
+            }]);
+        
+        return { success: true, upvotes: newUpvotes };
+        
+    } catch (error) {
+        console.error('Error upvoting comment:', error);
+        return { success: false, error: error.message };
+    }
+}
 
-        async function getCommentUpvotes(commentId) {
-            try {
-                const { count, error } = await supabaseClient
-                    .from('comment_interactions')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('comment_id', commentId)
-                    .eq('interaction_type', 'upvote');
-                
-                if (error) throw error;
-                return count || 0;
-            } catch (error) {
-                console.error('Error getting upvotes:', error);
-                return 0;
-            }
-        }
+    async function getCommentUpvotes(commentId) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('project_comments')
+            .select('upvotes')
+            .eq('id', commentId)
+            .single();
+        
+        if (error) throw error;
+        return data.upvotes || 0;
+    } catch (error) {
+        console.error('Error getting upvotes:', error);
+        return 0;
+    }
+}
 
         async function getUserUpvotedComments() {
             try {
