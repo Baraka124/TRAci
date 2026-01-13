@@ -367,7 +367,7 @@
             color: var(--primary-400);
         }
 
-        /* Admin controls */
+        /* Admin Controls */
         .admin-controls {
             display: flex;
             gap: 12px;
@@ -405,6 +405,46 @@
             color: var(--primary-600);
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* NEW: Proposal/Archived Stickers */
+        .project-sticker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid;
+            animation: pulse 2s infinite;
+        }
+
+        .sticker-proposal {
+            background: linear-gradient(135deg, #fef3c7, #f59e0b);
+            color: #92400e;
+            border-color: #f59e0b;
+        }
+
+        .sticker-imported {
+            background: linear-gradient(135deg, #dbeafe, #3b82f6);
+            color: #1e40af;
+            border-color: #3b82f6;
+        }
+
+        .sticker-published {
+            background: linear-gradient(135deg, #d1fae5, #10b981);
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .sticker-archived {
+            background: linear-gradient(135deg, #f3f4f6, #6b7280);
+            color: #374151;
+            border-color: #6b7280;
         }
 
         /* COMMENT COUNT BADGE */
@@ -738,6 +778,25 @@
             background: linear-gradient(to right, var(--warning-light) 0%, transparent 100%);
         }
 
+        .project-card.archived {
+            border: 2px solid var(--gray-400);
+            background: linear-gradient(to right, var(--gray-100) 0%, transparent 100%);
+            opacity: 0.8;
+        }
+
+        .project-card.proposal {
+            border: 2px solid var(--warning);
+            background: linear-gradient(135deg, #fef3c7, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .visibility-badge {
             font-size: 12px;
             padding: 2px 8px;
@@ -778,6 +837,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .project-status {
@@ -794,6 +854,7 @@
         .status-development { background: var(--primary-100); color: var(--primary-700); }
         .status-testing { background: var(--info-light); color: var(--info); }
         .status-production { background: var(--success-light); color: var(--success); }
+        .status-archived { background: var(--gray-200); color: var(--gray-700); }
 
         .project-description {
             color: var(--gray-600);
@@ -983,6 +1044,23 @@
             background: var(--info);
             color: var(--white);
             border-color: var(--info);
+        }
+
+        /* NEW: Sync to ThoraxLab button (Admin only) */
+        .sync-btn {
+            background: linear-gradient(135deg, var(--medical-purple), #9333ea);
+            color: var(--white);
+            border-color: var(--medical-purple);
+        }
+
+        .sync-btn:hover {
+            background: linear-gradient(135deg, #9333ea, #7c3aed);
+            transform: translateY(-2px);
+        }
+
+        .sync-btn.synced {
+            background: var(--success);
+            border-color: var(--success);
         }
 
         /* PDF Export button */
@@ -1406,11 +1484,14 @@
                 <div>
                     <h3 style="margin-bottom: 8px;">Welcome, Guest!</h3>
                     <p style="margin-bottom: 16px;">
-                        You're viewing our public innovation portfolio. Some projects are private/internal. 
-                        For collaboration inquiries, please contact our department directly.
+                        You're viewing our public innovation portfolio. You can post projects (admin approval required), comment, and explore collaborations.
                     </p>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button id="contactBtn" class="auth-btn" style="background: var(--primary-600);">
+                        <button id="guestPostProjectBtn" class="auth-btn" style="background: var(--primary-600);">
+                            <i class="mdi mdi-plus-circle"></i>
+                            <span>Post Project Idea</span>
+                        </button>
+                        <button id="contactBtn" class="auth-btn" style="background: var(--medical-teal);">
                             <i class="mdi mdi-email-send"></i>
                             <span>Contact Department</span>
                         </button>
@@ -1436,6 +1517,10 @@
             <button class="admin-btn" id="moderateCommentsBtn">
                 <i class="mdi mdi-comment-processing"></i>
                 <span>Moderate Comments</span>
+            </button>
+            <button class="admin-btn" id="moderateProjectsBtn">
+                <i class="mdi mdi-file-document-edit"></i>
+                <span>Moderate Projects</span>
             </button>
         </div>
 
@@ -1490,9 +1575,17 @@
                 <i class="mdi mdi-alert-circle"></i>
                 <span>Needs Review</span>
             </button>
-            <button class="filter-btn" data-filter="reviewed">
-                <i class="mdi mdi-check-circle"></i>
-                <span>Reviewed</span>
+            <button class="filter-btn" data-filter="proposals">
+                <i class="mdi mdi-lightbulb-on"></i>
+                <span>Proposals</span>
+            </button>
+            <button class="filter-btn" data-filter="imported">
+                <i class="mdi mdi-import"></i>
+                <span>Imported</span>
+            </button>
+            <button class="filter-btn" data-filter="published">
+                <i class="mdi mdi-share"></i>
+                <span>Published</span>
             </button>
             <button class="filter-btn" data-filter="private">
                 <i class="mdi mdi-lock"></i>
@@ -1708,6 +1801,7 @@
                             <option value="development">Development</option>
                             <option value="testing">Testing</option>
                             <option value="production">Production</option>
+                            <option value="archived">Archived</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1921,6 +2015,85 @@
         </div>
     </div>
 
+    <!-- Moderate Projects Modal -->
+    <div id="moderateProjectsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-file-document-edit"></i>
+                    <span>Moderate Project Proposals</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 16px;">
+                    <input type="text" id="projectModerationSearch" class="form-control" 
+                           placeholder="Search projects...">
+                </div>
+                
+                <div id="projectModerationList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Pending projects loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync to ThoraxLab Modal (Admin Only) -->
+    <div id="syncToThoraxLabModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-share-variant"></i>
+                    <span>Publish to ThoraxLab</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="syncProjectId">
+                
+                <div class="form-group">
+                    <label for="syncVisibility">Visibility on ThoraxLab *</label>
+                    <select id="syncVisibility" class="form-control">
+                        <option value="internal">🔒 Internal (Registered professionals only)</option>
+                        <option value="public">🌍 Public (Open to all collaborators)</option>
+                    </select>
+                    <small style="font-size: 0.75rem; color: var(--gray-500);">
+                        Internal: Only registered clinical/industry professionals<br>
+                        Public: Visible to all ThoraxLab users including guests
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="syncDescription">Additional Notes (Optional)</label>
+                    <textarea id="syncDescription" class="form-control" 
+                              placeholder="Add any notes for ThoraxLab collaborators..." rows="2"></textarea>
+                </div>
+                
+                <div class="moderation-panel">
+                    <h4 style="margin-bottom: 8px; color: var(--warning);">
+                        <i class="mdi mdi-alert-circle"></i>
+                        Sync Information
+                    </h4>
+                    <ul style="font-size: 0.875rem; color: var(--gray-600); padding-left: 20px; margin: 8px 0;">
+                        <li>Project will appear as "Clinical-led" on ThoraxLab</li>
+                        <li>A discussion thread will be automatically created</li>
+                        <li>Project owner will be listed as "TRAci Platform"</li>
+                        <li>Sync will be recorded in audit logs</li>
+                        <li>Project gets "Published" sticker in TRAci</li>
+                    </ul>
+                </div>
+                
+                <button id="confirmSyncBtn" class="auth-btn" style="width: 100%; margin-top: 16px; background: linear-gradient(135deg, var(--medical-purple), #9333ea);">
+                    <i class="mdi mdi-rocket-launch"></i>
+                    <span>Publish to ThoraxLab</span>
+                </button>
+                
+                <div id="syncError" class="error-message"></div>
+                <div id="syncSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- PDF Export Modal -->
     <div id="pdfExportModal" class="modal-overlay">
         <div class="modal-content">
@@ -1988,6 +2161,7 @@
         let currentProjectComments = null;
         let commentCounts = {};
         let pendingComments = [];
+        let pendingProjects = [];
 
         // ========== CORE FUNCTIONS ==========
 
@@ -2061,7 +2235,8 @@
                     username: data.username,
                     full_name: data.full_name,
                     role: data.role || 'guest',
-                    department: data.department
+                    department: data.department,
+                    email: data.email
                 };
                 
                 authToken = btoa(JSON.stringify(currentUser));
@@ -2212,8 +2387,14 @@
                 .from('projects')
                 .select('*');
             
+            // Guests see public projects and their own proposals
             if (currentUser && currentUser.role === 'guest') {
-                query = query.eq('visibility', 'public');
+                query = query.or(`visibility.eq.public,doctor_id.eq.${currentUser.id}`);
+            }
+            
+            // Doctors see public + private
+            if (currentUser && currentUser.role === 'doctor') {
+                query = query.or('visibility.eq.public,visibility.eq.private');
             }
             
             const { data, error } = await query
@@ -2244,12 +2425,13 @@
             dashboardData.tools = data || [];
         }
 
-        // Comment Count System
+        // Comment Count System - FIXED
         async function fetchCommentCounts() {
             try {
+                // Get approved comments for projects
                 const { data, error } = await supabaseClient
                     .from('project_comments')
-                    .select('project_id, status')
+                    .select('project_id')
                     .eq('status', 'approved');
                 
                 if (error) throw error;
@@ -2332,48 +2514,76 @@
             }
         }
 
-        // Project CRUD
+        // Project CRUD with new proposal logic
         async function addProject(projectData) {
             try {
-                const editCode = Math.floor(10000 + Math.random() * 90000).toString();
+                const editCode = currentUser.role === 'doctor' ? 
+                    Math.floor(10000 + Math.random() * 90000).toString() : null;
+                
+                // Determine if this is a proposal (guest submission)
+                const isProposal = currentUser.role === 'guest';
+                
+                const projectToInsert = {
+                    ...projectData,
+                    last_updated: new Date().toISOString(),
+                    edit_code: editCode,
+                    review_status: projectData.needs_feedback ? 'needs_review' : 'none',
+                    is_proposal: isProposal,
+                    status: isProposal ? 'planning' : projectData.status
+                };
+                
+                // Guest proposals are always private pending review
+                if (isProposal) {
+                    projectToInsert.visibility = 'private';
+                    projectToInsert.review_status = 'pending_review';
+                }
                 
                 const { data, error } = await supabaseClient
                     .from('projects')
-                    .insert([{
-                        ...projectData,
-                        last_updated: new Date().toISOString(),
-                        edit_code: editCode,
-                        review_status: projectData.needs_feedback ? 'needs_review' : 'none'
-                    }])
+                    .insert([projectToInsert])
                     .select()
                     .single();
                 
                 if (error) throw error;
                 
-                await logAudit('project_created', { 
+                const action = isProposal ? 'project_proposal_submitted' : 'project_created';
+                await logAudit(action, { 
                     project_name: projectData.name,
-                    visibility: projectData.visibility
+                    visibility: projectData.visibility,
+                    is_proposal: isProposal
                 }, data.id);
                 
-                alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
+                if (isProposal) {
+                    alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
+                } else if (currentUser.role === 'doctor') {
+                    alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
+                } else {
+                    alert('✅ Project added successfully!');
+                }
                 
-                document.getElementById('projectSuccess').textContent = 'Project added successfully!';
-                document.getElementById('projectSuccess').style.display = 'block';
+                if (document.getElementById('projectSuccess')) {
+                    document.getElementById('projectSuccess').textContent = 
+                        isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
+                    document.getElementById('projectSuccess').style.display = 'block';
+                }
                 
-                return { success: true, data, code: editCode };
+                return { success: true, data, code: editCode, isProposal: isProposal };
                 
             } catch (error) {
                 console.error('Error adding project:', error);
-                document.getElementById('projectError').textContent = 'Failed to add project: ' + error.message;
-                document.getElementById('projectError').style.display = 'block';
+                if (document.getElementById('projectError')) {
+                    document.getElementById('projectError').textContent = 'Failed to add project: ' + error.message;
+                    document.getElementById('projectError').style.display = 'block';
+                }
                 return { success: false, error: error.message };
             }
         }
 
         async function updateProject(projectId, projectData) {
             try {
+                // Check if doctor needs edit code
                 if (currentUser && currentUser.role === 'doctor') {
-                    const enteredCode = document.getElementById('editCodeVerification').value;
+                    const enteredCode = document.getElementById('editCodeVerification')?.value;
                     
                     if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
                         document.getElementById('editProjectError').textContent = 'Valid 5-digit edit code required';
@@ -2383,7 +2593,7 @@
                     
                     const { data: project, error: fetchError } = await supabaseClient
                         .from('projects')
-                        .select('edit_code')
+                        .select('edit_code, is_proposal')
                         .eq('id', projectId)
                         .single();
                     
@@ -2391,6 +2601,13 @@
                         document.getElementById('editProjectError').textContent = 'Project not found';
                         document.getElementById('editProjectError').style.display = 'block';
                         return { success: false, error: 'Project not found' };
+                    }
+                    
+                    // Doctors can't edit proposals (only admin can approve)
+                    if (project.is_proposal) {
+                        document.getElementById('editProjectError').textContent = 'Proposals can only be edited by admin';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Proposal editing restricted' };
                     }
                     
                     if (enteredCode !== project.edit_code) {
@@ -2406,8 +2623,15 @@
                     review_status: projectData.needs_feedback ? 'needs_review' : 'none'
                 };
                 
+                // Only admin can change visibility
                 if (currentUser && currentUser.role === 'admin') {
                     updateData.visibility = document.getElementById('editProjectVisibility').value;
+                    
+                    // If admin is approving a proposal
+                    if (updateData.is_proposal === false) {
+                        updateData.review_status = 'approved';
+                        updateData.is_proposal = false;
+                    }
                 }
                 
                 const { data, error } = await supabaseClient
@@ -2421,18 +2645,23 @@
                 
                 await logAudit('project_updated', { 
                     project_id: projectId,
-                    changes: projectData 
+                    changes: projectData,
+                    user_role: currentUser.role
                 }, projectId);
                 
-                document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
-                document.getElementById('editProjectSuccess').style.display = 'block';
+                if (document.getElementById('editProjectSuccess')) {
+                    document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
+                    document.getElementById('editProjectSuccess').style.display = 'block';
+                }
                 
                 return { success: true, data };
                 
             } catch (error) {
                 console.error('Error updating project:', error);
-                document.getElementById('editProjectError').textContent = 'Failed to update project: ' + error.message;
-                document.getElementById('editProjectError').style.display = 'block';
+                if (document.getElementById('editProjectError')) {
+                    document.getElementById('editProjectError').textContent = 'Failed to update project: ' + error.message;
+                    document.getElementById('editProjectError').style.display = 'block';
+                }
                 return { success: false, error: error.message };
             }
         }
@@ -2445,7 +2674,7 @@
             try {
                 const { data: project } = await supabaseClient
                     .from('projects')
-                    .select('name')
+                    .select('name, is_proposal')
                     .eq('id', projectId)
                     .single();
                 
@@ -2458,7 +2687,8 @@
                 
                 await logAudit('project_deleted', { 
                     project_id: projectId,
-                    project_name: project?.name || 'Unknown'
+                    project_name: project?.name || 'Unknown',
+                    was_proposal: project?.is_proposal || false
                 }, projectId);
                 
                 alert('Project deleted successfully!');
@@ -2645,9 +2875,42 @@
                     reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
                 }
                 
+                // NEW: Project Stickers
+                let projectStickers = '';
+                
+                // Proposal sticker
+                if (project.is_proposal) {
+                    projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
+                }
+                
+                // Imported sticker (check sync table)
+                // Published sticker (check sync table)
+                // Archived sticker
+                if (project.status === 'archived') {
+                    projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
+                }
+                
+                // Determine card class
+                let cardClass = 'project-card';
+                if (project.needs_feedback) cardClass += ' needs-feedback';
+                if (project.status === 'archived') cardClass += ' archived';
+                if (project.is_proposal) cardClass += ' proposal';
+                
                 // Action Buttons
                 let actionButtons = '';
                 if (currentUser) {
+                    // Sync button (Admin only for TRAci → ThoraxLab)
+                    let syncButton = '';
+                    if (currentUser.role === 'admin' && !project.is_proposal && project.status !== 'archived') {
+                        syncButton = `
+                            <button class="action-btn sync-btn" data-project-id="${project.id}" 
+                                    onclick="showSyncModal('${project.id}', '${project.name}')">
+                                <i class="mdi mdi-share-variant"></i>
+                                Publish
+                            </button>
+                        `;
+                    }
+                    
                     if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
@@ -2659,6 +2922,7 @@
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
+                                ${syncButton}
                                 <button class="action-btn upvote-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-thumb-up"></i>
                                     <span>Upvote</span>
@@ -2691,8 +2955,18 @@
                             </div>
                         `;
                     } else if (currentUser.role === 'guest') {
+                        // Guests can only edit their own proposals
+                        const canEdit = project.is_proposal && project.doctor_id === currentUser.id;
+                        const editButton = canEdit ? `
+                            <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                <i class="mdi mdi-pencil"></i>
+                                Edit Proposal
+                            </button>
+                        ` : '';
+                        
                         actionButtons = `
                             <div class="project-actions">
+                                ${editButton}
                                 <button class="action-btn upvote-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-thumb-up"></i>
                                     <span>Upvote</span>
@@ -2707,13 +2981,14 @@
                 }
                 
                 projectsHTML += `
-                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                    <div class="${cardClass}" data-project-id="${project.id}">
                         <div class="project-header">
                             <div class="project-title">
                                 <i class="mdi mdi-flask"></i>
                                 ${project.name}
                                 ${visibilityBadge}
                                 ${reviewSticker}
+                                ${projectStickers}
                                 ${commentBadge}
                             </div>
                             <span class="project-status ${statusClass}">${statusText}</span>
@@ -2760,12 +3035,22 @@
             attachProjectEventListeners();
         }
 
-        // Filtering
+        // Filtering with new categories
         function filterProjects(filterType) {
             if (filterType === 'all') {
                 dashboardData.filteredProjects = [...dashboardData.projects];
             } else if (filterType === 'needs_review') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'needs_review');
+            } else if (filterType === 'proposals') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.is_proposal === true);
+            } else if (filterType === 'imported') {
+                // Will need to check sync table
+                filterProjectsBySync('imported');
+                return;
+            } else if (filterType === 'published') {
+                // Will need to check sync table
+                filterProjectsBySync('published');
+                return;
             } else if (filterType === 'reviewed') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'reviewed');
             } else if (filterType === 'private') {
@@ -2778,6 +3063,38 @@
             }
             
             renderProjects();
+        }
+
+        async function filterProjectsBySync(filterType) {
+            try {
+                let query = supabaseClient
+                    .from('project_sync')
+                    .select('traci_project_id, thoraxlab_project_id, sync_direction');
+                
+                const { data: syncs, error } = await query;
+                
+                if (error) throw error;
+                
+                const syncedProjectIds = new Set();
+                syncs.forEach(sync => {
+                    if (filterType === 'imported' && sync.sync_direction === 'thoraxlab_to_traci') {
+                        syncedProjectIds.add(sync.traci_project_id);
+                    } else if (filterType === 'published' && sync.sync_direction === 'traci_to_thoraxlab') {
+                        syncedProjectIds.add(sync.traci_project_id);
+                    }
+                });
+                
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => 
+                    syncedProjectIds.has(p.id)
+                );
+                
+                renderProjects();
+                
+            } catch (error) {
+                console.error('Error filtering by sync:', error);
+                dashboardData.filteredProjects = [];
+                renderProjects();
+            }
         }
 
         async function filterProjectsByComments(filterType) {
@@ -2860,7 +3177,7 @@
             });
         }
 
-        // Comments System
+        // Comments System - FIXED
         async function fetchCommentsForProject(projectId) {
             try {
                 let query = supabaseClient
@@ -2872,7 +3189,7 @@
                 if (currentUser && currentUser.role === 'guest') {
                     query = query.eq('status', 'approved');
                 } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
-                    query = query.in('status', ['approved', 'rejected']);
+                    query = query.in('status', ['approved', 'pending']);
                 }
                 
                 const { data, error } = await query;
@@ -2889,11 +3206,6 @@
             try {
                 currentProjectComments = projectId;
                 const comments = await fetchCommentsForProject(projectId);
-                
-                // Get upvotes for each comment
-                for (let comment of comments) {
-                    comment.upvotes = await getCommentUpvotes(comment.id);
-                }
                 
                 document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
                 
@@ -2939,7 +3251,7 @@
                         
                         // Determine comment class
                         let commentClass = 'comment-item';
-                        if (comment.is_external) commentClass += ' external';
+                        if (comment.user_role === 'guest') commentClass += ' external';
                         if (comment.status === 'pending') commentClass += ' pending';
                         
                         commentsHTML += `
@@ -2948,7 +3260,7 @@
                                     <div class="comment-author">
                                         <i class="mdi mdi-account-circle"></i>
                                         ${comment.user_name}
-                                        ${comment.is_external ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">External</span>' : ''}
+                                        ${comment.user_role === 'guest' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">Guest</span>' : ''}
                                         ${comment.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">Pending</span>' : ''}
                                     </div>
                                     <div class="comment-date">${dateStr}</div>
@@ -2987,7 +3299,7 @@
                 document.getElementById('guestEmail').value = '';
                 document.getElementById('commentWordCount').textContent = '0/150 words';
                 
-                showModal('comments');
+                showModal('commentsModal');
                 
             } catch (error) {
                 console.error('Error loading comments:', error);
@@ -3076,7 +3388,6 @@
                 // Add email for guests
                 if (currentUser.role === 'guest' && guestEmail) {
                     commentData.user_email = guestEmail;
-                    commentData.is_external = true;
                 }
                 
                 const { data, error } = await supabaseClient
@@ -3127,6 +3438,25 @@
             }
         }
 
+        async function fetchPendingProjects() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('is_proposal', true)
+                    .eq('review_status', 'pending_review')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                pendingProjects = data || [];
+                return pendingProjects;
+            } catch (error) {
+                console.error('Error fetching pending projects:', error);
+                return [];
+            }
+        }
+
         async function moderateComment(commentId, action) {
             try {
                 const { error } = await supabaseClient
@@ -3148,6 +3478,202 @@
                 return { success: true };
             } catch (error) {
                 console.error('Error moderating comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function moderateProject(projectId, action) {
+            try {
+                if (action === 'approve') {
+                    const { error } = await supabaseClient
+                        .from('projects')
+                        .update({
+                            is_proposal: false,
+                            review_status: 'approved',
+                            visibility: 'public', // Make approved proposals public
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('id', projectId);
+                    
+                    if (error) throw error;
+                    
+                    await logAudit('project_proposal_approved', { 
+                        project_id: projectId
+                    });
+                    
+                } else if (action === 'reject') {
+                    const { error } = await supabaseClient
+                        .from('projects')
+                        .update({
+                            review_status: 'rejected',
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('id', projectId);
+                    
+                    if (error) throw error;
+                    
+                    await logAudit('project_proposal_rejected', { 
+                        project_id: projectId
+                    });
+                }
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Error moderating project:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // NEW: Sync to ThoraxLab Function
+        async function syncToThoraxLab(projectId, visibility, notes = '') {
+            try {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    throw new Error('Only admin can publish to ThoraxLab');
+                }
+                
+                // Get TRAci project
+                const { data: traciProject, error: fetchError } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // Check if already synced
+                const { data: existingSync } = await supabaseClient
+                    .from('project_sync')
+                    .select('thoraxlab_project_id')
+                    .eq('traci_project_id', projectId)
+                    .maybeSingle();
+                
+                if (existingSync) {
+                    const proceed = confirm('This project is already published to ThoraxLab. Update it?');
+                    if (!proceed) return;
+                }
+                
+                // Transform to ThoraxLab format
+                const thoraxlabProject = {
+                    title: traciProject.name,
+                    description: `[Published from TRAci Platform]\n\n${traciProject.description}\n\n${notes}`,
+                    project_type: 'clinical',
+                    visibility: visibility,
+                    status: 'active',
+                    owner_id: 'traci-platform', // System account
+                    target_audience: ['clinical_professionals', 'industry_partners'],
+                    discussion_type: 'collaboration',
+                                        tags: ['pulmonology', 'clinical_research', 'traci_platform'],
+                    source_traci_project_id: projectId,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                let thoraxlabProjectId;
+                
+                if (existingSync) {
+                    // Update existing ThoraxLab project
+                    const { data: updatedProject, error: updateError } = await supabaseClient
+                        .from('thoraxlab_projects')
+                        .update(thoraxlabProject)
+                        .eq('id', existingSync.thoraxlab_project_id)
+                        .select()
+                        .single();
+                    
+                    if (updateError) throw updateError;
+                    thoraxlabProjectId = updatedProject.id;
+                    
+                    // Update sync record
+                    await supabaseClient
+                        .from('project_sync')
+                        .update({
+                            sync_purpose: 'update',
+                            status: 'updated',
+                            sync_notes: notes,
+                            initiated_at: new Date().toISOString()
+                        })
+                        .eq('traci_project_id', projectId);
+                    
+                } else {
+                    // Create new ThoraxLab project
+                    const { data: newProject, error: createError } = await supabaseClient
+                        .from('thoraxlab_projects')
+                        .insert([thoraxlabProject])
+                        .select()
+                        .single();
+                    
+                    if (createError) throw createError;
+                    thoraxlabProjectId = newProject.id;
+                    
+                    // Record sync
+                    await supabaseClient
+                        .from('project_sync')
+                        .insert([{
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            sync_direction: 'traci_to_thoraxlab',
+                            sync_purpose: 'industry_collaboration',
+                            initiated_by: currentUser.id,
+                            initiated_at: new Date().toISOString(),
+                            status: 'completed',
+                            sync_notes: notes
+                        }]);
+                    
+                    // Auto-create discussion thread
+                    await supabaseClient
+                        .from('thoraxlab_discussions')
+                        .insert([{
+                            title: `Discussion: ${traciProject.name}`,
+                            content: `This clinical project was published from our internal TRAci platform for industry collaboration.\n\n**Clinical Context:** ${traciProject.description || 'No description'}\n\n**Status:** ${traciProject.status}\n**Progress:** ${traciProject.progress || 0}%\n\n**Notes from TRAci:** ${notes}`,
+                            project_id: thoraxlabProjectId,
+                            author_id: currentUser.id,
+                            created_at: new Date().toISOString()
+                        }]);
+                }
+                
+                // Update TRAci project with "published" status
+                await supabaseClient
+                    .from('projects')
+                    .update({
+                        last_updated: new Date().toISOString(),
+                        review_status: 'published_to_thoraxlab'
+                    })
+                    .eq('id', projectId);
+                
+                // Audit log
+                await logAudit('project_published_to_thoraxlab', {
+                    traci_project_id: projectId,
+                    thoraxlab_project_id: thoraxlabProjectId,
+                    visibility: visibility,
+                    notes: notes
+                }, projectId);
+                
+                // Cross-platform audit
+                await supabaseClient
+                    .from('cross_platform_audit')
+                    .insert([{
+                        user_name: currentUser.full_name || currentUser.username,
+                        action: 'project_published',
+                        platform: 'traci',
+                        details: `Published project "${traciProject.name}" to ThoraxLab`,
+                        metadata: { 
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            visibility: visibility
+                        },
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                alert(`✅ Project published to ThoraxLab!\n\nVisibility: ${visibility}\n\nProject is now available for industry collaboration.`);
+                
+                hideAllModals();
+                await initDashboard();
+                
+                return { success: true, thoraxlabProjectId };
+                
+            } catch (error) {
+                console.error('Error syncing to ThoraxLab:', error);
+                document.getElementById('syncError').textContent = 'Failed to publish: ' + error.message;
+                document.getElementById('syncError').style.display = 'block';
                 return { success: false, error: error.message };
             }
         }
@@ -3208,7 +3734,7 @@
                 // Add timestamp
                 doc.setFontSize(10);
                 doc.setTextColor(100, 100, 100);
-                doc.text(`Exported on: ${new Date().toLocaleDateString()}`, 20, 30);
+                doc.text(`Exported from TRAci on: ${new Date().toLocaleDateString()}`, 20, 30);
                 
                 let yPosition = 40;
                 
@@ -3227,6 +3753,8 @@
                     doc.text(`Progress: ${project.progress}%`, 20, yPosition);
                     yPosition += 10;
                     doc.text(`Visibility: ${project.visibility}`, 20, yPosition);
+                    yPosition += 10;
+                    doc.text(`Review Status: ${project.review_status || 'none'}`, 20, yPosition);
                     yPosition += 15;
                 }
                 
@@ -3324,7 +3852,7 @@
             try {
                 const { data: projects, error } = await supabaseClient
                     .from('projects')
-                    .select('id, name, edit_code, visibility, created_at')
+                    .select('id, name, edit_code, visibility, created_at, is_proposal')
                     .order('name');
                 
                 if (error) throw error;
@@ -3358,12 +3886,12 @@
                         <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
                             <div style="font-weight: 600;">${project.name}</div>
                             <div style="font-size: 0.75rem; color: var(--gray-500);">
-                                Created: ${dateStr}
+                                ${project.is_proposal ? '<span style="color: var(--warning);">Proposal</span>' : 'Project'} • Created: ${dateStr}
                             </div>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
                             <span style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--primary-50); padding: 6px 10px; border-radius: 6px; display: inline-block;">
-                                ${project.edit_code || 'Not set'}
+                                ${project.edit_code || 'N/A'}
                             </span>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
@@ -3372,10 +3900,12 @@
                                 : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
-                            <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200);">
-                                <i class="mdi mdi-refresh"></i>
-                                Reset
-                            </button>
+                            ${project.edit_code ? `
+                                <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200);">
+                                    <i class="mdi mdi-refresh"></i>
+                                    Reset
+                                </button>
+                            ` : 'N/A'}
                         </td>
                     `;
                     
@@ -3441,14 +3971,18 @@
             const editCodeSection = document.getElementById('editCodeSection');
             const visibilityControl = document.getElementById('visibilityControl');
             
-            if (currentUser && currentUser.role === 'doctor') {
+            if (currentUser && currentUser.role === 'doctor' && !project.is_proposal) {
                 editCodeSection.classList.remove('hidden');
                 visibilityControl.classList.add('hidden');
-                document.getElementById('editCodeVerification').value = '';
+                if (document.getElementById('editCodeVerification')) {
+                    document.getElementById('editCodeVerification').value = '';
+                }
             } else if (currentUser && currentUser.role === 'admin') {
                 editCodeSection.classList.add('hidden');
                 visibilityControl.classList.remove('hidden');
-                document.getElementById('editProjectVisibility').value = project.visibility || 'public';
+                if (document.getElementById('editProjectVisibility')) {
+                    document.getElementById('editProjectVisibility').value = project.visibility || 'public';
+                }
             } else {
                 editCodeSection.classList.add('hidden');
                 visibilityControl.classList.add('hidden');
@@ -3463,7 +3997,7 @@
                 dashboardData.projects.forEach(project => {
                     const option = document.createElement('option');
                     option.value = project.id;
-                    option.textContent = project.name;
+                    option.textContent = project.name + (project.is_proposal ? ' (Proposal)' : '');
                     select.appendChild(option);
                 });
             } catch (error) {
@@ -3497,6 +4031,36 @@
             document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
         }
 
+        // NEW: Show sync modal
+        function showSyncModal(projectId, projectName) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                alert('Only admin can publish projects to ThoraxLab');
+                return;
+            }
+            
+            document.getElementById('syncProjectId').value = projectId;
+            document.getElementById('syncError').style.display = 'none';
+            document.getElementById('syncSuccess').style.display = 'none';
+            document.getElementById('syncDescription').value = '';
+            
+            // Update modal title with project name
+            const modalHeader = document.querySelector('#syncToThoraxLabModal .modal-header h3');
+            if (modalHeader) {
+                modalHeader.innerHTML = `<i class="mdi mdi-share-variant"></i><span>Publish "${projectName}" to ThoraxLab</span>`;
+            }
+            
+            showModal('syncToThoraxLabModal');
+        }
+
+        // NEW: Load moderation data
+        async function loadModerationData() {
+            await Promise.all([
+                fetchPendingComments(),
+                fetchPendingProjects()
+            ]);
+            showModerationModal();
+        }
+
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredUser();
@@ -3506,6 +4070,15 @@
             document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Guest post project
+            document.getElementById('guestPostProjectBtn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showModal('loginModal');
+                } else {
+                    showModal('addProjectModal');
+                }
+            });
             
             // Modal close
             document.querySelectorAll('.modal-close').forEach(btn => {
@@ -3576,8 +4149,14 @@
             
             document.getElementById('moderateCommentsBtn').addEventListener('click', async () => {
                 await fetchPendingComments();
-                showModerationModal();
+                showCommentsModerationModal();
                 showModal('moderateCommentsModal');
+            });
+            
+            document.getElementById('moderateProjectsBtn').addEventListener('click', async () => {
+                await fetchPendingProjects();
+                showProjectsModerationModal();
+                showModal('moderateProjectsModal');
             });
             
             // Guest contact
@@ -3676,7 +4255,8 @@
                     status: document.getElementById('projectStatus').value,
                     progress: parseInt(document.getElementById('projectProgress').value) || 0,
                     needs_feedback: document.getElementById('projectNeedsFeedback').checked,
-                    visibility: document.getElementById('projectVisibility').value
+                    visibility: document.getElementById('projectVisibility').value,
+                    doctor_id: currentUser.id
                 };
                 
                 if (!projectData.name) {
@@ -3688,10 +4268,17 @@
                 this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
                 this.disabled = true;
                 
-                await addProject(projectData);
+                const result = await addProject(projectData);
                 
                 this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
                 this.disabled = false;
+                
+                if (result.success) {
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                }
             });
             
             document.getElementById('updateProjectBtn').addEventListener('click', async function() {
@@ -3706,6 +4293,13 @@
                 
                 if (currentUser && currentUser.role === 'admin') {
                     projectData.visibility = document.getElementById('editProjectVisibility').value;
+                    
+                    // If admin is changing from proposal to regular project
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project && project.is_proposal) {
+                        projectData.is_proposal = false;
+                        projectData.review_status = 'approved';
+                    }
                 }
                 
                 if (!projectData.name) {
@@ -3791,6 +4385,21 @@
                 document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
             });
             
+            // NEW: Sync to ThoraxLab
+            document.getElementById('confirmSyncBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('syncProjectId').value;
+                const visibility = document.getElementById('syncVisibility').value;
+                const notes = document.getElementById('syncDescription').value.trim();
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Publishing...';
+                this.disabled = true;
+                
+                await syncToThoraxLab(projectId, visibility, notes);
+                
+                this.innerHTML = '<i class="mdi mdi-rocket-launch"></i> Publish to ThoraxLab';
+                this.disabled = false;
+            });
+            
             // Auto-refresh every 5 minutes
             setInterval(async () => {
                 if (currentUser) {
@@ -3800,7 +4409,7 @@
         });
 
         // Moderation modal display
-        function showModerationModal() {
+        function showCommentsModerationModal() {
             const list = document.getElementById('moderationList');
             
             if (!pendingComments || pendingComments.length === 0) {
@@ -3848,15 +4457,115 @@
                     
                     await moderateComment(commentId, action);
                     await fetchPendingComments();
-                    showModerationModal();
+                    showCommentsModerationModal();
                     await fetchCommentCounts();
                     await initDashboard();
                 });
             });
         }
 
+        function showProjectsModerationModal() {
+            const list = document.getElementById('projectModerationList');
+            
+            if (!pendingProjects || pendingProjects.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                        <i class="mdi mdi-check-circle-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                        <p>No pending project proposals to moderate.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    ${pendingProjects.map(project => `
+                        <div class="project-card proposal" style="margin-bottom: 0;">
+                            <div class="project-header">
+                                <div class="project-title">
+                                    <i class="mdi mdi-lightbulb-on"></i>
+                                    ${project.name}
+                                    <span class="project-sticker sticker-proposal">
+                                        <i class="mdi mdi-account"></i> Guest Proposal
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p class="project-description">${project.description || 'No description'}</p>
+                            
+                            <div class="project-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>${project.progress || 0}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="project-actions">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}" 
+                                        onclick="loadProjectForEditDashboard('${project.id}')">
+                                    <i class="mdi mdi-eye"></i>
+                                    View Details
+                                </button>
+                                <button class="action-btn approve-btn" onclick="moderateProjectFromModal('${project.id}', 'approve')">
+                                    <i class="mdi mdi-check-circle"></i>
+                                    Approve
+                                </button>
+                                <button class="action-btn reject-btn" onclick="moderateProjectFromModal('${project.id}', 'reject')">
+                                    <i class="mdi mdi-close-circle"></i>
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            list.innerHTML = html;
+            
+            // Add search functionality
+            const searchInput = document.getElementById('projectModerationSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const items = document.querySelectorAll('#projectModerationList > div > .project-card');
+                    
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    });
+                });
+            }
+        }
+
+        // Helper functions for moderation
+        async function loadProjectForEditDashboard(projectId) {
+            const project = dashboardData.projects.find(p => p.id === projectId) || 
+                           pendingProjects.find(p => p.id === projectId);
+            if (project) {
+                loadProjectForEdit(project);
+                hideAllModals();
+                showModal('editProjectModal');
+            }
+        }
+
+        async function moderateProjectFromModal(projectId, action) {
+            const result = await moderateProject(projectId, action);
+            if (result.success) {
+                await fetchPendingProjects();
+                showProjectsModerationModal();
+                await initDashboard();
+                alert(`Project ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
+            }
+        }
+
         // Make functions globally available
         window.resetSingleCode = resetSingleCode;
+        window.showSyncModal = showSyncModal;
+        window.loadProjectForEditDashboard = loadProjectForEditDashboard;
+        window.moderateProjectFromModal = moderateProjectFromModal;
     </script>
 </body>
 </html>
