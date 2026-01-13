@@ -13,7 +13,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ===== COMPLETE CSS WITH ALL IMPROVEMENTS ===== */
+        /* ===== COMPLETE CSS ===== */
         :root {
             /* Colors */
             --ms-blue: #00A4EF;
@@ -100,7 +100,6 @@
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            scroll-behavior: smooth;
         }
 
         body {
@@ -110,7 +109,6 @@
             line-height: 1.6;
             padding: var(--space-4);
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .container {
@@ -395,8 +393,6 @@
             border-radius: var(--radius-lg);
             padding: var(--space-6);
             margin-bottom: var(--space-6);
-            position: relative;
-            overflow: hidden;
         }
 
         .guest-welcome-content {
@@ -482,6 +478,31 @@
             color: var(--primary-600);
             transform: translateY(-2px);
             box-shadow: var(--shadow);
+        }
+
+        /* Quick review button */
+        .review-btn {
+            background: var(--warning-light);
+            color: var(--warning);
+            border-color: var(--warning-light);
+        }
+
+        .review-btn:hover {
+            background: var(--warning);
+            color: var(--white);
+            border-color: var(--warning);
+        }
+
+        .review-btn.reviewed {
+            background: var(--success);
+            color: var(--white);
+            border-color: var(--success);
+        }
+
+        .review-btn.feedback-provided {
+            background: var(--info);
+            color: var(--white);
+            border-color: var(--info);
         }
 
         /* ===== STATS CARDS ===== */
@@ -659,9 +680,6 @@
             transform: translateY(-2px);
         }
 
-        .tool-card.operational { border-left: 4px solid var(--success); }
-        .tool-card.warning { border-left: 4px solid var(--warning); }
-
         .tool-header {
             display: flex;
             justify-content: space-between;
@@ -788,20 +806,6 @@
             border: 1px solid var(--success);
         }
 
-        .doctor-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--primary-100);
-            color: var(--primary-700);
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: var(--space-3);
-            white-space: nowrap;
-        }
-
         .project-header {
             display: flex;
             justify-content: space-between;
@@ -873,7 +877,7 @@
             transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Project actions mobile fix */
+        /* Project actions */
         .project-actions {
             display: flex;
             gap: var(--space-2);
@@ -932,26 +936,6 @@
             transform: translateY(-2px);
         }
 
-        .recommend-btn {
-            background: var(--warning-light);
-            color: var(--warning);
-            border-color: var(--warning-light);
-        }
-
-        .recommend-btn:hover {
-            background: var(--warning);
-            color: var(--white);
-            border-color: var(--warning);
-            transform: translateY(-2px);
-        }
-
-        .recommend-btn.recommended {
-            background: var(--warning);
-            color: var(--white);
-            border-color: var(--warning);
-        }
-
-        /* Comment button */
         .comment-btn {
             background: var(--info-light);
             color: var(--info);
@@ -1039,7 +1023,7 @@
             padding: var(--space-6);
         }
 
-        /* ===== FORM IMPROVEMENTS FOR MOBILE ===== */
+        /* ===== FORM STYLES ===== */
         .form-group {
             margin-bottom: var(--space-5);
         }
@@ -1060,14 +1044,11 @@
             padding: 14px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            font-size: 16px !important; /* Prevents iOS zoom */
+            font-size: 16px !important;
             transition: all 0.2s ease;
             font-family: var(--font-sans);
             background: var(--white);
             color: var(--gray-900);
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
             min-height: 48px;
         }
 
@@ -1113,10 +1094,6 @@
             
             .platform-name {
                 font-size: 1.5rem;
-            }
-            
-            .project-card, .tool-card {
-                margin: 0 0 12px 0;
             }
             
             .modal-content {
@@ -1195,6 +1172,29 @@
             padding: var(--space-16) var(--space-6);
             color: var(--gray-500);
         }
+
+        /* Messages */
+        .error-message {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: var(--space-4);
+            border-radius: var(--radius);
+            margin-top: var(--space-4);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        .success-message {
+            background: var(--success-light);
+            color: var(--success);
+            padding: var(--space-4);
+            border-radius: var(--radius);
+            margin-top: var(--space-4);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--success);
+        }
     </style>
 </head>
 <body>
@@ -1260,8 +1260,7 @@
                     <h3>Welcome, Guest!</h3>
                     <p>
                         You're viewing our public innovation portfolio. Some projects are private/internal. 
-                        For collaboration inquiries—especially regarding <strong>Pulmonology patient care</strong> 
-                        and <strong>clinical assistive technologies</strong>—please contact our department directly.
+                        For collaboration inquiries, please contact our department directly.
                     </p>
                     <div class="guest-welcome-actions">
                         <button id="contactBtn" class="auth-btn" style="background: var(--primary-600);">
@@ -1423,7 +1422,7 @@
                         <span>Authorized personnel only</span>
                     </p>
                 </div>
-                <div id="loginError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--danger);"></div>
+                <div id="loginError" class="error-message"></div>
             </div>
         </div>
     </div>
@@ -1498,8 +1497,8 @@
                     <i class="mdi mdi-content-save"></i>
                     <span>Save Project</span>
                 </button>
-                <div id="projectError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--danger);"></div>
-                <div id="projectSuccess" class="success-message" style="background: var(--success-light); color: var(--success); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--success);"></div>
+                <div id="projectError" class="error-message"></div>
+                <div id="projectSuccess" class="success-message"></div>
             </div>
         </div>
     </div>
@@ -1619,8 +1618,8 @@
                         <span>Delete Project</span>
                     </button>
                 </div>
-                <div id="editProjectError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--danger);"></div>
-                <div id="editProjectSuccess" class="success-message" style="background: var(--success-light); color: var(--success); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--success);"></div>
+                <div id="editProjectError" class="error-message"></div>
+                <div id="editProjectSuccess" class="success-message"></div>
             </div>
         </div>
     </div>
@@ -1664,8 +1663,8 @@
                     <i class="mdi mdi-content-save"></i>
                     <span>Save Tool</span>
                 </button>
-                <div id="toolError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--danger);"></div>
-                <div id="toolSuccess" class="success-message" style="background: var(--success-light); color: var(--success); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--success);"></div>
+                <div id="toolError" class="error-message"></div>
+                <div id="toolSuccess" class="success-message"></div>
             </div>
         </div>
     </div>
@@ -1725,6 +1724,19 @@
             <div class="modal-body">
                 <!-- Comment form (for logged-in users) -->
                 <div id="commentFormSection" class="hidden">
+                    <!-- Email field for guests -->
+                    <div id="guestEmailField" class="form-group hidden">
+                        <label for="guestEmail">
+                            <i class="mdi mdi-email"></i>
+                            <span>Your Email *</span>
+                        </label>
+                        <input type="email" id="guestEmail" class="form-control" 
+                               placeholder="email@example.com">
+                        <small class="text-muted" style="font-size: 0.75rem;">
+                            We'll notify you when your comment is approved
+                        </small>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="commentText">
                             <i class="mdi mdi-message-text"></i>
@@ -1744,13 +1756,19 @@
                         <i class="mdi mdi-send"></i>
                         <span>Post Comment</span>
                     </button>
-                    <div id="commentError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--danger);"></div>
-                    <div id="commentSuccess" class="success-message" style="background: var(--success-light); color: var(--success); padding: var(--space-4); border-radius: var(--radius); margin-top: var(--space-4); font-size: 0.875rem; display: none; border-left: 4px solid var(--success);"></div>
+                    <div id="commentError" class="error-message"></div>
+                    <div id="commentSuccess" class="success-message"></div>
                 </div>
                 
                 <!-- Comments list -->
                 <div id="commentsList" class="comment-list" style="margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);">
                     <!-- Comments loaded dynamically -->
+                </div>
+                
+                <!-- Pending notice for guests -->
+                <div id="pendingNotice" class="hidden" style="background: var(--warning-light); border: 1px solid var(--warning); border-radius: var(--radius); padding: var(--space-3); margin-top: var(--space-4); text-align: center;">
+                    <i class="mdi mdi-clock-outline" style="color: var(--warning);"></i>
+                    <span style="color: var(--warning); font-weight: 500;">Some comments are awaiting moderation</span>
                 </div>
             </div>
         </div>
@@ -2089,7 +2107,7 @@
             }
         }
 
-        async function submitProjectComment(projectId, commentText) {
+        async function submitProjectComment(projectId, commentText, guestEmail = null) {
             try {
                 if (!currentUser) {
                     throw new Error('You must be logged in to comment');
@@ -2104,22 +2122,42 @@
                     throw new Error('Comment cannot be empty');
                 }
                 
+                // Validate email for guests
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    throw new Error('Email is required for guest comments');
+                }
+                
+                if (currentUser.role === 'guest' && guestEmail) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(guestEmail)) {
+                        throw new Error('Please enter a valid email address');
+                    }
+                }
+                
                 let status = 'pending';
                 if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
                     status = 'approved';
                 }
                 
+                const commentData = {
+                    project_id: projectId,
+                    content: commentText,
+                    user_id: currentUser.id,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
+                    status: status,
+                    created_at: new Date().toISOString()
+                };
+                
+                // Add email for guests
+                if (currentUser.role === 'guest' && guestEmail) {
+                    commentData.user_email = guestEmail;
+                    commentData.is_external = true;
+                }
+                
                 const { data, error } = await supabaseClient
                     .from('project_comments')
-                    .insert([{
-                        project_id: projectId,
-                        content: commentText,
-                        user_id: currentUser.id,
-                        user_name: currentUser.full_name || currentUser.username,
-                        user_role: currentUser.role,
-                        status: status,
-                        created_at: new Date().toISOString()
-                    }])
+                    .insert([commentData])
                     .select()
                     .single();
                 
@@ -2128,13 +2166,40 @@
                 await logAudit('comment_added', { 
                     project_id: projectId,
                     comment_length: wordCount,
-                    auto_approved: status === 'approved'
+                    auto_approved: status === 'approved',
+                    has_email: !!guestEmail
                 }, projectId);
                 
                 return { success: true, data };
                 
             } catch (error) {
                 console.error('Error submitting comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function updateProjectReviewStatus(projectId, reviewStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({
+                        review_status: reviewStatus,
+                        last_reviewed_at: new Date().toISOString(),
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                await logAudit('project_review_updated', { 
+                    project_id: projectId,
+                    review_status: reviewStatus
+                }, projectId);
+                
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error updating review status:', error);
                 return { success: false, error: error.message };
             }
         }
@@ -2342,13 +2407,20 @@
                     }
                 }
                 
+                const updateData = {
+                    ...projectData,
+                    last_updated: new Date().toISOString(),
+                    review_status: projectData.needs_feedback ? 'needs_review' : 'none'
+                };
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    updateData.visibility = document.getElementById('editProjectVisibility').value;
+                    updateData.review_status = document.getElementById('editReviewStatus').value;
+                }
+                
                 const { data, error } = await supabaseClient
                     .from('projects')
-                    .update({
-                        ...projectData,
-                        last_updated: new Date().toISOString(),
-                        review_status: projectData.needs_feedback ? 'needs_review' : 'none'
-                    })
+                    .update(updateData)
                     .eq('id', projectId)
                     .select()
                     .single();
@@ -2516,7 +2588,7 @@
                 const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
                 
                 toolsHTML += `
-                    <div class="tool-card ${tool.status}">
+                    <div class="tool-card">
                         <div class="tool-header">
                             <div class="tool-name">
                                 <div class="tool-icon">
@@ -2580,6 +2652,7 @@
                 let actionButtons = '';
                 if (currentUser) {
                     if (currentUser.role === 'admin') {
+                        // Admin buttons with quick review action
                         actionButtons = `
                             <div class="project-actions">
                                 <button class="action-btn edit-btn" data-project-id="${project.id}">
@@ -2589,6 +2662,12 @@
                                 <button class="action-btn delete-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-delete"></i>
                                     Delete
+                                </button>
+                                <button class="action-btn review-btn ${project.review_status || 'needs_review'}" 
+                                        data-project-id="${project.id}" data-review-action="mark_reviewed">
+                                    <i class="mdi mdi-check-circle"></i>
+                                    ${project.review_status === 'reviewed' ? 'Reviewed' : 
+                                      project.review_status === 'feedback_provided' ? 'Feedback Given' : 'Mark Reviewed'}
                                 </button>
                                 <button class="action-btn comment-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-comment"></i>
@@ -2672,6 +2751,28 @@
                     });
                 });
                 
+                document.querySelectorAll('.review-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const projectId = this.dataset.projectId;
+                        const project = dashboardData.projects.find(p => p.id === projectId);
+                        if (!project || currentUser.role !== 'admin') return;
+                        
+                        // Cycle through review statuses
+                        let newStatus = 'reviewed';
+                        if (project.review_status === 'reviewed') {
+                            newStatus = 'feedback_provided';
+                        } else if (project.review_status === 'feedback_provided') {
+                            newStatus = 'none';
+                        }
+                        
+                        const result = await updateProjectReviewStatus(projectId, newStatus);
+                        if (result.success) {
+                            alert(`Project marked as ${newStatus.replace('_', ' ')}`);
+                            initDashboard();
+                        }
+                    });
+                });
+                
                 document.querySelectorAll('.comment-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const projectId = this.dataset.projectId;
@@ -2693,19 +2794,26 @@
                 
                 const commentFormSection = document.getElementById('commentFormSection');
                 const commentHintText = document.getElementById('commentHintText');
+                const guestEmailField = document.getElementById('guestEmailField');
                 
                 if (currentUser) {
                     commentFormSection.classList.remove('hidden');
+                    
+                    // Show email field for guests only
                     if (currentUser.role === 'guest') {
+                        guestEmailField.classList.remove('hidden');
                         commentHintText.textContent = 'Your comments will be reviewed before appearing';
                     } else {
+                        guestEmailField.classList.add('hidden');
                         commentHintText.textContent = 'Your comments will appear immediately';
                     }
                 } else {
                     commentFormSection.classList.add('hidden');
+                    guestEmailField.classList.add('hidden');
                 }
                 
                 const commentsList = document.getElementById('commentsList');
+                const pendingNotice = document.getElementById('pendingNotice');
                 
                 if (!comments || comments.length === 0) {
                     commentsList.innerHTML = `
@@ -2714,10 +2822,20 @@
                             <p>No comments yet. Be the first to share!</p>
                         </div>
                     `;
+                    pendingNotice.classList.add('hidden');
                 } else {
                     let commentsHTML = '';
+                    let hasPendingComments = false;
+                    let hasComments = false;
                     
                     comments.forEach(comment => {
+                        // Skip pending comments for guests
+                        if (currentUser.role === 'guest' && comment.status === 'pending') {
+                            hasPendingComments = true;
+                            return;
+                        }
+                        
+                        hasComments = true;
                         const date = new Date(comment.created_at);
                         const dateStr = date.toLocaleDateString('en-US', {
                             month: 'short',
@@ -2726,12 +2844,24 @@
                             minute: '2-digit'
                         });
                         
+                        // Track pending comments for notice
+                        if (comment.status === 'pending') {
+                            hasPendingComments = true;
+                        }
+                        
+                        let userBadge = '';
+                        if (comment.is_external) {
+                            userBadge = '<span style="font-size: 0.7rem; background: var(--primary-100); color: var(--primary-700); padding: 2px 6px; border-radius: var(--radius-full); margin-left: 6px;">External</span>';
+                        }
+                        
                         commentsHTML += `
-                            <div class="comment-item" style="background: var(--gray-50); border-radius: var(--radius); padding: var(--space-3); border-left: 3px solid var(--primary-500);">
+                            <div class="comment-item" style="background: ${comment.status === 'pending' ? 'var(--warning-light)' : 'var(--gray-50)'}; border-radius: var(--radius); padding: var(--space-3); border-left: 3px solid ${comment.status === 'pending' ? 'var(--warning)' : 'var(--primary-500)'};">
                                 <div class="comment-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
                                     <div class="comment-author" style="font-weight: 600; color: var(--gray-700); display: flex; align-items: center; gap: var(--space-2);">
                                         <i class="mdi mdi-account-circle"></i>
                                         ${comment.user_name}
+                                        ${userBadge}
+                                        ${comment.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: var(--radius-full); margin-left: 6px;">Pending</span>' : ''}
                                     </div>
                                     <div class="comment-date" style="font-size: 0.75rem; color: var(--gray-500);">
                                         ${dateStr}
@@ -2744,10 +2874,28 @@
                         `;
                     });
                     
-                    commentsList.innerHTML = commentsHTML;
+                    if (!hasComments) {
+                        commentsList.innerHTML = `
+                            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                                <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: var(--space-3);"></i>
+                                <p>No visible comments yet.</p>
+                            </div>
+                        `;
+                    } else {
+                        commentsList.innerHTML = commentsHTML;
+                    }
+                    
+                    // Show pending notice for guests if there are pending comments
+                    if (currentUser.role === 'guest' && hasPendingComments) {
+                        pendingNotice.classList.remove('hidden');
+                    } else {
+                        pendingNotice.classList.add('hidden');
+                    }
                 }
                 
+                // Reset form
                 document.getElementById('commentText').value = '';
+                document.getElementById('guestEmail').value = '';
                 document.getElementById('commentWordCount').textContent = '0/150 words';
                 document.getElementById('commentError').style.display = 'none';
                 document.getElementById('commentSuccess').style.display = 'none';
@@ -2916,6 +3064,7 @@
                 if (!currentProjectComments) return;
                 
                 const commentText = document.getElementById('commentText').value.trim();
+                const guestEmail = document.getElementById('guestEmail').value.trim();
                 const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
                 
                 if (wordCount === 0) {
@@ -2930,16 +3079,24 @@
                     return;
                 }
                 
+                // Validate email for guests
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    document.getElementById('commentError').textContent = 'Email is required for guest comments';
+                    document.getElementById('commentError').style.display = 'block';
+                    return;
+                }
+                
                 this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
                 this.disabled = true;
                 
-                const result = await submitProjectComment(currentProjectComments, commentText);
+                const result = await submitProjectComment(currentProjectComments, commentText, guestEmail);
                 
                 this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
                 this.disabled = false;
                 
                 if (result.success) {
                     document.getElementById('commentText').value = '';
+                    document.getElementById('guestEmail').value = '';
                     document.getElementById('commentWordCount').textContent = '0/150 words';
                     document.getElementById('commentSuccess').textContent = result.data.status === 'pending' 
                         ? 'Comment submitted for moderation' 
@@ -3065,7 +3222,6 @@
 
         // Make functions globally available
         window.resetSingleCode = resetSingleCode;
-        window.generateSimpleQR = generateSimpleQR;
     </script>
 </body>
 </html>
