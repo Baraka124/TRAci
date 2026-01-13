@@ -2579,7 +2579,136 @@ async function loadProjectsForPDFSelect() {
         console.error('Error loading projects for PDF:', error);
     }
 }
+// ========== EDIT CODE MANAGEMENT ==========
+async function loadEditCodes() {
+    try {
+        const { data: projects, error } = await supabaseClient
+            .from('projects')
+            .select('id, name, edit_code, visibility, created_at')
+            .order('name');
+        
+        if (error) throw error;
+        
+        const tbody = document.getElementById('codesTableBody');
+        if (!tbody) {
+            console.error("codesTableBody element not found!");
+            return;
+        }
+        
+        tbody.innerHTML = '';
+        
+        if (!projects || projects.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: var(--space-8);">
+                        <i class="mdi mdi-information" style="font-size: 2rem;"></i>
+                        <p>No projects found</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        projects.forEach(project => {
+            const createdDate = new Date(project.created_at);
+            const dateStr = createdDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric'
+            });
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
+                    <div style="font-weight: 600;">${project.name}</div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">
+                        Created: ${dateStr}
+                    </div>
+                </td>
+                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
+                    <span class="code-display" style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--primary-50); padding: 6px 10px; border-radius: var(--radius); display: inline-block;">
+                        ${project.edit_code || 'Not set'}
+                    </span>
+                </td>
+                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
+                    ${project.visibility === 'private' 
+                        ? '<span class="visibility-badge private"><i class="mdi mdi-lock"></i> Private</span>' 
+                        : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
+                </td>
+                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
+                    <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="padding: 6px 12px; border-radius: var(--radius); border: 1px solid; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200);">
+                        <i class="mdi mdi-refresh"></i>
+                        Reset
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+        
+        // Add search functionality if search input exists
+        const searchInput = document.getElementById('codeSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
+                    row.style.display = projectName.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading edit codes:', error);
+        alert('Failed to load edit codes');
+    }
+}
 
+async function resetSingleCode(projectId, projectName) {
+    if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) {
+        return;
+    }
+    
+    try {
+        const newCode = Math.floor(10000 + Math.random() * 90000).toString();
+        
+        const { error } = await supabaseClient
+            .from('projects')
+            .update({ 
+                edit_code: newCode,
+                last_updated: new Date().toISOString()
+            })
+            .eq('id', projectId);
+        
+        if (error) throw error;
+        
+        alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
+        loadEditCodes();
+        
+    } catch (error) {
+        console.error('Error resetting code:', error);
+        alert('Failed to reset code');
+    }
+}
+
+async function getProjectCode(projectId) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('projects')
+            .select('edit_code, name')
+            .eq('id', projectId)
+            .single();
+        
+        if (error) throw error;
+        
+        return { success: true, code: data.edit_code, name: data.name };
+        
+    } catch (error) {
+        console.error('Error getting project code:', error);
+        return { success: false, error: error.message };
+    }
+}
         // ========== IMPROVEMENT #1: COMMENT COUNT SYSTEM ==========
         async function fetchCommentCounts() {
             try {
@@ -3578,6 +3707,223 @@ function showModerationModal() {
         });
     });
 }
+        <!-- Add Project Modal -->
+<div id="addProjectModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <i class="mdi mdi-plus-circle"></i>
+                <span>Add New Project</span>
+            </h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="projectName">Project Name *</label>
+                <input type="text" id="projectName" class="form-control" 
+                       placeholder="Enter project name">
+            </div>
+            <div class="form-group">
+                <label for="projectDescription">Description</label>
+                <textarea id="projectDescription" class="form-control" 
+                          placeholder="Project description" rows="3"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group">
+                    <label for="projectStatus">Status</label>
+                    <select id="projectStatus" class="form-control">
+                        <option value="planning">Planning</option>
+                        <option value="development" selected>Development</option>
+                        <option value="testing">Testing</option>
+                        <option value="production">Production</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projectProgress">Progress (%)</label>
+                    <input type="number" id="projectProgress" class="form-control" 
+                           min="0" max="100" value="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="projectNeedsFeedback">
+                    <i class="mdi mdi-alert-circle"></i>
+                    <span>Mark for Review</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="projectVisibility">Visibility</label>
+                <select id="projectVisibility" class="form-control">
+                    <option value="public">🌍 Public (Visible to all)</option>
+                    <option value="private">🔒 Private (Doctors & Admin only)</option>
+                </select>
+            </div>
+            <button id="saveProjectBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
+                <i class="mdi mdi-content-save"></i>
+                <span>Save Project</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Project Modal -->
+<div id="editProjectModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <i class="mdi mdi-pencil"></i>
+                <span>Edit Project</span>
+            </h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editProjectId">
+            
+            <div id="editCodeSection" class="hidden">
+                <div class="form-group">
+                    <label for="editCodeVerification">Edit Verification Code *</label>
+                    <input type="password" id="editCodeVerification" 
+                           class="form-control" 
+                           placeholder="Enter 5-digit code" maxlength="5" 
+                           pattern="\d{5}" inputmode="numeric"
+                           style="font-family: monospace; font-size: 1.25rem; letter-spacing: 8px; text-align: center;">
+                    <small style="font-size: 0.75rem; color: var(--gray-500);">5-digit code required for doctor edits</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="editProjectName">Project Name *</label>
+                <input type="text" id="editProjectName" class="form-control" 
+                       placeholder="Enter project name">
+            </div>
+            <div class="form-group">
+                <label for="editProjectDescription">Description</label>
+                <textarea id="editProjectDescription" class="form-control" 
+                          placeholder="Project description" rows="3"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group">
+                    <label for="editProjectStatus">Status</label>
+                    <select id="editProjectStatus" class="form-control">
+                        <option value="planning">Planning</option>
+                        <option value="development">Development</option>
+                        <option value="testing">Testing</option>
+                        <option value="production">Production</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editProjectProgress">Progress (%)</label>
+                    <input type="number" id="editProjectProgress" class="form-control" 
+                           min="0" max="100" value="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="editProjectNeedsFeedback">
+                    <i class="mdi mdi-alert-circle"></i>
+                    <span>Mark for Review</span>
+                </label>
+            </div>
+            
+            <div id="visibilityControl" class="hidden">
+                <div class="form-group">
+                    <label for="editProjectVisibility">Visibility</label>
+                    <select id="editProjectVisibility" class="form-control">
+                        <option value="public">🌍 Public (All users)</option>
+                        <option value="private">🔒 Private (Doctors & Admin only)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <button id="updateProjectBtn" class="auth-btn" style="width: 100%;">
+                    <i class="mdi mdi-content-save"></i>
+                    <span>Update Project</span>
+                </button>
+                <button id="deleteProjectBtn" class="auth-btn" style="width: 100%; background: linear-gradient(135deg, var(--danger), #dc2626);">
+                    <i class="mdi mdi-delete"></i>
+                    <span>Delete Project</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Tool Modal -->
+<div id="addToolModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <i class="mdi mdi-toolbox"></i>
+                <span>Add New Tool</span>
+            </h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="toolName">Tool Name *</label>
+                <input type="text" id="toolName" class="form-control" 
+                       placeholder="Enter tool name">
+            </div>
+            <div class="form-group">
+                <label for="toolDescription">Description</label>
+                <textarea id="toolDescription" class="form-control" 
+                          placeholder="Tool description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="toolUrl">URL *</label>
+                <input type="url" id="toolUrl" class="form-control" 
+                       placeholder="https://tool.example.com">
+            </div>
+            <button id="saveToolBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
+                <i class="mdi mdi-content-save"></i>
+                <span>Save Tool</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- View Edit Codes Modal -->
+<div id="viewCodesModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3>
+                <i class="mdi mdi-key-chain"></i>
+                <span>Project Edit Codes</span>
+            </h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <input type="text" id="codeSearch" class="form-control" 
+                       placeholder="Search projects by name...">
+            </div>
+            
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Project</th>
+                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Edit Code</th>
+                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Visibility</th>
+                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody">
+                        <!-- Codes loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div>
+                <p style="font-size: 0.875rem; color: var(--gray-500);">
+                    <i class="mdi mdi-information"></i>
+                    <span>Doctors need these 5-digit codes to edit projects</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
     </script>
 </body>
 </html>
