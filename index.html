@@ -17,7 +17,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ===== COMPLETE CSS WITH ALL IMPROVEMENTS ===== */
+        /* ===== COMPLETE CSS ===== */
         :root {
             /* Colors */
             --ms-blue: #00A4EF;
@@ -325,6 +325,18 @@
         .user-role.doctor { background: var(--primary-100); color: var(--primary-700); }
         .user-role.guest { background: var(--gray-100); color: var(--gray-600); }
 
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
         /* Guest welcome */
         .guest-welcome {
             background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
@@ -395,7 +407,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* COMMENT COUNT BADGE - CRITICAL IMPROVEMENT #1 */
+        /* COMMENT COUNT BADGE */
         .comment-count-badge {
             display: inline-flex;
             align-items: center;
@@ -477,7 +489,7 @@
             line-height: 1;
         }
 
-        /* ===== ORIGINAL FILTER CONTROLS STYLE ===== */
+        /* Filter Controls */
         .filter-controls {
             display: flex;
             gap: 8px;
@@ -820,7 +832,7 @@
             transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Feedback channels with BEAUTIFUL icons */
+        /* Feedback channels */
         .feedback-section {
             display: flex;
             align-items: center;
@@ -874,7 +886,6 @@
         .channel-btn.whatsapp { background-color: #25D366; }
         .channel-btn.email { background-color: var(--primary-600); }
         .channel-btn.github { background-color: var(--gray-800); }
-        .channel-btn.slack { background-color: #4A154B; }
 
         /* Project actions */
         .project-actions {
@@ -934,7 +945,7 @@
             transform: translateY(-2px);
         }
 
-        /* UPVOTE BUTTON - IMPROVEMENT #2 */
+        /* UPVOTE BUTTON */
         .upvote-btn {
             background: var(--success-light);
             color: var(--success);
@@ -974,7 +985,7 @@
             border-color: var(--info);
         }
 
-        /* PDF Export button - IMPROVEMENT #3 */
+        /* PDF Export button */
         .pdf-export-btn {
             background: linear-gradient(135deg, var(--danger), #dc2626);
             color: var(--white);
@@ -1005,7 +1016,129 @@
             margin-top: 32px;
         }
 
-        /* ===== COMMENT MODAL STYLES ===== */
+        /* ===== MODAL STYLES ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
+        }
+
+        .modal-header h3 {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-100);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+            background: var(--white);
+            color: var(--gray-900);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        /* Comment modal */
         .comment-modal {
             max-width: 600px;
         }
@@ -1069,7 +1202,7 @@
             background: transparent;
             border: 1px solid var(--border);
             border-radius: 4px;
-            padding: 4px 8px;
+            padding: 6px 10px;
             font-size: 12px;
             color: var(--gray-600);
             cursor: pointer;
@@ -1104,8 +1237,8 @@
         }
 
         .moderation-btn {
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
             border: 1px solid;
             font-size: 12px;
             font-weight: 600;
@@ -1135,6 +1268,27 @@
             color: var(--white);
         }
 
+        /* Error/Success messages */
+        .error-message {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        .success-message {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            display: none;
+            border-left: 4px solid var(--success);
+        }
+
         /* Mobile fixes */
         @media (max-width: 768px) {
             body {
@@ -1157,6 +1311,16 @@
                 height: 32px;
                 font-size: 14px;
             }
+            
+            .modal-content {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .modal-overlay {
+                padding: 0;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1169,6 +1333,11 @@
             }
             
             .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .auth-btn, .admin-btn {
                 width: 100%;
                 justify-content: center;
             }
@@ -1195,7 +1364,7 @@
             </div>
             
             <div class="header-right">
-                <!-- Status panel - ONLY VISIBLE AFTER LOGIN -->
+                <!-- Status panel -->
                 <div class="status-panel" id="statusPanel">
                     <span>Updated: <strong id="lastUpdatedTime">--:--</strong></span>
                     <span class="live-indicator">
@@ -1363,7 +1532,6 @@
                         <i class="mdi mdi-flask"></i>
                         <span>Research Projects</span>
                     </h2>
-                    <div class="feedback-badge" id="feedbackBadge" class="hidden"></div>
                 </div>
                 <div class="section-content">
                     <div class="projects-list" id="projectsList">
@@ -1404,6 +1572,7 @@
     </div>
 
     <!-- ===== MODALS ===== -->
+    
     <!-- Login Modal -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
@@ -1429,7 +1598,233 @@
                     <i class="mdi mdi-login"></i>
                     <span>Sign In</span>
                 </button>
-                <div id="loginError" class="error-message" style="background: var(--danger-light); color: var(--danger); padding: 12px; border-radius: 6px; margin-top: 16px; display: none;"></div>
+                <div id="loginError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-plus-circle"></i>
+                    <span>Add New Project</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectName">Project Name *</label>
+                    <input type="text" id="projectName" class="form-control" 
+                           placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" class="form-control" 
+                              placeholder="Project description" rows="3"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development" selected>Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectProgress">Progress (%)</label>
+                        <input type="number" id="projectProgress" class="form-control" 
+                               min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="projectNeedsFeedback">
+                        <i class="mdi mdi-alert-circle"></i>
+                        <span>Mark for Review</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="projectVisibility">Visibility</label>
+                    <select id="projectVisibility" class="form-control">
+                        <option value="public">🌍 Public (Visible to all)</option>
+                        <option value="private">🔒 Private (Doctors & Admin only)</option>
+                    </select>
+                </div>
+                <button id="saveProjectBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
+                    <i class="mdi mdi-content-save"></i>
+                    <span>Save Project</span>
+                </button>
+                <div id="projectError" class="error-message"></div>
+                <div id="projectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-pencil"></i>
+                    <span>Edit Project</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editProjectId">
+                
+                <!-- Edit Code Section (for doctors) -->
+                <div id="editCodeSection" class="hidden">
+                    <div class="form-group">
+                        <label for="editCodeVerification">Edit Verification Code *</label>
+                        <input type="password" id="editCodeVerification" 
+                               class="form-control" 
+                               placeholder="Enter 5-digit code" maxlength="5" 
+                               pattern="\d{5}" inputmode="numeric"
+                               style="font-family: monospace; font-size: 1.25rem; letter-spacing: 8px; text-align: center;">
+                        <small style="font-size: 0.75rem; color: var(--gray-500);">5-digit code required for doctor edits</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProjectName">Project Name *</label>
+                    <input type="text" id="editProjectName" class="form-control" 
+                           placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="editProjectDescription">Description</label>
+                    <textarea id="editProjectDescription" class="form-control" 
+                              placeholder="Project description" rows="3"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label for="editProjectStatus">Status</label>
+                        <select id="editProjectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development">Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectProgress">Progress (%)</label>
+                        <input type="number" id="editProjectProgress" class="form-control" 
+                               min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="editProjectNeedsFeedback">
+                        <i class="mdi mdi-alert-circle"></i>
+                        <span>Mark for Review</span>
+                    </label>
+                </div>
+                
+                <!-- Visibility Control (admin only) -->
+                <div id="visibilityControl" class="hidden">
+                    <div class="form-group">
+                        <label for="editProjectVisibility">Visibility</label>
+                        <select id="editProjectVisibility" class="form-control">
+                            <option value="public">🌍 Public (All users)</option>
+                            <option value="private">🔒 Private (Doctors & Admin only)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <button id="updateProjectBtn" class="auth-btn" style="width: 100%;">
+                        <i class="mdi mdi-content-save"></i>
+                        <span>Update Project</span>
+                    </button>
+                    <button id="deleteProjectBtn" class="auth-btn" style="width: 100%; background: linear-gradient(135deg, var(--danger), #dc2626);">
+                        <i class="mdi mdi-delete"></i>
+                        <span>Delete Project</span>
+                    </button>
+                </div>
+                <div id="editProjectError" class="error-message"></div>
+                <div id="editProjectSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tool Modal -->
+    <div id="addToolModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-toolbox"></i>
+                    <span>Add New Tool</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="toolName">Tool Name *</label>
+                    <input type="text" id="toolName" class="form-control" 
+                           placeholder="Enter tool name">
+                </div>
+                <div class="form-group">
+                    <label for="toolDescription">Description</label>
+                    <textarea id="toolDescription" class="form-control" 
+                              placeholder="Tool description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="toolUrl">URL *</label>
+                    <input type="url" id="toolUrl" class="form-control" 
+                           placeholder="https://tool.example.com">
+                </div>
+                <button id="saveToolBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
+                    <i class="mdi mdi-content-save"></i>
+                    <span>Save Tool</span>
+                </button>
+                <div id="toolError" class="error-message"></div>
+                <div id="toolSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Edit Codes Modal -->
+    <div id="viewCodesModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-key-chain"></i>
+                    <span>Project Edit Codes</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="codeSearch" class="form-control" 
+                           placeholder="Search projects by name...">
+                </div>
+                
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 16px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Project</th>
+                                <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Edit Code</th>
+                                <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Visibility</th>
+                                <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="codesTableBody">
+                            <!-- Codes loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <p style="font-size: 0.875rem; color: var(--gray-500);">
+                        <i class="mdi mdi-information"></i>
+                        <span>Doctors need these 5-digit codes to edit projects</span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -1477,8 +1872,8 @@
                         <i class="mdi mdi-send"></i>
                         <span>Post Comment</span>
                     </button>
-                    <div id="commentError" style="background: var(--danger-light); color: var(--danger); padding: 12px; border-radius: 6px; margin-top: 16px; display: none;"></div>
-                    <div id="commentSuccess" style="background: var(--success-light); color: var(--success); padding: 12px; border-radius: 6px; margin-top: 16px; display: none;"></div>
+                    <div id="commentError" class="error-message"></div>
+                    <div id="commentSuccess" class="success-message"></div>
                 </div>
                 
                 <!-- Comments list -->
@@ -1567,13 +1962,10 @@
                     <span>Generate & Download PDF</span>
                 </button>
                 
-                <div id="pdfError" style="background: var(--danger-light); color: var(--danger); padding: 12px; border-radius: 6px; margin-top: 16px; display: none;"></div>
+                <div id="pdfError" class="error-message"></div>
             </div>
         </div>
     </div>
-
-    <!-- Other modals (Add Project, Edit Project, etc.) would go here -->
-    <!-- ... -->
 
     <!-- JavaScript -->
     <script>
@@ -1594,1122 +1986,265 @@
             lastUpdated: new Date()
         };
         let currentProjectComments = null;
-        let commentCounts = {}; // Store comment counts per project
-        let pendingComments = []; // For moderation
-        // ========== PASSWORD HASHING ==========
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+        let commentCounts = {};
+        let pendingComments = [];
 
-// ========== AUDIT LOGGING ==========
-async function logAudit(action, details = {}, projectId = null) {
-    try {
-        if (!currentUser) return;
-        
-        const auditData = {
-            user_id: currentUser.id,
-            user_name: currentUser.full_name || currentUser.username,
-            user_role: currentUser.role,
-            action: action,
-            details: JSON.stringify(details),
-            project_id: projectId,
-            ip_address: 'N/A',
-            created_at: new Date().toISOString()
-        };
-        
-        const { error } = await supabaseClient
-            .from('audit_logs')
-            .insert([auditData]);
-        
-        if (error) {
-            console.error('Error saving audit log:', error);
+        // ========== CORE FUNCTIONS ==========
+
+        // Password Hashing
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        
-    } catch (error) {
-        console.error('Error in audit logging:', error);
-    }
-}
 
-// ========== AUTHENTICATION ==========
-async function loginUser(username, password) {
-    const errorEl = document.getElementById('loginError');
-    errorEl.style.display = 'none';
-    
-    try {
-        const hashedPassword = await hashPassword(password);
-        
-        const { data, error } = await supabaseClient
-            .from('dashboard_users')
-            .select('*')
-            .eq('username', username)
-            .single();
-        
-        if (error || !data) {
-            errorEl.textContent = 'Invalid username or password';
-            errorEl.style.display = 'block';
-            return false;
-        }
-        
-        if (data.password !== hashedPassword) {
-            errorEl.textContent = 'Invalid username or password';
-            errorEl.style.display = 'block';
-            return false;
-        }
-        
-        currentUser = {
-            id: data.id,
-            username: data.username,
-            full_name: data.full_name,
-            role: data.role,
-            department: data.department
-        };
-        
-        authToken = btoa(JSON.stringify(currentUser));
-        localStorage.setItem('traci_auth_token', authToken);
-        
-        await logAudit('login', { username: username });
-        
-        return true;
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        errorEl.textContent = 'Login failed. Please try again.';
-        errorEl.style.display = 'block';
-        return false;
-    }
-}
-
-function logoutUser() {
-    if (currentUser) {
-        logAudit('logout', {});
-    }
-    
-    currentUser = null;
-    authToken = null;
-    localStorage.removeItem('traci_auth_token');
-    updateAuthUI();
-    showLoginRequired();
-}
-
-function loadStoredUser() {
-    if (authToken) {
-        try {
-            currentUser = JSON.parse(atob(authToken));
-        } catch (e) {
-            console.error('Failed to parse auth token:', e);
-            localStorage.removeItem('traci_auth_token');
-        }
-    }
-}
-
-// ========== UI MANAGEMENT ==========
-function updateAuthUI() {
-    const guestView = document.getElementById('guestView');
-    const userView = document.getElementById('userView');
-    const loginRequiredSection = document.getElementById('loginRequiredSection');
-    const statsContainer = document.getElementById('statsContainer');
-    const adminControls = document.getElementById('adminControls');
-    const contentGrid = document.getElementById('contentGrid');
-    const guestWelcome = document.getElementById('guestWelcome');
-    const statusPanel = document.getElementById('statusPanel');
-    const filterControls = document.getElementById('filterControls');
-    
-    if (currentUser) {
-        guestView.classList.add('hidden');
-        userView.classList.remove('hidden');
-        loginRequiredSection.classList.add('hidden');
-        
-        // Set user avatar
-        const avatar = document.getElementById('userAvatar');
-        const name = currentUser.full_name || currentUser.username;
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        avatar.textContent = initials;
-        
-        // Set user info
-        document.getElementById('currentUsername').textContent = name;
-        const roleBadge = document.getElementById('currentUserRole');
-        roleBadge.textContent = currentUser.role;
-        roleBadge.className = `user-role ${currentUser.role}`;
-        
-        // Show status panel ONLY after login
-        statusPanel.classList.add('visible');
-        
-        // Show content for ALL logged-in users
-        statsContainer.classList.remove('hidden');
-        contentGrid.classList.remove('hidden');
-        filterControls.classList.remove('hidden');
-        
-        // Show guest-specific sections
-        if (currentUser.role === 'guest') {
-            guestWelcome.classList.remove('hidden');
-        } else {
-            guestWelcome.classList.add('hidden');
-        }
-        
-        // Show admin controls only for admin
-        if (currentUser.role === 'admin') {
-            adminControls.classList.remove('hidden');
-            // Show Active Users card only for admin
-            document.getElementById('activeUsersCard').classList.remove('hidden');
-        } else {
-            adminControls.classList.add('hidden');
-            document.getElementById('activeUsersCard').classList.add('hidden');
-        }
-        
-        // Initialize dashboard
-        initDashboard();
-        
-    } else {
-        guestView.classList.remove('hidden');
-        userView.classList.add('hidden');
-        adminControls.classList.add('hidden');
-        guestWelcome.classList.add('hidden');
-        statusPanel.classList.remove('visible');
-        filterControls.classList.add('hidden');
-        showLoginRequired();
-    }
-}
-
-function showLoginRequired() {
-    document.getElementById('loginRequiredSection').classList.remove('hidden');
-    document.getElementById('statsContainer').classList.add('hidden');
-    document.getElementById('adminControls').classList.add('hidden');
-    document.getElementById('contentGrid').classList.add('hidden');
-    document.getElementById('guestWelcome').classList.add('hidden');
-    document.getElementById('filterControls').classList.add('hidden');
-}
-
-// ========== MODAL MANAGEMENT ==========
-function showModal(modalName) {
-    // Hide all modals first
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.style.display = 'none';
-    });
-    
-    // Show the requested modal
-    const modal = document.getElementById(modalName);
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function hideAllModals() {
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.style.display = 'none';
-    });
-    document.body.style.overflow = 'auto';
-}
-
-// ========== DATABASE FUNCTIONS ==========
-async function fetchProjects() {
-    let query = supabaseClient
-        .from('projects')
-        .select('*');
-    
-    // Filter by visibility for guests
-    if (currentUser && currentUser.role === 'guest') {
-        query = query.eq('visibility', 'public');
-    }
-    
-    const { data, error } = await query
-        .order('created_at', { ascending: false });
-    
-    if (error) {
-        console.error('Error fetching projects:', error);
-        dashboardData.projects = [];
-        return;
-    }
-    
-    dashboardData.projects = data || [];
-    dashboardData.filteredProjects = [...dashboardData.projects];
-}
-
-async function fetchTools() {
-    const { data, error } = await supabaseClient
-        .from('tools')
-        .select('*')
-        .order('created_at', { ascending: false });
-    
-    if (error) {
-        console.error('Error fetching tools:', error);
-        dashboardData.tools = [];
-        return;
-    }
-    
-    dashboardData.tools = data || [];
-}
-
-async function fetchCommentsForProject(projectId) {
-    try {
-        let query = supabaseClient
-            .from('project_comments')
-            .select('*')
-            .eq('project_id', projectId)
-            .order('created_at', { ascending: false });
-        
-        if (currentUser && currentUser.role === 'guest') {
-            query = query.eq('status', 'approved');
-        } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
-            query = query.in('status', ['approved', 'rejected']);
-        }
-        
-        const { data, error } = await query;
-        
-        if (error) throw error;
-        return data || [];
-    } catch (error) {
-        console.error('Error fetching comments:', error);
-        return [];
-    }
-}
-
-// ========== PROJECT CRUD ==========
-async function addProject(projectData) {
-    try {
-        const editCode = Math.floor(10000 + Math.random() * 90000).toString();
-        
-        const { data, error } = await supabaseClient
-            .from('projects')
-            .insert([{
-                ...projectData,
-                last_updated: new Date().toISOString(),
-                edit_code: editCode,
-                review_status: projectData.needs_feedback ? 'needs_review' : 'none'
-            }])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        
-        await logAudit('project_created', { 
-            project_name: projectData.name,
-            visibility: projectData.visibility
-        }, data.id);
-        
-        alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
-        
-        return { success: true, data, code: editCode };
-        
-    } catch (error) {
-        console.error('Error adding project:', error);
-        alert('Failed to add project: ' + error.message);
-        return { success: false, error: error.message };
-    }
-}
-
-async function updateProject(projectId, projectData) {
-    try {
-        if (currentUser && currentUser.role === 'doctor') {
-            const enteredCode = document.getElementById('editCodeVerification').value;
-            
-            if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
-                alert('Valid 5-digit edit code required');
-                return { success: false, error: 'Invalid edit code format' };
-            }
-            
-            const { data: project, error: fetchError } = await supabaseClient
-                .from('projects')
-                .select('edit_code')
-                .eq('id', projectId)
-                .single();
-            
-            if (fetchError || !project) {
-                alert('Project not found');
-                return { success: false, error: 'Project not found' };
-            }
-            
-            if (enteredCode !== project.edit_code) {
-                alert('Invalid edit code');
-                return { success: false, error: 'Invalid edit code' };
-            }
-        }
-        
-        const updateData = {
-            ...projectData,
-            last_updated: new Date().toISOString(),
-            review_status: projectData.needs_feedback ? 'needs_review' : 'none'
-        };
-        
-        const { data, error } = await supabaseClient
-            .from('projects')
-            .update(updateData)
-            .eq('id', projectId)
-            .select()
-            .single();
-        
-        if (error) throw error;
-        
-        await logAudit('project_updated', { 
-            project_id: projectId,
-            changes: projectData 
-        }, projectId);
-        
-        return { success: true, data };
-        
-    } catch (error) {
-        console.error('Error updating project:', error);
-        alert('Failed to update project: ' + error.message);
-        return { success: false, error: error.message };
-    }
-}
-
-async function deleteProject(projectId) {
-    if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-        return { success: false, error: 'Cancelled by user' };
-    }
-    
-    try {
-        const { data: project } = await supabaseClient
-            .from('projects')
-            .select('name')
-            .eq('id', projectId)
-            .single();
-        
-        const { error } = await supabaseClient
-            .from('projects')
-            .delete()
-            .eq('id', projectId);
-        
-        if (error) throw error;
-        
-        await logAudit('project_deleted', { 
-            project_id: projectId,
-            project_name: project?.name || 'Unknown'
-        }, projectId);
-        
-        alert('Project deleted successfully!');
-        return { success: true };
-        
-    } catch (error) {
-        console.error('Error deleting project:', error);
-        alert('Failed to delete project: ' + error.message);
-        return { success: false, error: error.message };
-    }
-}
-
-// ========== TOOL CRUD ==========
-async function addTool(toolData) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('tools')
-            .insert([{
-                ...toolData,
-                last_checked: new Date().toISOString()
-            }])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        
-        await logAudit('tool_created', { 
-            tool_name: toolData.name
-        });
-        
-        return { success: true, data };
-        
-    } catch (error) {
-        console.error('Error adding tool:', error);
-        alert('Failed to add tool: ' + error.message);
-        return { success: false, error: error.message };
-    }
-}
-
-// ========== DASHBOARD RENDERING ==========
-async function initDashboard() {
-    showLoadingState();
-    
-    try {
-        await Promise.all([
-            fetchProjects(),
-            fetchTools(),
-            fetchCommentCounts()
-        ]);
-        
-        updateStats();
-        renderDashboard();
-        updateTimestamp();
-        
-    } catch (error) {
-        console.error('Error loading dashboard:', error);
-        showErrorState();
-    }
-}
-
-async function updateStats() {
-    const toolsCount = dashboardData.tools.length;
-    const projectsCount = dashboardData.projects.length;
-    
-    // Calculate total comments
-    let totalComments = 0;
-    Object.values(commentCounts).forEach(count => {
-        totalComments += count;
-    });
-    
-    // Get active users (logins today) - only for admin
-    let activeUsersCount = 0;
-    if (currentUser && currentUser.role === 'admin') {
-        const today = new Date().toISOString().split('T')[0];
-        const { count } = await supabaseClient
-            .from('audit_logs')
-            .select('*', { count: 'exact', head: true })
-            .eq('action', 'login')
-            .gte('created_at', today);
-        activeUsersCount = count || 0;
-    }
-    
-    document.getElementById('toolsCount').textContent = toolsCount;
-    document.getElementById('projectsCount').textContent = projectsCount;
-    document.getElementById('commentsCount').textContent = totalComments;
-    document.getElementById('activeUsersCount').textContent = activeUsersCount;
-}
-
-function renderDashboard() {
-    renderTools();
-    renderProjects();
-}
-
-function renderTools() {
-    const toolsGrid = document.getElementById('toolsGrid');
-    
-    if (dashboardData.tools.length === 0) {
-        toolsGrid.innerHTML = `
-            <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
-                <i class="mdi mdi-toolbox-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let toolsHTML = '';
-    
-    dashboardData.tools.forEach(tool => {
-        const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
-        const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
-        
-        toolsHTML += `
-            <div class="tool-card">
-                <div class="tool-header">
-                    <div class="tool-name">
-                        <div class="tool-icon">
-                            <i class="${tool.icon || 'mdi mdi-toolbox'}"></i>
-                        </div>
-                        <span>${tool.name}</span>
-                    </div>
-                    <span class="tool-status ${statusClass}">${statusText}</span>
-                </div>
-                <p class="tool-description">${tool.description || 'No description available'}</p>
-                <div class="tool-footer">
-                    <a href="${tool.url}" target="_blank" class="tool-link">
-                        <i class="mdi mdi-open-in-new"></i>
-                        Access
-                    </a>
-                </div>
-            </div>
-        `;
-    });
-    
-    toolsGrid.innerHTML = toolsHTML;
-}
-
-function renderProjects() {
-    const projectsList = document.getElementById('projectsList');
-    
-    if (dashboardData.filteredProjects.length === 0) {
-        projectsList.innerHTML = `
-            <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
-                <i class="mdi mdi-flask-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                <p>No projects found matching your filter.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let projectsHTML = '';
-    
-    dashboardData.filteredProjects.forEach(project => {
-        const statusClass = `status-${project.status}`;
-        const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
-        
-        const visibilityBadge = project.visibility === 'private' 
-            ? `<span class="visibility-badge private">
-                 <i class="mdi mdi-lock"></i> Private
-               </span>`
-            : `<span class="visibility-badge public">
-                 <i class="mdi mdi-earth"></i> Public
-               </span>`;
-        
-        // COMMENT COUNT BADGE
-        const commentCount = getCommentCount(project.id);
-        const commentBadge = commentCount > 0 ? 
-            `<span class="comment-count-badge" data-project-id="${project.id}">
-                <i class="mdi mdi-comment"></i>
-                ${commentCount}
-            </span>` : '';
-        
-        // REVIEW STICKER
-        let reviewSticker = '';
-        if (project.review_status === 'needs_review') {
-            reviewSticker = `<span class="review-sticker needs-review"><i class="mdi mdi-alert"></i> Needs Review</span>`;
-        } else if (project.review_status === 'reviewed') {
-            reviewSticker = `<span class="review-sticker reviewed"><i class="mdi mdi-check-circle"></i> Reviewed</span>`;
-        } else if (project.review_status === 'feedback_provided') {
-            reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
-        }
-        
-        // ACTION BUTTONS
-        let actionButtons = '';
-        if (currentUser) {
-            if (currentUser.role === 'admin') {
-                actionButtons = `
-                    <div class="project-actions">
-                        <button class="action-btn edit-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-pencil"></i>
-                            Edit
-                        </button>
-                        <button class="action-btn delete-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-delete"></i>
-                            Delete
-                        </button>
-                        <button class="action-btn upvote-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-thumb-up"></i>
-                            <span>Upvote</span>
-                        </button>
-                        <button class="action-btn comment-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-comment"></i>
-                            Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
-                        </button>
-                        <button class="action-btn pdf-export-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-file-pdf"></i>
-                            Export PDF
-                        </button>
-                    </div>
-                `;
-            } else if (currentUser.role === 'doctor') {
-                actionButtons = `
-                    <div class="project-actions">
-                        <button class="action-btn edit-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-pencil"></i>
-                            Edit (with code)
-                        </button>
-                        <button class="action-btn upvote-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-thumb-up"></i>
-                            <span>Upvote</span>
-                        </button>
-                        <button class="action-btn comment-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-comment"></i>
-                            Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
-                        </button>
-                    </div>
-                `;
-            } else if (currentUser.role === 'guest') {
-                actionButtons = `
-                    <div class="project-actions">
-                        <button class="action-btn upvote-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-thumb-up"></i>
-                            <span>Upvote</span>
-                        </button>
-                        <button class="action-btn comment-btn" data-project-id="${project.id}">
-                            <i class="mdi mdi-comment"></i>
-                            View Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        projectsHTML += `
-            <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
-                <div class="project-header">
-                    <div class="project-title">
-                        <i class="mdi mdi-flask"></i>
-                        ${project.name}
-                        ${visibilityBadge}
-                        ${reviewSticker}
-                        ${commentBadge}
-                    </div>
-                    <span class="project-status ${statusClass}">${statusText}</span>
-                </div>
+        // Audit Logging
+        async function logAudit(action, details = {}, projectId = null) {
+            try {
+                if (!currentUser) return;
                 
-                <p class="project-description">${project.description || 'No description available'}</p>
+                const auditData = {
+                    user_id: currentUser.id,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
+                    action: action,
+                    details: JSON.stringify(details),
+                    project_id: projectId,
+                    ip_address: 'N/A',
+                    created_at: new Date().toISOString()
+                };
                 
-                <div class="project-progress">
-                    <div class="progress-label">
-                        <span>Progress</span>
-                        <span>${project.progress || 0}%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
-                    </div>
-                </div>
+                const { error } = await supabaseClient
+                    .from('audit_logs')
+                    .insert([auditData]);
                 
-                <!-- FEEDBACK CHANNELS -->
-                <div class="feedback-section">
-                    <div class="feedback-badge">Feedback Channels:</div>
-                    <div class="feedback-channels">
-                        <a href="https://wa.me/?text=Project: ${encodeURIComponent(project.name)}" 
-                           class="channel-btn whatsapp" target="_blank" title="Share on WhatsApp">
-                            <i class="mdi mdi-whatsapp"></i>
-                        </a>
-                        <a href="mailto:?subject=Project: ${encodeURIComponent(project.name)}&body=${encodeURIComponent(project.description || 'Check out this project!')}" 
-                           class="channel-btn email" title="Share via Email">
-                            <i class="mdi mdi-email"></i>
-                        </a>
-                        <a href="#" class="channel-btn github" title="View on GitHub">
-                            <i class="mdi mdi-github"></i>
-                        </a>
-                    </div>
-                </div>
+                if (error) console.error('Error saving audit log:', error);
                 
-                ${actionButtons}
-            </div>
-        `;
-    });
-    
-    projectsList.innerHTML = projectsHTML;
-    
-    // Add event listeners to the new buttons
-    attachProjectEventListeners();
-}
-
-// ========== HELPER FUNCTIONS ==========
-function updateTimestamp() {
-    if (!currentUser) return;
-    
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit'
-    });
-    const dateString = now.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
-    });
-    
-    document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
-    dashboardData.lastUpdated = now;
-}
-
-function showLoadingState() {
-    document.getElementById('lastUpdatedTime').textContent = 'Loading...';
-}
-
-function showErrorState() {
-    document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
-}
-
-function filterProjects(filterType) {
-    if (filterType === 'all') {
-        dashboardData.filteredProjects = [...dashboardData.projects];
-    } else if (filterType === 'needs_review') {
-        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'needs_review');
-    } else if (filterType === 'reviewed') {
-        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'reviewed');
-    } else if (filterType === 'private') {
-        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
-    } else if (filterType === 'public') {
-        dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
-    } else if (filterType === 'most_commented') {
-        filterProjectsByComments('most_commented');
-        return;
-    }
-    
-    renderProjects();
-}
-
-function attachProjectEventListeners() {
-    if (!currentUser) return;
-    
-    // Edit buttons
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const projectId = this.dataset.projectId;
-            const project = dashboardData.projects.find(p => p.id === projectId);
-            if (project) {
-                loadProjectForEdit(project);
-                showModal('editProjectModal');
+            } catch (error) {
+                console.error('Error in audit logging:', error);
             }
-        });
-    });
-    
-    // Delete buttons
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const projectId = this.dataset.projectId;
-            await deleteProject(projectId);
-            await initDashboard();
-        });
-    });
-    
-    // Comment buttons
-    document.querySelectorAll('.comment-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const projectId = this.dataset.projectId;
-            const project = dashboardData.projects.find(p => p.id === projectId);
-            if (project) {
-                await loadProjectComments(projectId, project.name);
-            }
-        });
-    });
-    
-    // Comment count badges
-    document.querySelectorAll('.comment-count-badge').forEach(badge => {
-        badge.addEventListener('click', async function() {
-            const projectId = this.dataset.projectId;
-            const project = dashboardData.projects.find(p => p.id === projectId);
-            if (project) {
-                await loadProjectComments(projectId, project.name);
-            }
-        });
-    });
-    
-    // Upvote buttons
-    document.querySelectorAll('.upvote-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const projectId = this.dataset.projectId;
-            // Implement project upvoting logic
-            alert('Upvoting feature coming soon!');
-        });
-    });
-    
-    // PDF Export buttons
-    document.querySelectorAll('.pdf-export-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const projectId = this.dataset.projectId;
-            // Show PDF export modal with project pre-selected
-            loadProjectsForPDFSelect();
-            document.getElementById('pdfProjectSelect').value = projectId;
-            showModal('pdfExportModal');
-        });
-    });
-}
-
-async function loadProjectComments(projectId, projectName) {
-    try {
-        currentProjectComments = projectId;
-        const comments = await fetchCommentsForProject(projectId);
-        
-        // Get upvotes for each comment
-        for (let comment of comments) {
-            comment.upvotes = await getCommentUpvotes(comment.id);
         }
-        
-        document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
-        
-        const commentFormSection = document.getElementById('commentFormSection');
-        const commentHintText = document.getElementById('commentHintText');
-        const guestEmailField = document.getElementById('guestEmailField');
-        
-        if (currentUser) {
-            commentFormSection.classList.remove('hidden');
-            
-            // Show email field for guests only
-            if (currentUser.role === 'guest') {
-                guestEmailField.classList.remove('hidden');
-                commentHintText.textContent = 'Your comments will be reviewed before appearing';
-            } else {
-                guestEmailField.classList.add('hidden');
-                commentHintText.textContent = 'Your comments will appear immediately';
-            }
-        } else {
-            commentFormSection.classList.add('hidden');
-            guestEmailField.classList.add('hidden');
-        }
-        
-        const commentsList = document.getElementById('commentsList');
-        
-        if (!comments || comments.length === 0) {
-            commentsList.innerHTML = `
-                <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
-                    <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                    <p>No comments yet. Be the first to share!</p>
-                </div>
-            `;
-        } else {
-            // Get user's upvoted comments
-            const userUpvotedComments = await getUserUpvotedComments();
-            
-            let commentsHTML = '';
-            comments.forEach(comment => {
-                const date = new Date(comment.created_at);
-                const dateStr = date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                // Determine comment class
-                let commentClass = 'comment-item';
-                if (comment.is_external) commentClass += ' external';
-                if (comment.status === 'pending') commentClass += ' pending';
-                
-                // Check if user upvoted this comment
-                const isUpvoted = userUpvotedComments.includes(comment.id);
-                
-                commentsHTML += `
-                    <div class="${commentClass}">
-                        <div class="comment-header">
-                            <div class="comment-author">
-                                <i class="mdi mdi-account-circle"></i>
-                                ${comment.user_name}
-                                ${comment.is_external ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">External</span>' : ''}
-                                ${comment.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">Pending</span>' : ''}
-                            </div>
-                            <div class="comment-date">${dateStr}</div>
-                        </div>
-                        <div class="comment-content">${comment.content}</div>
-                        <div class="comment-actions">
-                            <button class="comment-upvote-btn ${isUpvoted ? 'upvoted' : ''}" 
-                                    data-comment-id="${comment.id}">
-                                <i class="mdi mdi-thumb-up"></i>
-                                <span>${comment.upvotes || 0}</span>
-                            </button>
-                            ${currentUser && (currentUser.role === 'admin' || currentUser.id === comment.user_id) ? `
-                                <button class="moderation-btn edit-comment-btn" data-comment-id="${comment.id}">
-                                    <i class="mdi mdi-pencil"></i> Edit
-                                </button>
-                            ` : ''}
-                        </div>
-                        ${currentUser && currentUser.role === 'admin' && comment.status === 'pending' ? `
-                            <div class="moderation-panel">
-                                <div class="moderation-actions">
-                                    <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
-                                        <i class="mdi mdi-check-circle"></i> Approve
-                                    </button>
-                                    <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
-                                        <i class="mdi mdi-close-circle"></i> Reject
-                                    </button>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            commentsList.innerHTML = commentsHTML;
-            
-            // Add event listeners to comment buttons
-            attachCommentEventListeners();
-        }
-        
-        // Reset form
-        document.getElementById('commentText').value = '';
-        document.getElementById('guestEmail').value = '';
-        document.getElementById('commentWordCount').textContent = '0/150 words';
-        
-        showModal('comments');
-        
-    } catch (error) {
-        console.error('Error loading comments:', error);
-        alert('Failed to load comments');
-    }
-}
 
-function attachCommentEventListeners() {
-    // Upvote buttons
-    document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            const result = await upvoteComment(commentId);
+        // Authentication
+        async function loginUser(username, password) {
+            const errorEl = document.getElementById('loginError');
+            errorEl.style.display = 'none';
             
-            if (result.success) {
-                // Update UI
-                const countSpan = this.querySelector('span');
-                const currentCount = parseInt(countSpan.textContent) || 0;
-                if (result.action === 'added') {
-                    countSpan.textContent = currentCount + 1;
-                    this.classList.add('upvoted');
-                } else {
-                    countSpan.textContent = Math.max(0, currentCount - 1);
-                    this.classList.remove('upvoted');
+            try {
+                const hashedPassword = await hashPassword(password);
+                
+                const { data, error } = await supabaseClient
+                    .from('dashboard_users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+                
+                if (error || !data) {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                    return false;
                 }
-            } else {
-                alert('Failed to upvote: ' + result.error);
-            }
-        });
-    });
-    
-    // Admin moderation buttons
-    document.querySelectorAll('.approve-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            const result = await moderateComment(commentId, 'approve');
-            
-            if (result.success) {
-                // Remove the comment from view or update status
-                this.closest('.comment-item').remove();
-                await sendEmailNotification(commentId, 'approved');
-                await fetchCommentCounts();
-                await initDashboard();
-            }
-        });
-    });
-    
-    document.querySelectorAll('.reject-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            const result = await moderateComment(commentId, 'reject');
-            
-            if (result.success) {
-                this.closest('.comment-item').remove();
-            }
-        });
-    });
-}
-
-async function loadProjectsForPDFSelect() {
-    try {
-        const select = document.getElementById('pdfProjectSelect');
-        select.innerHTML = '<option value="">-- Choose a project --</option>';
-        
-        dashboardData.projects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.id;
-            option.textContent = project.name;
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error loading projects for PDF:', error);
-    }
-}
-// ========== EDIT CODE MANAGEMENT ==========
-async function loadEditCodes() {
-    try {
-        const { data: projects, error } = await supabaseClient
-            .from('projects')
-            .select('id, name, edit_code, visibility, created_at')
-            .order('name');
-        
-        if (error) throw error;
-        
-        const tbody = document.getElementById('codesTableBody');
-        if (!tbody) {
-            console.error("codesTableBody element not found!");
-            return;
-        }
-        
-        tbody.innerHTML = '';
-        
-        if (!projects || projects.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" style="text-align: center; padding: var(--space-8);">
-                        <i class="mdi mdi-information" style="font-size: 2rem;"></i>
-                        <p>No projects found</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        projects.forEach(project => {
-            const createdDate = new Date(project.created_at);
-            const dateStr = createdDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric'
-            });
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
-                    <div style="font-weight: 600;">${project.name}</div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">
-                        Created: ${dateStr}
-                    </div>
-                </td>
-                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
-                    <span class="code-display" style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--primary-50); padding: 6px 10px; border-radius: var(--radius); display: inline-block;">
-                        ${project.edit_code || 'Not set'}
-                    </span>
-                </td>
-                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
-                    ${project.visibility === 'private' 
-                        ? '<span class="visibility-badge private"><i class="mdi mdi-lock"></i> Private</span>' 
-                        : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
-                </td>
-                <td style="padding: var(--space-3); border-bottom: 1px solid var(--border); vertical-align: middle;">
-                    <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="padding: 6px 12px; border-radius: var(--radius); border: 1px solid; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200);">
-                        <i class="mdi mdi-refresh"></i>
-                        Reset
-                    </button>
-                </td>
-            `;
-            
-            tbody.appendChild(row);
-        });
-        
-        // Add search functionality if search input exists
-        const searchInput = document.getElementById('codeSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                const rows = tbody.querySelectorAll('tr');
                 
-                rows.forEach(row => {
-                    const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
-                    row.style.display = projectName.includes(searchTerm) ? '' : 'none';
-                });
+                // Check both password_hash and password columns
+                const storedPassword = data.password_hash || data.password;
+                
+                if (storedPassword !== hashedPassword) {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                    return false;
+                }
+                
+                currentUser = {
+                    id: data.id,
+                    username: data.username,
+                    full_name: data.full_name,
+                    role: data.role || 'guest',
+                    department: data.department
+                };
+                
+                authToken = btoa(JSON.stringify(currentUser));
+                localStorage.setItem('traci_auth_token', authToken);
+                
+                await logAudit('login', { username: username });
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorEl.textContent = 'Login failed. Please try again.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+        }
+
+        function logoutUser() {
+            if (currentUser) {
+                logAudit('logout', {});
+            }
+            
+            currentUser = null;
+            authToken = null;
+            localStorage.removeItem('traci_auth_token');
+            updateAuthUI();
+            showLoginRequired();
+        }
+
+        function loadStoredUser() {
+            if (authToken) {
+                try {
+                    currentUser = JSON.parse(atob(authToken));
+                } catch (e) {
+                    console.error('Failed to parse auth token:', e);
+                    localStorage.removeItem('traci_auth_token');
+                }
+            }
+        }
+
+        // UI Management
+        function updateAuthUI() {
+            const guestView = document.getElementById('guestView');
+            const userView = document.getElementById('userView');
+            const loginRequiredSection = document.getElementById('loginRequiredSection');
+            const statsContainer = document.getElementById('statsContainer');
+            const adminControls = document.getElementById('adminControls');
+            const contentGrid = document.getElementById('contentGrid');
+            const guestWelcome = document.getElementById('guestWelcome');
+            const statusPanel = document.getElementById('statusPanel');
+            const filterControls = document.getElementById('filterControls');
+            
+            if (currentUser) {
+                guestView.classList.add('hidden');
+                userView.classList.remove('hidden');
+                loginRequiredSection.classList.add('hidden');
+                
+                // Set user avatar
+                const avatar = document.getElementById('userAvatar');
+                const name = currentUser.full_name || currentUser.username;
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                avatar.textContent = initials;
+                
+                // Set user info
+                document.getElementById('currentUsername').textContent = name;
+                const roleBadge = document.getElementById('currentUserRole');
+                roleBadge.textContent = currentUser.role;
+                roleBadge.className = `user-role ${currentUser.role}`;
+                
+                // Show status panel
+                statusPanel.classList.add('visible');
+                
+                // Show content
+                statsContainer.classList.remove('hidden');
+                contentGrid.classList.remove('hidden');
+                filterControls.classList.remove('hidden');
+                
+                // Guest-specific sections
+                if (currentUser.role === 'guest') {
+                    guestWelcome.classList.remove('hidden');
+                } else {
+                    guestWelcome.classList.add('hidden');
+                }
+                
+                // Admin controls
+                if (currentUser.role === 'admin') {
+                    adminControls.classList.remove('hidden');
+                    document.getElementById('activeUsersCard').classList.remove('hidden');
+                } else {
+                    adminControls.classList.add('hidden');
+                    document.getElementById('activeUsersCard').classList.add('hidden');
+                }
+                
+                // Initialize dashboard
+                initDashboard();
+                
+            } else {
+                guestView.classList.remove('hidden');
+                userView.classList.add('hidden');
+                adminControls.classList.add('hidden');
+                guestWelcome.classList.add('hidden');
+                statusPanel.classList.remove('visible');
+                filterControls.classList.add('hidden');
+                showLoginRequired();
+            }
+        }
+
+        function showLoginRequired() {
+            document.getElementById('loginRequiredSection').classList.remove('hidden');
+            document.getElementById('statsContainer').classList.add('hidden');
+            document.getElementById('adminControls').classList.add('hidden');
+            document.getElementById('contentGrid').classList.add('hidden');
+            document.getElementById('guestWelcome').classList.add('hidden');
+            document.getElementById('filterControls').classList.add('hidden');
+        }
+
+        // Modal Management
+        function showModal(modalName) {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+            
+            const modal = document.getElementById(modalName);
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+            document.body.style.overflow = 'auto';
+            clearFormMessages();
+        }
+
+        function clearFormMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
             });
         }
-        
-    } catch (error) {
-        console.error('Error loading edit codes:', error);
-        alert('Failed to load edit codes');
-    }
-}
 
-async function resetSingleCode(projectId, projectName) {
-    if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) {
-        return;
-    }
-    
-    try {
-        const newCode = Math.floor(10000 + Math.random() * 90000).toString();
-        
-        const { error } = await supabaseClient
-            .from('projects')
-            .update({ 
-                edit_code: newCode,
-                last_updated: new Date().toISOString()
-            })
-            .eq('id', projectId);
-        
-        if (error) throw error;
-        
-        alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
-        loadEditCodes();
-        
-    } catch (error) {
-        console.error('Error resetting code:', error);
-        alert('Failed to reset code');
-    }
-}
+        // Database Functions
+        async function fetchProjects() {
+            let query = supabaseClient
+                .from('projects')
+                .select('*');
+            
+            if (currentUser && currentUser.role === 'guest') {
+                query = query.eq('visibility', 'public');
+            }
+            
+            const { data, error } = await query
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching projects:', error);
+                dashboardData.projects = [];
+                return;
+            }
+            
+            dashboardData.projects = data || [];
+            dashboardData.filteredProjects = [...dashboardData.projects];
+        }
 
-async function getProjectCode(projectId) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('projects')
-            .select('edit_code, name')
-            .eq('id', projectId)
-            .single();
-        
-        if (error) throw error;
-        
-        return { success: true, code: data.edit_code, name: data.name };
-        
-    } catch (error) {
-        console.error('Error getting project code:', error);
-        return { success: false, error: error.message };
-    }
-}
-        // ========== IMPROVEMENT #1: COMMENT COUNT SYSTEM ==========
+        async function fetchTools() {
+            const { data, error } = await supabaseClient
+                .from('tools')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching tools:', error);
+                dashboardData.tools = [];
+                return;
+            }
+            
+            dashboardData.tools = data || [];
+        }
+
+        // Comment Count System
         async function fetchCommentCounts() {
             try {
                 const { data, error } = await supabaseClient
@@ -2737,85 +2272,887 @@ async function getProjectCode(projectId) {
             return commentCounts[projectId] || 0;
         }
 
-        // ========== IMPROVEMENT #2: UPVOTE SYSTEM ==========
+        // Upvote System
         async function upvoteComment(commentId) {
-    try {
-        if (!currentUser) {
-            throw new Error('You must be logged in to upvote');
-        }
-        
-        // Get current upvote count
-        const { data: comment, error: fetchError } = await supabaseClient
-            .from('project_comments')
-            .select('upvotes')
-            .eq('id', commentId)
-            .single();
-        
-        if (fetchError) throw fetchError;
-        
-        // Simple increment for now (you can enhance with user tracking later)
-        const newUpvotes = (comment.upvotes || 0) + 1;
-        
-        const { error } = await supabaseClient
-            .from('project_comments')
-            .update({ upvotes: newUpvotes })
-            .eq('id', commentId);
-        
-        if (error) throw error;
-        
-        // Also record in comment_interactions for tracking
-        await supabaseClient
-            .from('comment_interactions')
-            .insert([{
-                comment_id: commentId,
-                user_id: currentUser.id,
-                interaction_type: 'upvote',
-                created_at: new Date().toISOString()
-            }]);
-        
-        return { success: true, upvotes: newUpvotes };
-        
-    } catch (error) {
-        console.error('Error upvoting comment:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-    async function getCommentUpvotes(commentId) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('project_comments')
-            .select('upvotes')
-            .eq('id', commentId)
-            .single();
-        
-        if (error) throw error;
-        return data.upvotes || 0;
-    } catch (error) {
-        console.error('Error getting upvotes:', error);
-        return 0;
-    }
-}
-
-        async function getUserUpvotedComments() {
             try {
-                if (!currentUser) return [];
+                if (!currentUser) {
+                    throw new Error('You must be logged in to upvote');
+                }
                 
-                const { data, error } = await supabaseClient
-                    .from('comment_interactions')
-                    .select('comment_id')
-                    .eq('user_id', currentUser.id)
-                    .eq('interaction_type', 'upvote');
+                // Get current upvote count
+                const { data: comment, error: fetchError } = await supabaseClient
+                    .from('project_comments')
+                    .select('upvotes')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // Increment upvote count
+                const newUpvotes = (comment.upvotes || 0) + 1;
+                
+                const { error } = await supabaseClient
+                    .from('project_comments')
+                    .update({ upvotes: newUpvotes })
+                    .eq('id', commentId);
                 
                 if (error) throw error;
-                return data.map(item => item.comment_id);
+                
+                // Record in comment_interactions for tracking
+                await supabaseClient
+                    .from('comment_interactions')
+                    .insert([{
+                        comment_id: commentId,
+                        user_id: currentUser.id,
+                        interaction_type: 'upvote',
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                return { success: true, upvotes: newUpvotes };
+                
             } catch (error) {
-                console.error('Error getting user upvotes:', error);
+                console.error('Error upvoting comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function getCommentUpvotes(commentId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .select('upvotes')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (error) throw error;
+                return data.upvotes || 0;
+            } catch (error) {
+                console.error('Error getting upvotes:', error);
+                return 0;
+            }
+        }
+
+        // Project CRUD
+        async function addProject(projectData) {
+            try {
+                const editCode = Math.floor(10000 + Math.random() * 90000).toString();
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([{
+                        ...projectData,
+                        last_updated: new Date().toISOString(),
+                        edit_code: editCode,
+                        review_status: projectData.needs_feedback ? 'needs_review' : 'none'
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('project_created', { 
+                    project_name: projectData.name,
+                    visibility: projectData.visibility
+                }, data.id);
+                
+                alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
+                
+                document.getElementById('projectSuccess').textContent = 'Project added successfully!';
+                document.getElementById('projectSuccess').style.display = 'block';
+                
+                return { success: true, data, code: editCode };
+                
+            } catch (error) {
+                console.error('Error adding project:', error);
+                document.getElementById('projectError').textContent = 'Failed to add project: ' + error.message;
+                document.getElementById('projectError').style.display = 'block';
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function updateProject(projectId, projectData) {
+            try {
+                if (currentUser && currentUser.role === 'doctor') {
+                    const enteredCode = document.getElementById('editCodeVerification').value;
+                    
+                    if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
+                        document.getElementById('editProjectError').textContent = 'Valid 5-digit edit code required';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Invalid edit code format' };
+                    }
+                    
+                    const { data: project, error: fetchError } = await supabaseClient
+                        .from('projects')
+                        .select('edit_code')
+                        .eq('id', projectId)
+                        .single();
+                    
+                    if (fetchError || !project) {
+                        document.getElementById('editProjectError').textContent = 'Project not found';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Project not found' };
+                    }
+                    
+                    if (enteredCode !== project.edit_code) {
+                        document.getElementById('editProjectError').textContent = 'Invalid edit code';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Invalid edit code' };
+                    }
+                }
+                
+                const updateData = {
+                    ...projectData,
+                    last_updated: new Date().toISOString(),
+                    review_status: projectData.needs_feedback ? 'needs_review' : 'none'
+                };
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    updateData.visibility = document.getElementById('editProjectVisibility').value;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .update(updateData)
+                    .eq('id', projectId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('project_updated', { 
+                    project_id: projectId,
+                    changes: projectData 
+                }, projectId);
+                
+                document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
+                document.getElementById('editProjectSuccess').style.display = 'block';
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error updating project:', error);
+                document.getElementById('editProjectError').textContent = 'Failed to update project: ' + error.message;
+                document.getElementById('editProjectError').style.display = 'block';
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function deleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return { success: false, error: 'Cancelled by user' };
+            }
+            
+            try {
+                const { data: project } = await supabaseClient
+                    .from('projects')
+                    .select('name')
+                    .eq('id', projectId)
+                    .single();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                await logAudit('project_deleted', { 
+                    project_id: projectId,
+                    project_name: project?.name || 'Unknown'
+                }, projectId);
+                
+                alert('Project deleted successfully!');
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Failed to delete project: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Tool CRUD
+        async function addTool(toolData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([{
+                        ...toolData,
+                        last_checked: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('tool_created', { 
+                    tool_name: toolData.name
+                });
+                
+                document.getElementById('toolSuccess').textContent = 'Tool added successfully!';
+                document.getElementById('toolSuccess').style.display = 'block';
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error adding tool:', error);
+                document.getElementById('toolError').textContent = 'Failed to add tool: ' + error.message;
+                document.getElementById('toolError').style.display = 'block';
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Dashboard Functions
+        async function initDashboard() {
+            showLoadingState();
+            
+            try {
+                await Promise.all([
+                    fetchProjects(),
+                    fetchTools(),
+                    fetchCommentCounts()
+                ]);
+                
+                updateStats();
+                renderDashboard();
+                updateTimestamp();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showErrorState();
+            }
+        }
+
+        async function updateStats() {
+            const toolsCount = dashboardData.tools.length;
+            const projectsCount = dashboardData.projects.length;
+            
+            // Calculate total comments
+            let totalComments = 0;
+            Object.values(commentCounts).forEach(count => {
+                totalComments += count;
+            });
+            
+            // Get active users (logins today) - only for admin
+            let activeUsersCount = 0;
+            if (currentUser && currentUser.role === 'admin') {
+                const today = new Date().toISOString().split('T')[0];
+                const { count } = await supabaseClient
+                    .from('audit_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('action', 'login')
+                    .gte('created_at', today);
+                activeUsersCount = count || 0;
+            }
+            
+            document.getElementById('toolsCount').textContent = toolsCount;
+            document.getElementById('projectsCount').textContent = projectsCount;
+            document.getElementById('commentsCount').textContent = totalComments;
+            document.getElementById('activeUsersCount').textContent = activeUsersCount;
+        }
+
+        function renderDashboard() {
+            renderTools();
+            renderProjects();
+        }
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('toolsGrid');
+            
+            if (dashboardData.tools.length === 0) {
+                toolsGrid.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                        <i class="mdi mdi-toolbox-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                        <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let toolsHTML = '';
+            
+            dashboardData.tools.forEach(tool => {
+                const statusClass = tool.status === 'operational' ? 'status-operational' : 'status-warning';
+                const statusText = tool.status === 'operational' ? 'Operational' : 'Needs Attention';
+                
+                toolsHTML += `
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <div class="tool-name">
+                                <div class="tool-icon">
+                                    <i class="${tool.icon || 'mdi mdi-toolbox'}"></i>
+                                </div>
+                                <span>${tool.name}</span>
+                            </div>
+                            <span class="tool-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="tool-description">${tool.description || 'No description available'}</p>
+                        <div class="tool-footer">
+                            <a href="${tool.url}" target="_blank" class="tool-link">
+                                <i class="mdi mdi-open-in-new"></i>
+                                Access
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            toolsGrid.innerHTML = toolsHTML;
+        }
+
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            
+            if (dashboardData.filteredProjects.length === 0) {
+                projectsList.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                        <i class="mdi mdi-flask-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                        <p>No projects found matching your filter.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let projectsHTML = '';
+            
+            dashboardData.filteredProjects.forEach(project => {
+                const statusClass = `status-${project.status}`;
+                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+                
+                const visibilityBadge = project.visibility === 'private' 
+                    ? `<span class="visibility-badge private">
+                         <i class="mdi mdi-lock"></i> Private
+                       </span>`
+                    : `<span class="visibility-badge public">
+                         <i class="mdi mdi-earth"></i> Public
+                       </span>`;
+                
+                // Comment Count Badge
+                const commentCount = getCommentCount(project.id);
+                const commentBadge = commentCount > 0 ? 
+                    `<span class="comment-count-badge" data-project-id="${project.id}">
+                        <i class="mdi mdi-comment"></i>
+                        ${commentCount}
+                    </span>` : '';
+                
+                // Review Sticker
+                let reviewSticker = '';
+                if (project.review_status === 'needs_review') {
+                    reviewSticker = `<span class="review-sticker needs-review"><i class="mdi mdi-alert"></i> Needs Review</span>`;
+                } else if (project.review_status === 'reviewed') {
+                    reviewSticker = `<span class="review-sticker reviewed"><i class="mdi mdi-check-circle"></i> Reviewed</span>`;
+                } else if (project.review_status === 'feedback_provided') {
+                    reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
+                }
+                
+                // Action Buttons
+                let actionButtons = '';
+                if (currentUser) {
+                    if (currentUser.role === 'admin') {
+                        actionButtons = `
+                            <div class="project-actions">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-pencil"></i>
+                                    Edit
+                                </button>
+                                <button class="action-btn delete-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-delete"></i>
+                                    Delete
+                                </button>
+                                <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-thumb-up"></i>
+                                    <span>Upvote</span>
+                                </button>
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                                </button>
+                                <button class="action-btn pdf-export-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-file-pdf"></i>
+                                    Export PDF
+                                </button>
+                            </div>
+                        `;
+                    } else if (currentUser.role === 'doctor') {
+                        actionButtons = `
+                            <div class="project-actions">
+                                <button class="action-btn edit-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-pencil"></i>
+                                    Edit (with code)
+                                </button>
+                                <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-thumb-up"></i>
+                                    <span>Upvote</span>
+                                </button>
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                                </button>
+                            </div>
+                        `;
+                    } else if (currentUser.role === 'guest') {
+                        actionButtons = `
+                            <div class="project-actions">
+                                <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-thumb-up"></i>
+                                    <span>Upvote</span>
+                                </button>
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    View Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                projectsHTML += `
+                    <div class="project-card ${project.needs_feedback ? 'needs-feedback' : ''}">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <i class="mdi mdi-flask"></i>
+                                ${project.name}
+                                ${visibilityBadge}
+                                ${reviewSticker}
+                                ${commentBadge}
+                            </div>
+                            <span class="project-status ${statusClass}">${statusText}</span>
+                        </div>
+                        
+                        <p class="project-description">${project.description || 'No description available'}</p>
+                        
+                        <div class="project-progress">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>${project.progress || 0}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feedback Channels -->
+                        <div class="feedback-section">
+                            <div class="feedback-badge">Feedback Channels:</div>
+                            <div class="feedback-channels">
+                                <a href="https://wa.me/?text=Project: ${encodeURIComponent(project.name)}" 
+                                   class="channel-btn whatsapp" target="_blank" title="Share on WhatsApp">
+                                    <i class="mdi mdi-whatsapp"></i>
+                                </a>
+                                <a href="mailto:?subject=Project: ${encodeURIComponent(project.name)}&body=${encodeURIComponent(project.description || 'Check out this project!')}" 
+                                   class="channel-btn email" title="Share via Email">
+                                    <i class="mdi mdi-email"></i>
+                                </a>
+                                <a href="#" class="channel-btn github" title="View on GitHub">
+                                    <i class="mdi mdi-github"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        ${actionButtons}
+                    </div>
+                `;
+            });
+            
+            projectsList.innerHTML = projectsHTML;
+            
+            // Add event listeners
+            attachProjectEventListeners();
+        }
+
+        // Filtering
+        function filterProjects(filterType) {
+            if (filterType === 'all') {
+                dashboardData.filteredProjects = [...dashboardData.projects];
+            } else if (filterType === 'needs_review') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'needs_review');
+            } else if (filterType === 'reviewed') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'reviewed');
+            } else if (filterType === 'private') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
+            } else if (filterType === 'public') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
+            } else if (filterType === 'most_commented') {
+                filterProjectsByComments('most_commented');
+                return;
+            }
+            
+            renderProjects();
+        }
+
+        async function filterProjectsByComments(filterType) {
+            await fetchCommentCounts();
+            
+            if (filterType === 'most_commented') {
+                dashboardData.filteredProjects = [...dashboardData.projects].sort((a, b) => {
+                    return (commentCounts[b.id] || 0) - (commentCounts[a.id] || 0);
+                });
+            }
+            
+            renderProjects();
+        }
+
+        // Event Listeners
+        function attachProjectEventListeners() {
+            if (!currentUser) return;
+            
+            // Edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.dataset.projectId;
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project) {
+                        loadProjectForEdit(project);
+                        showModal('editProjectModal');
+                    }
+                });
+            });
+            
+            // Delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const projectId = this.dataset.projectId;
+                    const result = await deleteProject(projectId);
+                    if (result.success) {
+                        await initDashboard();
+                    }
+                });
+            });
+            
+            // Comment buttons
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const projectId = this.dataset.projectId;
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project) {
+                        await loadProjectComments(projectId, project.name);
+                    }
+                });
+            });
+            
+            // Comment count badges
+            document.querySelectorAll('.comment-count-badge').forEach(badge => {
+                badge.addEventListener('click', async function() {
+                    const projectId = this.dataset.projectId;
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project) {
+                        await loadProjectComments(projectId, project.name);
+                    }
+                });
+            });
+            
+            // Upvote buttons
+            document.querySelectorAll('.upvote-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const projectId = this.dataset.projectId;
+                    alert('Project upvoting feature coming soon!');
+                });
+            });
+            
+            // PDF Export buttons
+            document.querySelectorAll('.pdf-export-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.dataset.projectId;
+                    loadProjectsForPDFSelect();
+                    document.getElementById('pdfProjectSelect').value = projectId;
+                    showModal('pdfExportModal');
+                });
+            });
+        }
+
+        // Comments System
+        async function fetchCommentsForProject(projectId) {
+            try {
+                let query = supabaseClient
+                    .from('project_comments')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .order('created_at', { ascending: false });
+                
+                if (currentUser && currentUser.role === 'guest') {
+                    query = query.eq('status', 'approved');
+                } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
+                    query = query.in('status', ['approved', 'rejected']);
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching comments:', error);
                 return [];
             }
         }
 
-        // ========== IMPROVEMENT #3: PDF EXPORT ==========
+        async function loadProjectComments(projectId, projectName) {
+            try {
+                currentProjectComments = projectId;
+                const comments = await fetchCommentsForProject(projectId);
+                
+                // Get upvotes for each comment
+                for (let comment of comments) {
+                    comment.upvotes = await getCommentUpvotes(comment.id);
+                }
+                
+                document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
+                
+                const commentFormSection = document.getElementById('commentFormSection');
+                const commentHintText = document.getElementById('commentHintText');
+                const guestEmailField = document.getElementById('guestEmailField');
+                
+                if (currentUser) {
+                    commentFormSection.classList.remove('hidden');
+                    
+                    // Show email field for guests only
+                    if (currentUser.role === 'guest') {
+                        guestEmailField.classList.remove('hidden');
+                        commentHintText.textContent = 'Your comments will be reviewed before appearing';
+                    } else {
+                        guestEmailField.classList.add('hidden');
+                        commentHintText.textContent = 'Your comments will appear immediately';
+                    }
+                } else {
+                    commentFormSection.classList.add('hidden');
+                    guestEmailField.classList.add('hidden');
+                }
+                
+                const commentsList = document.getElementById('commentsList');
+                
+                if (!comments || comments.length === 0) {
+                    commentsList.innerHTML = `
+                        <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                            <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                            <p>No comments yet. Be the first to share!</p>
+                        </div>
+                    `;
+                } else {
+                    let commentsHTML = '';
+                    comments.forEach(comment => {
+                        const date = new Date(comment.created_at);
+                        const dateStr = date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        // Determine comment class
+                        let commentClass = 'comment-item';
+                        if (comment.is_external) commentClass += ' external';
+                        if (comment.status === 'pending') commentClass += ' pending';
+                        
+                        commentsHTML += `
+                            <div class="${commentClass}">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        <i class="mdi mdi-account-circle"></i>
+                                        ${comment.user_name}
+                                        ${comment.is_external ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">External</span>' : ''}
+                                        ${comment.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 2px 6px; border-radius: 9999px; margin-left: 6px;">Pending</span>' : ''}
+                                    </div>
+                                    <div class="comment-date">${dateStr}</div>
+                                </div>
+                                <div class="comment-content">${comment.content}</div>
+                                <div class="comment-actions">
+                                    <button class="comment-upvote-btn" data-comment-id="${comment.id}">
+                                        <i class="mdi mdi-thumb-up"></i>
+                                        <span>${comment.upvotes || 0}</span>
+                                    </button>
+                                </div>
+                                ${currentUser && currentUser.role === 'admin' && comment.status === 'pending' ? `
+                                    <div class="moderation-panel">
+                                        <div class="moderation-actions">
+                                            <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
+                                                <i class="mdi mdi-check-circle"></i> Approve
+                                            </button>
+                                            <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
+                                                <i class="mdi mdi-close-circle"></i> Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    commentsList.innerHTML = commentsHTML;
+                    
+                    // Add event listeners to comment buttons
+                    attachCommentEventListeners();
+                }
+                
+                // Reset form
+                document.getElementById('commentText').value = '';
+                document.getElementById('guestEmail').value = '';
+                document.getElementById('commentWordCount').textContent = '0/150 words';
+                
+                showModal('comments');
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                alert('Failed to load comments');
+            }
+        }
+
+        function attachCommentEventListeners() {
+            // Upvote buttons
+            document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    const result = await upvoteComment(commentId);
+                    
+                    if (result.success) {
+                        // Update UI
+                        const countSpan = this.querySelector('span');
+                        countSpan.textContent = result.upvotes;
+                        this.classList.add('upvoted');
+                    } else {
+                        alert('Failed to upvote: ' + result.error);
+                    }
+                });
+            });
+            
+            // Admin moderation buttons
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'approve');
+                    await fetchCommentCounts();
+                    await initDashboard();
+                });
+            });
+            
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'reject');
+                });
+            });
+        }
+
+        async function submitProjectComment(projectId, commentText, guestEmail = null) {
+            try {
+                if (!currentUser) {
+                    throw new Error('You must be logged in to comment');
+                }
+                
+                const wordCount = commentText.trim().split(/\s+/).length;
+                if (wordCount > 150) {
+                    throw new Error('Comment must be 150 words or less');
+                }
+                
+                if (wordCount === 0) {
+                    throw new Error('Comment cannot be empty');
+                }
+                
+                // Validate email for guests
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    throw new Error('Email is required for guest comments');
+                }
+                
+                if (currentUser.role === 'guest' && guestEmail) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(guestEmail)) {
+                        throw new Error('Please enter a valid email address');
+                    }
+                }
+                
+                let status = 'pending';
+                if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
+                    status = 'approved';
+                }
+                
+                const commentData = {
+                    project_id: projectId,
+                    content: commentText,
+                    user_id: currentUser.id,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
+                    status: status,
+                    created_at: new Date().toISOString()
+                };
+                
+                // Add email for guests
+                if (currentUser.role === 'guest' && guestEmail) {
+                    commentData.user_email = guestEmail;
+                    commentData.is_external = true;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .insert([commentData])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('comment_added', { 
+                    project_id: projectId,
+                    comment_length: wordCount,
+                    auto_approved: status === 'approved',
+                    has_email: !!guestEmail
+                }, projectId);
+                
+                // Update comment counts
+                await fetchCommentCounts();
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Moderation System
+        async function fetchPendingComments() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .select(`
+                        *,
+                        projects!inner (name)
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                pendingComments = data || [];
+                return pendingComments;
+            } catch (error) {
+                console.error('Error fetching pending comments:', error);
+                return [];
+            }
+        }
+
+        async function moderateComment(commentId, action) {
+            try {
+                const { error } = await supabaseClient
+                    .from('project_comments')
+                    .update({
+                        status: action === 'approve' ? 'approved' : 'rejected',
+                        moderated_at: new Date().toISOString(),
+                        moderated_by: currentUser.username
+                    })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                await logAudit('comment_moderated', { 
+                    comment_id: commentId,
+                    action: action 
+                });
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Error moderating comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // PDF Export
         async function exportProjectToPDF(projectId) {
             try {
                 const includeDetails = document.getElementById('includeDetails').checked;
@@ -2865,7 +3202,7 @@ async function getProjectCode(projectId) {
                 
                 // Add title
                 doc.setFontSize(20);
-                doc.setTextColor(2, 132, 199); // Primary color
+                doc.setTextColor(2, 132, 199);
                 doc.text(`Project: ${project.name}`, 20, 20);
                 
                 // Add timestamp
@@ -2982,935 +3319,544 @@ async function getProjectCode(projectId) {
             }
         }
 
-        // ========== IMPROVEMENT #4: ADMIN MODERATION PANEL ==========
-        async function fetchPendingComments() {
+        // Edit Code Management
+        async function loadEditCodes() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('project_comments')
-                    .select(`
-                        *,
-                        projects!inner (name)
-                    `)
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false });
+                const { data: projects, error } = await supabaseClient
+                    .from('projects')
+                    .select('id, name, edit_code, visibility, created_at')
+                    .order('name');
                 
                 if (error) throw error;
                 
-                pendingComments = data || [];
-                return pendingComments;
-            } catch (error) {
-                console.error('Error fetching pending comments:', error);
-                return [];
-            }
-        }
-
-        async function moderateComment(commentId, action) {
-            try {
-                const { error } = await supabaseClient
-                    .from('project_comments')
-                    .update({
-                        status: action === 'approve' ? 'approved' : 'rejected',
-                        moderated_at: new Date().toISOString(),
-                        moderated_by: currentUser.username
-                    })
-                    .eq('id', commentId);
+                const tbody = document.getElementById('codesTableBody');
+                if (!tbody) return;
                 
-                if (error) throw error;
+                tbody.innerHTML = '';
                 
-                await logAudit('comment_moderated', { 
-                    comment_id: commentId,
-                    action: action 
-                });
-                
-                return { success: true };
-            } catch (error) {
-                console.error('Error moderating comment:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== IMPROVEMENT #5: EMAIL NOTIFICATIONS ==========
-        async function sendEmailNotification(commentId, action) {
-            try {
-                // Get comment details
-                const { data: comment, error } = await supabaseClient
-                    .from('project_comments')
-                    .select('*, projects!inner (name)')
-                    .eq('id', commentId)
-                    .single();
-                
-                if (error) throw error;
-                
-                // Only send to external users with email
-                if (comment.user_email && comment.is_external) {
-                    const subject = action === 'approved' 
-                        ? `Your comment has been approved - ${comment.projects.name}`
-                        : `Update regarding your comment - ${comment.projects.name}`;
-                    
-                    const body = action === 'approved'
-                        ? `Dear ${comment.user_name},\n\nYour comment on project "${comment.projects.name}" has been approved and is now visible to other users.\n\nThank you for your contribution!\n\nBest regards,\nTRAci Innovation Team`
-                        : `Dear ${comment.user_name},\n\nThank you for your comment on project "${comment.projects.name}". Our team is reviewing it and will notify you once a decision is made.\n\nBest regards,\nTRAci Innovation Team`;
-                    
-                    // In production, you would send an actual email here
-                    // For now, we'll log it
-                    console.log(`Email to ${comment.user_email}:`, { subject, body });
-                    
-                    return { success: true };
+                if (!projects || projects.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 32px 16px;">
+                                <i class="mdi mdi-information" style="font-size: 2rem;"></i>
+                                <p>No projects found</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
                 }
                 
-                return { success: true, skipped: true };
-            } catch (error) {
-                console.error('Error sending email:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== IMPROVEMENT #6: COMMENT SORTING ==========
-        function sortComments(comments, sortBy = 'newest') {
-            const sorted = [...comments];
-            
-            switch(sortBy) {
-                case 'newest':
-                    return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                case 'oldest':
-                    return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                case 'most_upvoted':
-                    return sorted.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
-                case 'least_upvoted':
-                    return sorted.sort((a, b) => (a.upvotes || 0) - (b.upvotes || 0));
-                default:
-                    return sorted;
-            }
-        }
-
-        // ========== IMPROVEMENT #7: EXTERNAL USER ACCESS CODES ==========
-        async function generateAccessCode(email, projectId = null) {
-            try {
-                const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-                
-                const { error } = await supabaseClient
-                    .from('guest_access_codes')
-                    .insert([{
-                        email: email,
-                        access_code: code,
-                        project_access: projectId ? [projectId] : [],
-                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
-                    }]);
-                
-                if (error) throw error;
-                
-                return { success: true, code };
-            } catch (error) {
-                console.error('Error generating access code:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== IMPROVEMENT #8: COMMENT ANALYTICS ==========
-        async function getCommentAnalytics() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('project_comments')
-                    .select('project_id, projects!inner (name), created_at, status')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                const analytics = {
-                    total: data.length,
-                    approved: data.filter(c => c.status === 'approved').length,
-                    pending: data.filter(c => c.status === 'pending').length,
-                    rejected: data.filter(c => c.status === 'rejected').length,
-                    byProject: {},
-                    timeline: {}
-                };
-                
-                // Group by project
-                data.forEach(comment => {
-                    const projectName = comment.projects.name;
-                    analytics.byProject[projectName] = (analytics.byProject[projectName] || 0) + 1;
-                });
-                
-                // Group by date
-                const last7Days = [...Array(7)].map((_, i) => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    return d.toISOString().split('T')[0];
-                }).reverse();
-                
-                last7Days.forEach(date => {
-                    analytics.timeline[date] = data.filter(c => 
-                        c.created_at.split('T')[0] === date
-                    ).length;
-                });
-                
-                return analytics;
-            } catch (error) {
-                console.error('Error getting comment analytics:', error);
-                return null;
-            }
-        }
-
-        // ========== IMPROVEMENT #9: COMMENT EDITING ==========
-        async function editComment(commentId, newContent) {
-            try {
-                if (!currentUser) {
-                    throw new Error('You must be logged in to edit comments');
-                }
-                
-                // Check if user owns the comment
-                const { data: comment, error: fetchError } = await supabaseClient
-                    .from('project_comments')
-                    .select('user_id')
-                    .eq('id', commentId)
-                    .single();
-                
-                if (fetchError) throw fetchError;
-                
-                if (comment.user_id !== currentUser.id && currentUser.role !== 'admin') {
-                    throw new Error('You can only edit your own comments');
-                }
-                
-                const { error } = await supabaseClient
-                    .from('project_comments')
-                    .update({
-                        content: newContent,
-                        edited_at: new Date().toISOString(),
-                        edited_by: currentUser.username
-                    })
-                    .eq('id', commentId);
-                
-                if (error) throw error;
-                
-                await logAudit('comment_edited', { comment_id: commentId });
-                
-                return { success: true };
-            } catch (error) {
-                console.error('Error editing comment:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== IMPROVEMENT #10: COMMENT REPORTING ==========
-        async function reportComment(commentId, reason) {
-            try {
-                if (!currentUser) {
-                    throw new Error('You must be logged in to report comments');
-                }
-                
-                const { error } = await supabaseClient
-                    .from('comment_interactions')
-                    .insert([{
-                        comment_id: commentId,
-                        user_id: currentUser.id,
-                        interaction_type: 'report',
-                        details: JSON.stringify({ reason: reason }),
-                        created_at: new Date().toISOString()
-                    }]);
-                
-                if (error) throw error;
-                
-                await logAudit('comment_reported', { comment_id: commentId, reason: reason });
-                
-                return { success: true };
-            } catch (error) {
-                console.error('Error reporting comment:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ========== IMPROVEMENT #11: MOBILE COMMENT INTERFACE ==========
-        function enhanceMobileCommentUI() {
-            if (window.innerWidth < 768) {
-                // Adjust comment modal for mobile
-                const modal = document.querySelector('#commentsModal .modal-content');
-                if (modal) {
-                    modal.style.maxWidth = '100%';
-                    modal.style.margin = '0';
-                    modal.style.borderRadius = '0';
-                    modal.style.height = '100vh';
-                }
-                
-                // Make buttons easier to tap
-                document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
-                    btn.style.minHeight = '44px';
-                    btn.style.minWidth = '44px';
-                    btn.style.padding = '12px';
-                });
-            }
-        }
-
-        // ========== IMPROVEMENT #12: REAL-TIME UPDATES ==========
-        function setupRealtimeUpdates() {
-            if (!currentUser) return;
-            
-            // Subscribe to comment changes
-            const commentsSubscription = supabaseClient
-                .channel('comments-changes')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'project_comments' }, 
-                    async (payload) => {
-                        console.log('Comment change detected:', payload);
-                        
-                        // Refresh comment counts
-                        await fetchCommentCounts();
-                        
-                        // If we're viewing comments for this project, refresh them
-                        if (currentProjectComments === payload.new.project_id) {
-                            await loadProjectComments(currentProjectComments, '');
-                        }
-                        
-                        // Refresh dashboard if needed
-                        if (currentUser.role === 'admin') {
-                            initDashboard();
-                        }
-                    }
-                )
-                .subscribe();
-            
-            return commentsSubscription;
-        }
-
-        // ========== IMPROVEMENT #13: FILTER BY COMMENT STATUS ==========
-        async function filterProjectsByComments(filterType) {
-            await fetchCommentCounts();
-            
-            if (filterType === 'most_commented') {
-                // Sort projects by comment count
-                dashboardData.filteredProjects = [...dashboardData.projects].sort((a, b) => {
-                    return (commentCounts[b.id] || 0) - (commentCounts[a.id] || 0);
-                });
-            } else {
-                // Use existing filter logic
-                filterProjects(filterType);
-            }
-            
-            renderProjects();
-        }
-
-        // ========== IMPROVEMENT #14: COMMENT EXPORT ==========
-        async function exportComments(projectId, format = 'pdf') {
-            try {
-                // Fetch comments
-                const { data: comments, error } = await supabaseClient
-                    .from('project_comments')
-                    .select('*, projects!inner (name)')
-                    .eq('project_id', projectId)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                if (format === 'pdf') {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    
-                    doc.setFontSize(16);
-                    doc.text(`Comments Export - ${comments[0]?.projects.name || 'Project'}`, 20, 20);
-                    
-                    let y = 30;
-                    comments.forEach((comment, index) => {
-                        if (y > 270) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        
-                        doc.setFontSize(12);
-                        doc.text(`${comment.user_name} (${comment.user_role}):`, 20, y);
-                        y += 8;
-                        
-                        doc.setFontSize(10);
-                        const lines = doc.splitTextToSize(comment.content, 170);
-                        lines.forEach(line => {
-                            doc.text(line, 20, y);
-                            y += 5;
-                        });
-                        
-                        doc.setFontSize(8);
-                        doc.text(`Posted: ${new Date(comment.created_at).toLocaleDateString()} | Status: ${comment.status}`, 20, y);
-                        y += 15;
+                projects.forEach(project => {
+                    const createdDate = new Date(project.created_at);
+                    const dateStr = createdDate.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric'
                     });
                     
-                    doc.save(`comments-export-${projectId}.pdf`);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
+                            <div style="font-weight: 600;">${project.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--gray-500);">
+                                Created: ${dateStr}
+                            </div>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
+                            <span style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--primary-50); padding: 6px 10px; border-radius: 6px; display: inline-block;">
+                                ${project.edit_code || 'Not set'}
+                            </span>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
+                            ${project.visibility === 'private' 
+                                ? '<span class="visibility-badge private"><i class="mdi mdi-lock"></i> Private</span>' 
+                                : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;">
+                            <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; background: var(--primary-50); color: var(--primary-700); border-color: var(--primary-200);">
+                                <i class="mdi mdi-refresh"></i>
+                                Reset
+                            </button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                // Add search functionality
+                const searchInput = document.getElementById('codeSearch');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        const searchTerm = this.value.toLowerCase().trim();
+                        const rows = tbody.querySelectorAll('tr');
+                        
+                        rows.forEach(row => {
+                            const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
+                            row.style.display = projectName.includes(searchTerm) ? '' : 'none';
+                        });
+                    });
                 }
                 
-                return { success: true };
             } catch (error) {
-                console.error('Error exporting comments:', error);
-                return { success: false, error: error.message };
+                console.error('Error loading edit codes:', error);
+                alert('Failed to load edit codes');
             }
+        }
+
+        async function resetSingleCode(projectId, projectName) {
+            if (!confirm(`Reset edit code for "${projectName}"?\n\nA new 5-digit code will be generated.`)) {
+                return;
+            }
+            
+            try {
+                const newCode = Math.floor(10000 + Math.random() * 90000).toString();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update({ 
+                        edit_code: newCode,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
+                loadEditCodes();
+                
+            } catch (error) {
+                console.error('Error resetting code:', error);
+                alert('Failed to reset code');
+            }
+        }
+
+        // Helper Functions
+        function loadProjectForEdit(project) {
+            document.getElementById('editProjectId').value = project.id;
+            document.getElementById('editProjectName').value = project.name || '';
+            document.getElementById('editProjectDescription').value = project.description || '';
+            document.getElementById('editProjectStatus').value = project.status || 'development';
+            document.getElementById('editProjectProgress').value = project.progress || 0;
+            document.getElementById('editProjectNeedsFeedback').checked = project.needs_feedback || false;
+            
+            const editCodeSection = document.getElementById('editCodeSection');
+            const visibilityControl = document.getElementById('visibilityControl');
+            
+            if (currentUser && currentUser.role === 'doctor') {
+                editCodeSection.classList.remove('hidden');
+                visibilityControl.classList.add('hidden');
+                document.getElementById('editCodeVerification').value = '';
+            } else if (currentUser && currentUser.role === 'admin') {
+                editCodeSection.classList.add('hidden');
+                visibilityControl.classList.remove('hidden');
+                document.getElementById('editProjectVisibility').value = project.visibility || 'public';
+            } else {
+                editCodeSection.classList.add('hidden');
+                visibilityControl.classList.add('hidden');
+            }
+        }
+
+        async function loadProjectsForPDFSelect() {
+            try {
+                const select = document.getElementById('pdfProjectSelect');
+                select.innerHTML = '<option value="">-- Choose a project --</option>';
+                
+                dashboardData.projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading projects for PDF:', error);
+            }
+        }
+
+        function updateTimestamp() {
+            if (!currentUser) return;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            document.getElementById('lastUpdatedTime').textContent = `${dateString} at ${timeString}`;
+            dashboardData.lastUpdated = now;
+        }
+
+        function showLoadingState() {
+            document.getElementById('lastUpdatedTime').textContent = 'Loading...';
+        }
+
+        function showErrorState() {
+            document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
         }
 
         // ========== EVENT LISTENERS ==========
-document.addEventListener('DOMContentLoaded', function() {
-    // Load stored user and setup UI
-    loadStoredUser();
-    updateAuthUI();
-    
-    // Login buttons
-    document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
-    document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
-    document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-    
-    // Modal close buttons
-    document.querySelectorAll('.modal-close').forEach(btn => {
-        btn.addEventListener('click', hideAllModals);
-    });
-    
-    // Close modals when clicking outside
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) hideAllModals();
-        });
-    });
-    
-    // Login form submission
-    document.getElementById('submitLogin').addEventListener('click', async function() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        
-        if (!username || !password) {
-            document.getElementById('loginError').textContent = 'Please enter both username and password';
-            document.getElementById('loginError').style.display = 'block';
-            return;
-        }
-        
-        this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Signing In...';
-        this.disabled = true;
-        
-        const success = await loginUser(username, password);
-        
-        this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
-        this.disabled = false;
-        
-        if (success) {
-            hideAllModals();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStoredUser();
             updateAuthUI();
-        }
-    });
-    
-    // Enter key for login
-    document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            document.getElementById('submitLogin').click();
-        }
-    });
-    
-    // Admin control buttons
-    document.getElementById('addProjectBtn').addEventListener('click', () => {
-        showModal('addProjectModal');
-    });
-    
-    document.getElementById('addToolBtn').addEventListener('click', () => {
-        showModal('addToolModal');
-    });
-    
-    document.getElementById('viewCodesBtn').addEventListener('click', () => {
-        loadEditCodes();
-        showModal('viewCodesModal');
-    });
-    
-    // Moderate Comments button - NEW IMPROVEMENT
-    document.getElementById('moderateCommentsBtn').addEventListener('click', async () => {
-        await fetchPendingComments();
-        showModerationModal();
-        showModal('moderateCommentsModal');
-    });
-    
-    // Guest contact button
-    document.getElementById('contactBtn').addEventListener('click', () => {
-        window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry - TRAci Dashboard');
-    });
-    
-    // Filter controls - NEW FEATURE
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('active');
+            
+            // Login
+            document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Modal close
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', hideAllModals);
             });
             
-            // Add active class to clicked button
-            this.classList.add('active');
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) hideAllModals();
+                });
+            });
             
-            // Filter projects
-            const filterType = this.dataset.filter;
-            filterProjects(filterType);
-        });
-    });
-    
-    // Comment system
-    document.getElementById('commentText').addEventListener('input', function() {
-        const text = this.value.trim();
-        const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
-        document.getElementById('commentWordCount').textContent = `${words}/150 words`;
-        
-        if (words > 150) {
-            this.style.borderColor = 'var(--danger)';
-            document.getElementById('commentWordCount').style.color = 'var(--danger)';
-        } else {
-            this.style.borderColor = 'var(--border)';
-            document.getElementById('commentWordCount').style.color = 'var(--gray-500)';
-        }
-    });
-    
-    // Submit comment
-    document.getElementById('submitCommentBtn').addEventListener('click', async function() {
-        if (!currentProjectComments) return;
-        
-        const commentText = document.getElementById('commentText').value.trim();
-        const guestEmail = document.getElementById('guestEmail').value.trim();
-        const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
-        
-        if (wordCount === 0) {
-            document.getElementById('commentError').textContent = 'Please enter a comment';
-            document.getElementById('commentError').style.display = 'block';
-            return;
-        }
-        
-        if (wordCount > 150) {
-            document.getElementById('commentError').textContent = 'Comment must be 150 words or less';
-            document.getElementById('commentError').style.display = 'block';
-            return;
-        }
-        
-        // Validate email for guests
-        if (currentUser.role === 'guest' && !guestEmail) {
-            document.getElementById('commentError').textContent = 'Email is required for guest comments';
-            document.getElementById('commentError').style.display = 'block';
-            return;
-        }
-        
-        this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
-        this.disabled = true;
-        
-        const result = await submitProjectComment(currentProjectComments, commentText, guestEmail);
-        
-        this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
-        this.disabled = false;
-        
-        if (result.success) {
-            document.getElementById('commentText').value = '';
-            document.getElementById('guestEmail').value = '';
-            document.getElementById('commentWordCount').textContent = '0/150 words';
-            document.getElementById('commentSuccess').textContent = result.data.status === 'pending' 
-                ? 'Comment submitted for moderation' 
-                : 'Comment posted successfully';
-            document.getElementById('commentSuccess').style.display = 'block';
-            
-            const project = dashboardData.projects.find(p => p.id === currentProjectComments);
-            if (project) {
-                setTimeout(() => {
-                    loadProjectComments(currentProjectComments, project.name);
-                }, 1500);
-            }
-        } else {
-            document.getElementById('commentError').textContent = 'Failed to post comment: ' + result.error;
-            document.getElementById('commentError').style.display = 'block';
-        }
-    });
-    
-    // PDF Export button - NEW IMPROVEMENT
-    document.getElementById('generatePDFBtn').addEventListener('click', async function() {
-        const projectId = document.getElementById('pdfProjectSelect').value;
-        if (!projectId) {
-            document.getElementById('pdfError').textContent = 'Please select a project';
-            document.getElementById('pdfError').style.display = 'block';
-            return;
-        }
-        
-        this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating PDF...';
-        this.disabled = true;
-        
-        const result = await exportProjectToPDF(projectId);
-        
-        this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
-        this.disabled = false;
-        
-        if (!result.success) {
-            document.getElementById('pdfError').textContent = 'Error: ' + result.error;
-            document.getElementById('pdfError').style.display = 'block';
-        } else {
-            hideAllModals();
-        }
-    });
-    
-    // Dashboard refresh
-    document.getElementById('refreshLink').addEventListener('click', async function(e) {
-        e.preventDefault();
-        if (!currentUser) return;
-        
-        document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
-        await initDashboard();
-        document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
-    });
-    
-    // Auto-refresh every 5 minutes
-    setInterval(async () => {
-        if (currentUser) {
-            await initDashboard();
-        }
-    }, 5 * 60 * 1000);
-    
-    // Setup real-time updates if user is logged in
-    if (currentUser) {
-        setupRealtimeUpdates();
-    }
-});
-
-// Make functions globally available
-window.resetSingleCode = resetSingleCode;
-
-// ========== MISSING HELPER FUNCTIONS ==========
-async function submitProjectComment(projectId, commentText, guestEmail = null) {
-    try {
-        if (!currentUser) {
-            throw new Error('You must be logged in to comment');
-        }
-        
-        const wordCount = commentText.trim().split(/\s+/).length;
-        if (wordCount > 150) {
-            throw new Error('Comment must be 150 words or less');
-        }
-        
-        if (wordCount === 0) {
-            throw new Error('Comment cannot be empty');
-        }
-        
-        // Validate email for guests
-        if (currentUser.role === 'guest' && !guestEmail) {
-            throw new Error('Email is required for guest comments');
-        }
-        
-        if (currentUser.role === 'guest' && guestEmail) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(guestEmail)) {
-                throw new Error('Please enter a valid email address');
-            }
-        }
-        
-        let status = 'pending';
-        if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
-            status = 'approved';
-        }
-        
-        const commentData = {
-            project_id: projectId,
-            content: commentText,
-            user_id: currentUser.id,
-            user_name: currentUser.full_name || currentUser.username,
-            user_role: currentUser.role,
-            status: status,
-            created_at: new Date().toISOString()
-        };
-        
-        // Add email for guests
-        if (currentUser.role === 'guest' && guestEmail) {
-            commentData.user_email = guestEmail;
-            commentData.is_external = true;
-        }
-        
-        const { data, error } = await supabaseClient
-            .from('project_comments')
-            .insert([commentData])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        
-        await logAudit('comment_added', { 
-            project_id: projectId,
-            comment_length: wordCount,
-            auto_approved: status === 'approved',
-            has_email: !!guestEmail
-        }, projectId);
-        
-        // Update comment counts
-        await fetchCommentCounts();
-        
-        return { success: true, data };
-        
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-function showModerationModal() {
-    const list = document.getElementById('moderationList');
-    
-    if (!pendingComments || pendingComments.length === 0) {
-        list.innerHTML = `
-            <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
-                <i class="mdi mdi-check-circle-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                <p>No pending comments to moderate. Great job!</p>
-            </div>
-        `;
-        document.getElementById('bulkActionsPanel').classList.add('hidden');
-        return;
-    }
-    
-    let html = `
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            ${pendingComments.map(comment => `
-                <div class="comment-item pending" style="margin-bottom: 0;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                        <input type="checkbox" class="comment-checkbox" value="${comment.id}">
-                        <strong>${comment.user_name}</strong>
-                        <span style="font-size: 12px; color: var(--gray-500);">on "${comment.projects.name}"</span>
-                    </div>
-                    <div class="comment-content">${comment.content}</div>
-                    <div class="comment-actions">
-                        <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
-                            <i class="mdi mdi-check-circle"></i> Approve
-                        </button>
-                        <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
-                            <i class="mdi mdi-close-circle"></i> Reject
-                        </button>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-    
-    list.innerHTML = html;
-    document.getElementById('bulkActionsPanel').classList.remove('hidden');
-    
-    // Add event listeners for moderation buttons
-    document.querySelectorAll('.moderation-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            const action = this.classList.contains('approve-btn') ? 'approve' : 'reject';
-            
-            const result = await moderateComment(commentId, action);
-            if (result.success) {
-                if (action === 'approve') {
-                    await sendEmailNotification(commentId, 'approved');
+            // Login form
+            document.getElementById('submitLogin').addEventListener('click', async function() {
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!username || !password) {
+                    document.getElementById('loginError').textContent = 'Please enter both username and password';
+                    document.getElementById('loginError').style.display = 'block';
+                    return;
                 }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Signing In...';
+                this.disabled = true;
+                
+                const success = await loginUser(username, password);
+                
+                this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
+                this.disabled = false;
+                
+                if (success) {
+                    hideAllModals();
+                    updateAuthUI();
+                }
+            });
+            
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submitLogin').click();
+                }
+            });
+            
+            // Admin buttons
+            document.getElementById('addProjectBtn').addEventListener('click', () => {
+                document.getElementById('projectName').value = '';
+                document.getElementById('projectDescription').value = '';
+                document.getElementById('projectStatus').value = 'development';
+                document.getElementById('projectProgress').value = '0';
+                document.getElementById('projectNeedsFeedback').checked = false;
+                document.getElementById('projectVisibility').value = 'public';
+                clearFormMessages();
+                showModal('addProjectModal');
+            });
+            
+            document.getElementById('addToolBtn').addEventListener('click', () => {
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolDescription').value = '';
+                document.getElementById('toolUrl').value = '';
+                clearFormMessages();
+                showModal('addToolModal');
+            });
+            
+            document.getElementById('viewCodesBtn').addEventListener('click', () => {
+                loadEditCodes();
+                showModal('viewCodesModal');
+            });
+            
+            document.getElementById('moderateCommentsBtn').addEventListener('click', async () => {
                 await fetchPendingComments();
                 showModerationModal();
-                await fetchCommentCounts();
+                showModal('moderateCommentsModal');
+            });
+            
+            // Guest contact
+            document.getElementById('contactBtn').addEventListener('click', () => {
+                window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry - TRAci Dashboard');
+            });
+            
+            // Filter controls
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    
+                    const filterType = this.dataset.filter;
+                    filterProjects(filterType);
+                });
+            });
+            
+            // Comment system
+            document.getElementById('commentText').addEventListener('input', function() {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+                document.getElementById('commentWordCount').textContent = `${words}/150 words`;
+                
+                if (words > 150) {
+                    this.style.borderColor = 'var(--danger)';
+                    document.getElementById('commentWordCount').style.color = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'var(--border)';
+                    document.getElementById('commentWordCount').style.color = 'var(--gray-500)';
+                }
+            });
+            
+            document.getElementById('submitCommentBtn').addEventListener('click', async function() {
+                if (!currentProjectComments) return;
+                
+                const commentText = document.getElementById('commentText').value.trim();
+                const guestEmail = document.getElementById('guestEmail').value.trim();
+                const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
+                
+                if (wordCount === 0) {
+                    document.getElementById('commentError').textContent = 'Please enter a comment';
+                    document.getElementById('commentError').style.display = 'block';
+                    return;
+                }
+                
+                if (wordCount > 150) {
+                    document.getElementById('commentError').textContent = 'Comment must be 150 words or less';
+                    document.getElementById('commentError').style.display = 'block';
+                    return;
+                }
+                
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    document.getElementById('commentError').textContent = 'Email is required for guest comments';
+                    document.getElementById('commentError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
+                this.disabled = true;
+                
+                const result = await submitProjectComment(currentProjectComments, commentText, guestEmail);
+                
+                this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
+                this.disabled = false;
+                
+                if (result.success) {
+                    document.getElementById('commentText').value = '';
+                    document.getElementById('guestEmail').value = '';
+                    document.getElementById('commentWordCount').textContent = '0/150 words';
+                    document.getElementById('commentSuccess').textContent = result.data.status === 'pending' 
+                        ? 'Comment submitted for moderation' 
+                        : 'Comment posted successfully';
+                    document.getElementById('commentSuccess').style.display = 'block';
+                    
+                    const project = dashboardData.projects.find(p => p.id === currentProjectComments);
+                    if (project) {
+                        setTimeout(() => {
+                            loadProjectComments(currentProjectComments, project.name);
+                        }, 1500);
+                    }
+                } else {
+                    document.getElementById('commentError').textContent = 'Failed to post comment: ' + result.error;
+                    document.getElementById('commentError').style.display = 'block';
+                }
+            });
+            
+            // Project CRUD
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
+                    visibility: document.getElementById('projectVisibility').value
+                };
+                
+                if (!projectData.name) {
+                    document.getElementById('projectError').textContent = 'Project name is required';
+                    document.getElementById('projectError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addProject(projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
+                this.disabled = false;
+            });
+            
+            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                const projectData = {
+                    name: document.getElementById('editProjectName').value.trim(),
+                    description: document.getElementById('editProjectDescription').value.trim(),
+                    status: document.getElementById('editProjectStatus').value,
+                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
+                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked
+                };
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    projectData.visibility = document.getElementById('editProjectVisibility').value;
+                }
+                
+                if (!projectData.name) {
+                    document.getElementById('editProjectError').textContent = 'Project name is required';
+                    document.getElementById('editProjectError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Updating...';
+                this.disabled = true;
+                
+                await updateProject(projectId, projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Update Project';
+                this.disabled = false;
+            });
+            
+            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                await deleteProject(projectId);
+                hideAllModals();
                 await initDashboard();
-            }
+            });
+            
+            // Tool CRUD
+            document.getElementById('saveToolBtn').addEventListener('click', async function() {
+                const toolData = {
+                    name: document.getElementById('toolName').value.trim(),
+                    description: document.getElementById('toolDescription').value.trim(),
+                    url: document.getElementById('toolUrl').value.trim(),
+                    status: 'operational',
+                    icon: 'mdi mdi-toolbox',
+                    category: 'General'
+                };
+                
+                if (!toolData.name || !toolData.url) {
+                    document.getElementById('toolError').textContent = 'Tool name and URL are required';
+                    document.getElementById('toolError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addTool(toolData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Tool';
+                this.disabled = false;
+            });
+            
+            // PDF Export
+            document.getElementById('generatePDFBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('pdfProjectSelect').value;
+                if (!projectId) {
+                    document.getElementById('pdfError').textContent = 'Please select a project';
+                    document.getElementById('pdfError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating PDF...';
+                this.disabled = true;
+                
+                const result = await exportProjectToPDF(projectId);
+                
+                this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
+                this.disabled = false;
+                
+                if (!result.success) {
+                    document.getElementById('pdfError').textContent = 'Error: ' + result.error;
+                    document.getElementById('pdfError').style.display = 'block';
+                } else {
+                    hideAllModals();
+                }
+            });
+            
+            // Dashboard refresh
+            document.getElementById('refreshLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
+                await initDashboard();
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
+            });
+            
+            // Auto-refresh every 5 minutes
+            setInterval(async () => {
+                if (currentUser) {
+                    await initDashboard();
+                }
+            }, 5 * 60 * 1000);
         });
-    });
-}
-        <!-- Add Project Modal -->
-<div id="addProjectModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>
-                <i class="mdi mdi-plus-circle"></i>
-                <span>Add New Project</span>
-            </h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="projectName">Project Name *</label>
-                <input type="text" id="projectName" class="form-control" 
-                       placeholder="Enter project name">
-            </div>
-            <div class="form-group">
-                <label for="projectDescription">Description</label>
-                <textarea id="projectDescription" class="form-control" 
-                          placeholder="Project description" rows="3"></textarea>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div class="form-group">
-                    <label for="projectStatus">Status</label>
-                    <select id="projectStatus" class="form-control">
-                        <option value="planning">Planning</option>
-                        <option value="development" selected>Development</option>
-                        <option value="testing">Testing</option>
-                        <option value="production">Production</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="projectProgress">Progress (%)</label>
-                    <input type="number" id="projectProgress" class="form-control" 
-                           min="0" max="100" value="0">
-                </div>
-            </div>
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="projectNeedsFeedback">
-                    <i class="mdi mdi-alert-circle"></i>
-                    <span>Mark for Review</span>
-                </label>
-            </div>
-            <div class="form-group">
-                <label for="projectVisibility">Visibility</label>
-                <select id="projectVisibility" class="form-control">
-                    <option value="public">🌍 Public (Visible to all)</option>
-                    <option value="private">🔒 Private (Doctors & Admin only)</option>
-                </select>
-            </div>
-            <button id="saveProjectBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
-                <i class="mdi mdi-content-save"></i>
-                <span>Save Project</span>
-            </button>
-        </div>
-    </div>
-</div>
 
-<!-- Edit Project Modal -->
-<div id="editProjectModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>
-                <i class="mdi mdi-pencil"></i>
-                <span>Edit Project</span>
-            </h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="editProjectId">
+        // Moderation modal display
+        function showModerationModal() {
+            const list = document.getElementById('moderationList');
             
-            <div id="editCodeSection" class="hidden">
-                <div class="form-group">
-                    <label for="editCodeVerification">Edit Verification Code *</label>
-                    <input type="password" id="editCodeVerification" 
-                           class="form-control" 
-                           placeholder="Enter 5-digit code" maxlength="5" 
-                           pattern="\d{5}" inputmode="numeric"
-                           style="font-family: monospace; font-size: 1.25rem; letter-spacing: 8px; text-align: center;">
-                    <small style="font-size: 0.75rem; color: var(--gray-500);">5-digit code required for doctor edits</small>
-                </div>
-            </div>
+            if (!pendingComments || pendingComments.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                        <i class="mdi mdi-check-circle-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                        <p>No pending comments to moderate. Great job!</p>
+                    </div>
+                `;
+                document.getElementById('bulkActionsPanel').classList.add('hidden');
+                return;
+            }
             
-            <div class="form-group">
-                <label for="editProjectName">Project Name *</label>
-                <input type="text" id="editProjectName" class="form-control" 
-                       placeholder="Enter project name">
-            </div>
-            <div class="form-group">
-                <label for="editProjectDescription">Description</label>
-                <textarea id="editProjectDescription" class="form-control" 
-                          placeholder="Project description" rows="3"></textarea>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div class="form-group">
-                    <label for="editProjectStatus">Status</label>
-                    <select id="editProjectStatus" class="form-control">
-                        <option value="planning">Planning</option>
-                        <option value="development">Development</option>
-                        <option value="testing">Testing</option>
-                        <option value="production">Production</option>
-                    </select>
+            let html = `
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    ${pendingComments.map(comment => `
+                        <div class="comment-item pending" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                <input type="checkbox" class="comment-checkbox" value="${comment.id}">
+                                <strong>${comment.user_name}</strong>
+                                <span style="font-size: 12px; color: var(--gray-500);">on "${comment.projects.name}"</span>
+                            </div>
+                            <div class="comment-content">${comment.content}</div>
+                            <div class="comment-actions">
+                                <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
+                                    <i class="mdi mdi-check-circle"></i> Approve
+                                </button>
+                                <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
+                                    <i class="mdi mdi-close-circle"></i> Reject
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
-                <div class="form-group">
-                    <label for="editProjectProgress">Progress (%)</label>
-                    <input type="number" id="editProjectProgress" class="form-control" 
-                           min="0" max="100" value="0">
-                </div>
-            </div>
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="editProjectNeedsFeedback">
-                    <i class="mdi mdi-alert-circle"></i>
-                    <span>Mark for Review</span>
-                </label>
-            </div>
+            `;
             
-            <div id="visibilityControl" class="hidden">
-                <div class="form-group">
-                    <label for="editProjectVisibility">Visibility</label>
-                    <select id="editProjectVisibility" class="form-control">
-                        <option value="public">🌍 Public (All users)</option>
-                        <option value="private">🔒 Private (Doctors & Admin only)</option>
-                    </select>
-                </div>
-            </div>
+            list.innerHTML = html;
+            document.getElementById('bulkActionsPanel').classList.remove('hidden');
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <button id="updateProjectBtn" class="auth-btn" style="width: 100%;">
-                    <i class="mdi mdi-content-save"></i>
-                    <span>Update Project</span>
-                </button>
-                <button id="deleteProjectBtn" class="auth-btn" style="width: 100%; background: linear-gradient(135deg, var(--danger), #dc2626);">
-                    <i class="mdi mdi-delete"></i>
-                    <span>Delete Project</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+            // Add moderation button listeners
+            document.querySelectorAll('.moderation-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    const action = this.classList.contains('approve-btn') ? 'approve' : 'reject';
+                    
+                    await moderateComment(commentId, action);
+                    await fetchPendingComments();
+                    showModerationModal();
+                    await fetchCommentCounts();
+                    await initDashboard();
+                });
+            });
+        }
 
-<!-- Add Tool Modal -->
-<div id="addToolModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>
-                <i class="mdi mdi-toolbox"></i>
-                <span>Add New Tool</span>
-            </h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="toolName">Tool Name *</label>
-                <input type="text" id="toolName" class="form-control" 
-                       placeholder="Enter tool name">
-            </div>
-            <div class="form-group">
-                <label for="toolDescription">Description</label>
-                <textarea id="toolDescription" class="form-control" 
-                          placeholder="Tool description" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="toolUrl">URL *</label>
-                <input type="url" id="toolUrl" class="form-control" 
-                       placeholder="https://tool.example.com">
-            </div>
-            <button id="saveToolBtn" class="auth-btn" style="width: 100%; margin-top: 16px;">
-                <i class="mdi mdi-content-save"></i>
-                <span>Save Tool</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- View Edit Codes Modal -->
-<div id="viewCodesModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 700px;">
-        <div class="modal-header">
-            <h3>
-                <i class="mdi mdi-key-chain"></i>
-                <span>Project Edit Codes</span>
-            </h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <input type="text" id="codeSearch" class="form-control" 
-                       placeholder="Search projects by name...">
-            </div>
-            
-            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Project</th>
-                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Edit Code</th>
-                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Visibility</th>
-                            <th style="background: var(--gray-50); position: sticky; top: 0; padding: 12px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--gray-700); border-bottom: 2px solid var(--border); white-space: nowrap;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="codesTableBody">
-                        <!-- Codes loaded dynamically -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div>
-                <p style="font-size: 0.875rem; color: var(--gray-500);">
-                    <i class="mdi mdi-information"></i>
-                    <span>Doctors need these 5-digit codes to edit projects</span>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
+        // Make functions globally available
+        window.resetSingleCode = resetSingleCode;
     </script>
 </body>
 </html>
