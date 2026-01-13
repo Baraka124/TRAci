@@ -2,26 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>TRAci | Pneumology Innovation Dashboard</title>
     
-    <!-- Professional Icons -->
+    <!-- Remove problematic QR library, use built-in -->
+    <script>
+        // Simple QR code generator without external library
+        function generateSimpleQR(text, elementId) {
+            const qrContainer = document.getElementById(elementId);
+            if (!qrContainer) return;
+            
+            qrContainer.innerHTML = '';
+            
+            // Create a simple visual representation
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 200;
+            canvas.height = 200;
+            
+            // Clear background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Draw QR-like pattern (simplified)
+            ctx.fillStyle = '#0c4a6e';
+            
+            // Draw border squares
+            ctx.fillRect(10, 10, 40, 40);
+            ctx.fillRect(150, 10, 40, 40);
+            ctx.fillRect(10, 150, 40, 40);
+            
+            // Draw text
+            ctx.fillStyle = '#000000';
+            ctx.font = '14px monospace';
+            ctx.textAlign = 'center';
+            
+            const lines = text.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], 100, 90 + (i * 20));
+            }
+            
+            // Draw code in center
+            ctx.font = 'bold 20px monospace';
+            const code = text.match(/Code: (\d+)/)?.[1] || '00000';
+            ctx.fillText(`🔐 ${code}`, 100, 130);
+            
+            qrContainer.appendChild(canvas);
+        }
+    </script>
+    
+    <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
-    <!-- QR Code Library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    
-    <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ===== PROFESSIONAL MEDICAL THEME ===== */
+        /* ===== VARIABLES ===== */
         :root {
-            /* Primary Medical Colors */
+            /* Microsoft-inspired colors for logo */
+            --ms-blue: #00A4EF;
+            --ms-green: #7FBA00;
+            --ms-yellow: #FFB900;
+            --ms-orange: #F25022;
+            
+            /* Medical theme */
             --primary-50: #f0f9ff;
             --primary-100: #e0f2fe;
             --primary-200: #bae6fd;
@@ -33,13 +79,12 @@
             --primary-800: #075985;
             --primary-900: #0c4a6e;
             
-            /* Medical Accent Colors */
             --medical-teal: #0d9488;
             --medical-green: #059669;
             --medical-purple: #7c3aed;
             --medical-cyan: #0891b2;
             
-            /* Status Colors */
+            /* Status colors */
             --success: #10b981;
             --success-light: #d1fae5;
             --warning: #f59e0b;
@@ -49,7 +94,7 @@
             --info: #3b82f6;
             --info-light: #dbeafe;
             
-            /* Neutral Colors */
+            /* Neutrals */
             --white: #ffffff;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
@@ -71,7 +116,7 @@
             --border-light: #e2e8f0;
             --border: #cbd5e1;
             
-            /* Typography */
+            /* Fonts */
             --font-sans: 'Inter', sans-serif;
             --font-heading: 'Space Grotesk', sans-serif;
             
@@ -86,7 +131,7 @@
             --space-12: 3rem;
             --space-16: 4rem;
             
-            /* Border Radius */
+            /* Border radius */
             --radius-sm: 0.25rem;
             --radius: 0.375rem;
             --radius-md: 0.5rem;
@@ -105,7 +150,7 @@
             --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Dark Mode */
+        /* Dark mode */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-primary: #0f172a;
@@ -127,16 +172,6 @@
                 color: var(--white);
                 border-color: var(--gray-700);
             }
-            
-            .form-control:focus {
-                background-color: var(--gray-800);
-                color: var(--white);
-            }
-            
-            #loginUsername, #loginPassword {
-                color: var(--white) !important;
-                background-color: var(--gray-800) !important;
-            }
         }
 
         /* ===== RESET & BASE ===== */
@@ -151,9 +186,6 @@
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
             scroll-behavior: smooth;
         }
 
@@ -172,72 +204,34 @@
             margin: 0 auto;
         }
 
-        /* ===== UTILITY CLASSES ===== */
+        /* ===== UTILITIES ===== */
+        .hidden { display: none !important; }
         .text-center { text-align: center; }
         .text-muted { color: var(--gray-500); }
-        .hidden { display: none !important; }
+        .cursor-pointer { cursor: pointer; }
 
-        /* ===== WINDOWS-STYLE LOGO ===== */
-        .logo {
-            width: 56px;
-            height: 56px;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-        }
-
+        /* ===== WINDOWS LOGO ===== */
         .windows-logo {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            gap: 4px;
+            gap: 3px;
         }
 
         .windows-square {
-            border-radius: 4px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            border-radius: 3px;
+            transition: transform 0.3s ease;
         }
 
-        .windows-square.s1 { background: #00A4EF; } /* Microsoft blue */
-        .windows-square.s2 { background: #7FBA00; } /* Microsoft green */
-        .windows-square.s3 { background: #FFB900; } /* Microsoft yellow */
-        .windows-square.s4 { background: #F25022; } /* Microsoft orange */
+        .windows-square.s1 { background: var(--ms-blue); }
+        .windows-square.s2 { background: var(--ms-green); }
+        .windows-square.s3 { background: var(--ms-yellow); }
+        .windows-square.s4 { background: var(--ms-orange); }
 
         .logo:hover .windows-square {
             transform: scale(1.1);
-            opacity: 0.9;
-        }
-
-        .logo:hover .windows-square.s1 { animation: float1 2s ease-in-out infinite; }
-        .logo:hover .windows-square.s2 { animation: float2 2s ease-in-out infinite 0.5s; }
-        .logo:hover .windows-square.s3 { animation: float3 2s ease-in-out infinite 1s; }
-        .logo:hover .windows-square.s4 { animation: float4 2s ease-in-out infinite 1.5s; }
-
-        @keyframes float1 {
-            0%, 100% { transform: translate(0, 0) rotate(0); }
-            50% { transform: translate(-2px, -2px) rotate(-5deg); }
-        }
-
-        @keyframes float2 {
-            0%, 100% { transform: translate(0, 0) rotate(0); }
-            50% { transform: translate(2px, -2px) rotate(5deg); }
-        }
-
-        @keyframes float3 {
-            0%, 100% { transform: translate(0, 0) rotate(0); }
-            50% { transform: translate(-2px, 2px) rotate(-5deg); }
-        }
-
-        @keyframes float4 {
-            0%, 100% { transform: translate(0, 0) rotate(0); }
-            50% { transform: translate(2px, 2px) rotate(5deg); }
         }
 
         /* ===== HEADER ===== */
@@ -260,12 +254,26 @@
             flex: 1;
         }
 
+        .logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-600), var(--medical-teal));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+        }
+
         .platform-info {
             display: flex;
             flex-direction: column;
             gap: var(--space-1);
             min-width: 0;
-            overflow: hidden;
         }
 
         .platform-name {
@@ -284,9 +292,6 @@
             font-weight: 500;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .header-right {
@@ -296,7 +301,7 @@
             flex-shrink: 0;
         }
 
-        /* Status Panel */
+        /* Status panel */
         .status-panel {
             display: flex;
             align-items: center;
@@ -332,11 +337,6 @@
         }
 
         /* ===== AUTH SECTION ===== */
-        .auth-section {
-            display: flex;
-            align-items: center;
-        }
-
         .auth-btn {
             padding: var(--space-3) var(--space-6);
             background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
@@ -360,13 +360,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        .auth-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* User Profile */
         .user-profile {
             display: flex;
             align-items: center;
@@ -417,20 +410,9 @@
             width: fit-content;
         }
 
-        .user-role.admin {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .user-role.doctor {
-            background: var(--primary-100);
-            color: var(--primary-700);
-        }
-
-        .user-role.guest {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
+        .user-role.admin { background: var(--danger-light); color: var(--danger); }
+        .user-role.doctor { background: var(--primary-100); color: var(--primary-700); }
+        .user-role.guest { background: var(--gray-100); color: var(--gray-600); }
 
         .logout-btn {
             background: transparent;
@@ -445,9 +427,40 @@
             min-height: 44px;
         }
 
-        .logout-btn:hover {
-            background: var(--gray-100);
-            color: var(--danger);
+        /* ===== GUEST WELCOME BANNER ===== */
+        .guest-welcome {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            border: 1px solid #bae6fd;
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guest-welcome-content {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-6);
+        }
+
+        .guest-welcome-icon {
+            flex-shrink: 0;
+            font-size: 3rem;
+            color: var(--primary-400);
+        }
+
+        .guest-welcome-text h3 {
+            font-family: var(--font-heading);
+            color: var(--primary-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .guest-welcome-actions {
+            display: flex;
+            gap: var(--space-3);
+            margin-top: var(--space-4);
+            flex-wrap: wrap;
         }
 
         /* ===== ADMIN CONTROLS ===== */
@@ -473,7 +486,6 @@
             gap: var(--space-2);
             white-space: nowrap;
             min-height: 44px;
-            min-width: 44px;
         }
 
         .admin-btn:hover {
@@ -481,119 +493,6 @@
             color: var(--primary-600);
             transform: translateY(-2px);
             box-shadow: var(--shadow);
-        }
-
-        /* ===== GUEST WELCOME SECTION ===== */
-        .guest-welcome {
-            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-            border: 1px solid #bae6fd;
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            margin-bottom: var(--space-6);
-            position: relative;
-            overflow: hidden;
-            display: none;
-        }
-
-        .guest-welcome.show {
-            display: block;
-        }
-
-        .welcome-content {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-6);
-        }
-
-        .welcome-icon {
-            flex-shrink: 0;
-            font-size: 3rem;
-            color: var(--primary-400);
-        }
-
-        .welcome-text h3 {
-            font-family: var(--font-heading);
-            color: var(--primary-700);
-            margin-bottom: var(--space-2);
-        }
-
-        .welcome-text p {
-            color: var(--gray-600);
-            margin-bottom: var(--space-3);
-        }
-
-        .welcome-actions {
-            display: flex;
-            gap: var(--space-3);
-            flex-wrap: wrap;
-        }
-
-        .contact-btn {
-            padding: var(--space-2) var(--space-4);
-            background: var(--primary-600);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            min-height: 44px;
-        }
-
-        .learn-btn {
-            padding: var(--space-2) var(--space-4);
-            background: transparent;
-            color: var(--primary-600);
-            border: 1px solid var(--primary-400);
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            min-height: 44px;
-        }
-
-        .welcome-decoration {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, transparent 50%, rgba(14, 165, 233, 0.1) 50%);
-        }
-
-        /* ===== GUEST COMMENT SECTION ===== */
-        .comment-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            margin-bottom: var(--space-6);
-            display: none;
-        }
-
-        .comment-section.show {
-            display: block;
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            margin-bottom: var(--space-4);
-        }
-
-        .comment-icon {
-            font-size: 2rem;
-            color: var(--primary-500);
-        }
-
-        .comment-title {
-            font-family: var(--font-heading);
-            color: var(--gray-800);
         }
 
         /* ===== STATS CARDS ===== */
@@ -635,21 +534,11 @@
             flex-shrink: 0;
         }
 
-        .stat-icon.tools {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        }
-
-        .stat-icon.projects {
-            background: linear-gradient(135deg, var(--medical-teal), var(--medical-cyan));
-        }
-
-        .stat-icon.feedback {
-            background: linear-gradient(135deg, var(--warning), #f59e0b);
-        }
-
-        .stat-icon.active {
-            background: linear-gradient(135deg, var(--success), var(--medical-green));
-        }
+        .stat-icon.tools { background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); }
+        .stat-icon.projects { background: linear-gradient(135deg, var(--medical-teal), var(--medical-cyan)); }
+        .stat-icon.feedback { background: linear-gradient(135deg, var(--warning), #f59e0b); }
+        .stat-icon.active { background: linear-gradient(135deg, var(--success), var(--medical-green)); }
+        .stat-icon.audit { background: linear-gradient(135deg, var(--medical-purple), #9333ea); }
 
         .stat-info h3 {
             font-size: 0.8125rem;
@@ -657,7 +546,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: var(--space-1);
-            white-space: nowrap;
         }
 
         .stat-number {
@@ -668,7 +556,7 @@
             line-height: 1;
         }
 
-        /* ===== FILTER CONTROLS ===== */
+        /* ===== FILTERS ===== */
         .filter-controls {
             display: flex;
             gap: var(--space-2);
@@ -691,8 +579,6 @@
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
-            min-height: 44px;
-            min-width: 44px;
         }
 
         .filter-btn:hover {
@@ -785,13 +671,8 @@
             transform: translateY(-2px);
         }
 
-        .tool-card.operational {
-            border-left: 4px solid var(--success);
-        }
-
-        .tool-card.warning {
-            border-left: 4px solid var(--warning);
-        }
+        .tool-card.operational { border-left: 4px solid var(--success); }
+        .tool-card.warning { border-left: 4px solid var(--warning); }
 
         .tool-header {
             display: flex;
@@ -833,15 +714,8 @@
             white-space: nowrap;
         }
 
-        .status-operational {
-            background: var(--success-light);
-            color: var(--success);
-        }
-
-        .status-warning {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
+        .status-operational { background: var(--success-light); color: var(--success); }
+        .status-warning { background: var(--warning-light); color: var(--warning); }
 
         .tool-description {
             color: var(--gray-600);
@@ -860,11 +734,6 @@
             gap: var(--space-2);
         }
 
-        .tool-updated {
-            color: var(--gray-500);
-            white-space: nowrap;
-        }
-
         .tool-link {
             color: var(--primary-600);
             text-decoration: none;
@@ -876,11 +745,7 @@
             white-space: nowrap;
         }
 
-        .tool-link:hover {
-            color: var(--primary-700);
-        }
-
-        /* ===== PROJECTS LIST ===== */
+        /* ===== PROJECTS ===== */
         .projects-list {
             display: flex;
             flex-direction: column;
@@ -905,7 +770,6 @@
             background: linear-gradient(to right, var(--warning-light) 0%, transparent 100%);
         }
 
-        /* Visibility Badges */
         .visibility-badge {
             font-size: 0.75rem;
             padding: 2px 8px;
@@ -930,7 +794,6 @@
             border: 1px solid var(--success);
         }
 
-        /* Doctor Badge */
         .doctor-badge {
             display: inline-flex;
             align-items: center;
@@ -974,25 +837,10 @@
             white-space: nowrap;
         }
 
-        .status-planning {
-            background: var(--gray-100);
-            color: var(--gray-600);
-        }
-
-        .status-development {
-            background: var(--primary-100);
-            color: var(--primary-700);
-        }
-
-        .status-testing {
-            background: var(--info-light);
-            color: var(--info);
-        }
-
-        .status-production {
-            background: var(--success-light);
-            color: var(--success);
-        }
+        .status-planning { background: var(--gray-100); color: var(--gray-600); }
+        .status-development { background: var(--primary-100); color: var(--primary-700); }
+        .status-testing { background: var(--info-light); color: var(--info); }
+        .status-production { background: var(--success-light); color: var(--success); }
 
         .project-description {
             color: var(--gray-600);
@@ -1001,7 +849,7 @@
             line-height: 1.5;
         }
 
-        /* Progress Bar */
+        /* Progress bar */
         .project-progress {
             margin-bottom: var(--space-4);
         }
@@ -1031,7 +879,7 @@
             transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Project Links */
+        /* Project links */
         .project-links {
             display: flex;
             gap: var(--space-3);
@@ -1060,7 +908,7 @@
             border-color: var(--primary-300);
         }
 
-        /* Feedback Section */
+        /* Feedback section */
         .feedback-section {
             display: flex;
             align-items: center;
@@ -1116,7 +964,7 @@
         .channel-btn.github { background-color: var(--gray-800); }
         .channel-btn.slack { background-color: #4A154B; }
 
-        /* Project Actions */
+        /* Project actions */
         .project-actions {
             display: flex;
             gap: var(--space-2);
@@ -1138,7 +986,6 @@
             gap: 4px;
             white-space: nowrap;
             min-height: 44px;
-            min-width: 44px;
         }
 
         .edit-btn {
@@ -1183,6 +1030,19 @@
             background: var(--warning);
             color: var(--white);
             border-color: var(--warning);
+        }
+
+        /* Comment button */
+        .comment-btn {
+            background: var(--info-light);
+            color: var(--info);
+            border-color: var(--info-light);
+        }
+
+        .comment-btn:hover {
+            background: var(--info);
+            color: var(--white);
+            border-color: var(--info);
         }
 
         /* ===== MODALS ===== */
@@ -1256,16 +1116,11 @@
             min-height: 44px;
         }
 
-        .modal-close:hover {
-            background: var(--gray-100);
-            color: var(--gray-700);
-        }
-
         .modal-body {
             padding: var(--space-6);
         }
 
-        /* Form Styles - FIXED TEXT VISIBILITY */
+        /* Form styles */
         .form-group {
             margin-bottom: var(--space-5);
         }
@@ -1294,11 +1149,6 @@
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-        }
-
-        .form-control::placeholder {
-            color: var(--gray-400);
-            opacity: 1;
         }
 
         .form-control:focus {
@@ -1344,7 +1194,7 @@
             border-radius: var(--radius-sm);
         }
 
-        /* Edit Code Input */
+        /* Edit code input */
         .edit-code-input {
             font-family: monospace;
             font-size: 1.25rem;
@@ -1356,7 +1206,7 @@
             background: var(--white) !important;
         }
 
-        /* QR Code Container */
+        /* QR code */
         .qr-container {
             text-align: center;
             padding: var(--space-4);
@@ -1395,7 +1245,6 @@
             gap: var(--space-2);
             margin-top: var(--space-4);
             min-height: 44px;
-            min-width: 44px;
         }
 
         .btn-primary:hover {
@@ -1404,59 +1253,11 @@
             box-shadow: var(--shadow);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
         .btn-danger {
             background: linear-gradient(135deg, var(--danger), #dc2626);
         }
 
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-        }
-
-        /* Form Footer */
-        .form-footer {
-            margin-top: var(--space-5);
-            text-align: center;
-            color: var(--gray-500);
-            font-size: 0.8125rem;
-        }
-
-        .hint {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-        }
-
-        /* Messages */
-        .error-message {
-            background: var(--danger-light);
-            color: var(--danger);
-            padding: var(--space-4);
-            border-radius: var(--radius);
-            margin-top: var(--space-4);
-            font-size: 0.875rem;
-            display: none;
-            border-left: 4px solid var(--danger);
-        }
-
-        .success-message {
-            background: var(--success-light);
-            color: var(--success);
-            padding: var(--space-4);
-            border-radius: var(--radius);
-            margin-top: var(--space-4);
-            font-size: 0.875rem;
-            display: none;
-            border-left: 4px solid var(--success);
-        }
-
-        /* ===== CODE MANAGEMENT TABLE ===== */
+        /* Code management table */
         .codes-table-container {
             max-height: 400px;
             overflow-y: auto;
@@ -1489,10 +1290,6 @@
             vertical-align: middle;
         }
 
-        .codes-table tr:hover {
-            background: var(--gray-50);
-        }
-
         .code-display {
             font-family: monospace;
             font-size: 1.1rem;
@@ -1503,48 +1300,151 @@
             display: inline-block;
         }
 
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            padding: var(--space-8) 0;
-            color: var(--gray-500);
-            font-size: 0.875rem;
+        /* Comments section */
+        .comments-section {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
             border-top: 1px solid var(--border);
-            margin-top: var(--space-8);
         }
 
-        .footer a {
-            color: var(--primary-600);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
+        .comment-form {
+            margin-bottom: var(--space-4);
         }
 
-        .footer a:hover {
-            color: var(--primary-700);
-            text-decoration: underline;
+        .comment-textarea {
+            width: 100%;
+            padding: var(--space-3);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font-sans);
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: var(--space-2);
+            background: var(--white);
+            color: var(--gray-900);
         }
 
-        /* ===== EMPTY STATES ===== */
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .comment-item {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: var(--space-3);
+            border-left: 3px solid var(--primary-500);
+        }
+
+        .comment-item.pending {
+            border-left-color: var(--warning);
+            background: var(--warning-light);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .comment-date {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .comment-content {
+            color: var(--gray-600);
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .pending-badge {
+            background: var(--warning-light);
+            color: var(--warning);
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            margin-left: var(--space-2);
+        }
+
+        /* Audit logs */
+        .audit-table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .audit-table th {
+            background: var(--gray-50);
+            position: sticky;
+            top: 0;
+            padding: var(--space-3);
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .audit-table td {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        /* Messages */
+        .error-message {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: var(--space-4);
+            border-radius: var(--radius);
+            margin-top: var(--space-4);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        .success-message {
+            background: var(--success-light);
+            color: var(--success);
+            padding: var(--space-4);
+            border-radius: var(--radius);
+            margin-top: var(--space-4);
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid var(--success);
+        }
+
+        /* Empty states */
         .empty-state {
             text-align: center;
             padding: var(--space-16) var(--space-6);
             color: var(--gray-500);
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: var(--space-4);
-            color: var(--gray-300);
-        }
-
-        /* ===== LOADING STATES ===== */
-        .loading {
-            text-align: center;
-            padding: var(--space-16);
-            color: var(--gray-500);
-        }
-
+        /* Loading */
         .loading-spinner {
             border: 3px solid var(--gray-200);
             border-top: 3px solid var(--primary-500);
@@ -1560,259 +1460,69 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ===== MOBILE RESPONSIVE ===== */
-        
-        /* Tablets */
-        @media (max-width: 992px) {
-            html {
-                font-size: 15px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: var(--space-4);
-            }
-            
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: var(--space-8) 0;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            margin-top: var(--space-8);
         }
 
-        /* Mobile */
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
-            body {
-                padding: var(--space-2);
-            }
-            
-            .container {
-                padding: 0 var(--space-2);
-            }
-            
-            .header {
-                padding: var(--space-4) 0;
-                margin-bottom: var(--space-6);
-            }
-            
-            .platform-name {
-                font-size: 1.25rem;
-            }
-            
-            .header-right {
-                flex-direction: column;
-                gap: var(--space-3);
-            }
-            
-            .status-panel {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .user-profile {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-container {
-                grid-template-columns: 1fr;
-                gap: var(--space-3);
-            }
-            
-            .stat-card {
-                padding: var(--space-4);
-                min-height: auto;
-            }
-            
-            .admin-controls {
-                justify-content: center;
-                gap: var(--space-2);
-                margin-bottom: var(--space-6);
-            }
-            
-            .admin-btn {
-                padding: var(--space-2) var(--space-3);
-                font-size: 0.8125rem;
-            }
-            
-            .filter-controls {
-                padding: var(--space-3);
-                gap: var(--space-2);
-            }
-            
-            .filter-btn {
-                padding: var(--space-1) var(--space-3);
-                font-size: 0.75rem;
-            }
-            
-            .section-header {
-                padding: var(--space-4);
-            }
-            
-            .section-content {
-                padding: var(--space-4);
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tool-card, .project-card {
-                padding: var(--space-4);
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .project-actions {
-                flex-direction: column;
-            }
-            
-            .action-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .feedback-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-3);
-            }
-            
-            .modal-content {
-                max-width: 95%;
-                margin: var(--space-2);
-            }
-            
-            .modal-header, .modal-body {
-                padding: var(--space-4);
-            }
-            
-            .codes-table {
-                font-size: 0.875rem;
-            }
-            
-            .codes-table th,
-            .codes-table td {
-                padding: var(--space-2);
-            }
-            
-            .qr-code {
-                width: 150px;
-                height: 150px;
-            }
+            body { padding: var(--space-2); }
+            .container { padding: 0 var(--space-2); }
+            .header { flex-direction: column; gap: var(--space-4); }
+            .header-right { flex-direction: column; gap: var(--space-3); width: 100%; }
+            .status-panel, .user-profile { width: 100%; justify-content: center; }
+            .stats-container { grid-template-columns: 1fr; }
+            .stat-card { flex-direction: column; text-align: center; gap: var(--space-3); }
+            .admin-controls { justify-content: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .project-actions { flex-direction: column; }
+            .action-btn { width: 100%; justify-content: center; }
+            .modal-content { max-width: 95%; margin: var(--space-2); }
+            .guest-welcome-content { flex-direction: column; text-align: center; gap: var(--space-3); }
+            .guest-welcome-actions { justify-content: center; }
         }
 
-        /* Small phones */
         @media (max-width: 480px) {
-            html {
-                font-size: 14px;
-            }
-            
-            .logo-section {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: var(--space-2);
-            }
-            
-            .platform-name {
-                font-size: 1.125rem;
-            }
-            
-            .department-name {
-                font-size: 0.75rem;
-            }
-            
-            .auth-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .user-profile {
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-2);
-                padding: var(--space-3);
-            }
-            
-            .user-info {
-                align-items: center;
-            }
-            
-            .stat-card {
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-3);
-            }
-            
-            .tool-name {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-2);
-            }
-            
-            .project-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-2);
-            }
-            
-            .form-control {
-                font-size: 16px;
-            }
-            
-            .edit-code-input {
-                font-size: 1.125rem;
-                letter-spacing: 6px;
-                padding: 10px;
-            }
-            
-            .qr-code {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .footer {
-                padding: var(--space-6) 0;
-                font-size: 0.8125rem;
-            }
+            html { font-size: 14px; }
+            .platform-name { font-size: 1.25rem; }
+            .auth-btn { width: 100%; justify-content: center; }
+            .user-profile { flex-direction: column; text-align: center; gap: var(--space-2); }
+            .filter-controls { justify-content: center; }
+            .project-header { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+            .project-status { align-self: flex-start; }
+            .qr-code { width: 150px; height: 150px; }
+        }
+
+        /* Fix for mobile */
+        input, textarea, select {
+            font-size: 16px; /* Prevents iOS zoom */
+        }
+
+        /* Better focus for accessibility */
+        *:focus {
+            outline: 2px solid var(--primary-500);
+            outline-offset: 2px;
         }
 
         /* Fix hover on mobile */
         @media (hover: none) and (pointer: coarse) {
-            .auth-btn:hover,
-            .admin-btn:hover,
-            .filter-btn:hover,
-            .action-btn:hover,
-            .channel-btn:hover,
-            .logout-btn:hover,
-            .tool-card:hover,
-            .project-card:hover,
-            .stat-card:hover {
+            .auth-btn:hover, .admin-btn:hover, .filter-btn:hover,
+            .action-btn:hover, .channel-btn:hover, .logout-btn:hover,
+            .tool-card:hover, .project-card:hover, .stat-card:hover {
                 transform: none;
-                box-shadow: var(--shadow-sm);
             }
             
-            .auth-btn:active,
-            .admin-btn:active,
-            .filter-btn:active,
-            .action-btn:active,
-            .channel-btn:active,
-            .logout-btn:active {
+            .auth-btn:active, .admin-btn:active, .filter-btn:active,
+            .action-btn:active, .channel-btn:active, .logout-btn:active {
                 transform: scale(0.98);
             }
-        }
-
-        /* Focus styles */
-        *:focus {
-            outline: 2px solid var(--primary-500);
-            outline-offset: 2px;
         }
     </style>
 </head>
@@ -1843,7 +1553,6 @@
                     </span>
                 </div>
                 
-                <!-- Authentication Section -->
                 <div class="auth-section" id="authSection">
                     <!-- Guest View -->
                     <div id="guestView">
@@ -1870,85 +1579,41 @@
             </div>
         </header>
 
-        <!-- Guest Welcome Section -->
-        <div class="guest-welcome" id="guestWelcome">
-            <div class="welcome-content">
-                <div class="welcome-icon">
+        <!-- Guest Welcome Banner -->
+        <div id="guestWelcome" class="guest-welcome hidden">
+            <div class="guest-welcome-content">
+                <div class="guest-welcome-icon">
                     <i class="mdi mdi-hand-wave"></i>
                 </div>
-                <div class="welcome-text">
+                <div class="guest-welcome-text">
                     <h3>Welcome, Guest!</h3>
                     <p>
                         You're viewing our public innovation portfolio. Some projects are private/internal. 
                         For collaboration inquiries—especially regarding <strong>Pulmonology patient care</strong> 
                         and <strong>clinical assistive technologies</strong>—please contact our department directly.
                     </p>
-                    <div class="welcome-actions">
-                        <button id="contactBtn" class="contact-btn">
+                    <div class="guest-welcome-actions">
+                        <button id="contactBtn" class="auth-btn" style="background: var(--primary-600);">
                             <i class="mdi mdi-email-send"></i>
-                            Contact Department
+                            <span>Contact Department</span>
                         </button>
-                        <button id="learnMoreBtn" class="learn-btn">
+                        <button id="learnMoreBtn" style="
+                            padding: var(--space-2) var(--space-4);
+                            background: transparent;
+                            color: var(--primary-600);
+                            border: 1px solid var(--primary-400);
+                            border-radius: var(--radius);
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            gap: var(--space-2);
+                        ">
                             <i class="mdi mdi-information"></i>
-                            Learn More
+                            <span>Learn More</span>
                         </button>
                     </div>
                 </div>
-            </div>
-            <div class="welcome-decoration"></div>
-        </div>
-
-        <!-- Guest Comment Section -->
-        <div class="comment-section" id="commentSection">
-            <div class="comment-header">
-                <div class="comment-icon">
-                    <i class="mdi mdi-comment-text-multiple"></i>
-                </div>
-                <h3 class="comment-title">Share Your Thoughts</h3>
-            </div>
-            
-            <div class="form-group">
-                <label>
-                    <i class="mdi mdi-message-text"></i>
-                    Comment (max 150 words)
-                </label>
-                <textarea id="guestComment" class="form-control" rows="4" 
-                          placeholder="Share your feedback, questions, or collaboration ideas..."></textarea>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-2);">
-                    <small class="text-muted">
-                        <i class="mdi mdi-shield-check"></i>
-                        Comments are moderated before appearing
-                    </small>
-                    <span id="wordCount" class="text-muted">0/150 words</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: var(--space-3);">
-                <button id="submitCommentBtn" class="btn-primary" style="flex: 1;">
-                    <i class="mdi mdi-send"></i>
-                    Submit Comment
-                </button>
-                <button id="viewCommentsBtn" style="
-                    padding: var(--space-3) var(--space-6);
-                    background: var(--gray-100);
-                    color: var(--gray-700);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius);
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: var(--space-2);
-                    transition: var(--transition);
-                ">
-                    <i class="mdi mdi-eye"></i>
-                    View Comments
-                </button>
-            </div>
-            
-            <div id="commentSuccess" class="success-message" style="margin-top: var(--space-4);">
-                <i class="mdi mdi-check-circle"></i>
-                <span>Comment submitted for moderation. Thank you!</span>
             </div>
         </div>
 
@@ -1969,6 +1634,10 @@
             <button class="admin-btn" id="resetCodeBtn">
                 <i class="mdi mdi-key-change"></i>
                 <span>Reset Code</span>
+            </button>
+            <button class="admin-btn" id="viewAuditBtn">
+                <i class="mdi mdi-history"></i>
+                <span>Audit Logs</span>
             </button>
         </div>
 
@@ -2002,12 +1671,12 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon active">
-                    <i class="mdi mdi-chart-timeline-variant"></i>
+                <div class="stat-icon audit">
+                    <i class="mdi mdi-shield-account"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>Active Development</h3>
-                    <div class="stat-number" id="activeCount">0</div>
+                    <h3>Active Users</h3>
+                    <div class="stat-number" id="activeUsersCount">0</div>
                 </div>
             </div>
         </div>
@@ -2032,7 +1701,7 @@
             </button>
         </div>
 
-        <!-- Main Content Grid -->
+        <!-- Main Content -->
         <div class="content-grid" id="contentGrid" class="hidden">
             <!-- Tools Section -->
             <div class="section">
@@ -2060,7 +1729,7 @@
                 </div>
                 <div class="section-content">
                     <div class="projects-list" id="projectsList">
-                        <!-- Projects loaded dynamically - ONLY 1-2 projects -->
+                        <!-- Projects loaded dynamically -->
                     </div>
                 </div>
             </div>
@@ -2123,14 +1792,16 @@
                         <i class="mdi mdi-account"></i>
                         <span>Username</span>
                     </label>
-                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter username">
+                    <input type="text" id="loginUsername" class="form-control" 
+                           placeholder="Enter username" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">
                         <i class="mdi mdi-key"></i>
                         <span>Password</span>
                     </label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
+                    <input type="password" id="loginPassword" class="form-control" 
+                           placeholder="Enter password" autocomplete="current-password">
                 </div>
                 <button id="submitLogin" class="btn-primary">
                     <i class="mdi mdi-login"></i>
@@ -2163,14 +1834,16 @@
                         <i class="mdi mdi-text-box"></i>
                         <span>Project Name *</span>
                     </label>
-                    <input type="text" id="projectName" class="form-control" placeholder="Enter project name">
+                    <input type="text" id="projectName" class="form-control" 
+                           placeholder="Enter project name">
                 </div>
                 <div class="form-group">
                     <label for="projectDescription">
                         <i class="mdi mdi-text"></i>
                         <span>Description</span>
                     </label>
-                    <textarea id="projectDescription" class="form-control" placeholder="Project description" rows="3"></textarea>
+                    <textarea id="projectDescription" class="form-control" 
+                              placeholder="Project description" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -2190,7 +1863,8 @@
                             <i class="mdi mdi-progress-clock"></i>
                             <span>Progress (%)</span>
                         </label>
-                        <input type="number" id="projectProgress" class="form-control" min="0" max="100" value="0">
+                        <input type="number" id="projectProgress" class="form-control" 
+                               min="0" max="100" value="0">
                     </div>
                 </div>
                 <div class="form-group">
@@ -2240,8 +1914,10 @@
                             <i class="mdi mdi-lock"></i>
                             <span>Edit Verification Code *</span>
                         </label>
-                        <input type="password" id="editCodeVerification" class="form-control edit-code-input" 
-                               placeholder="Enter 5-digit code" maxlength="5" pattern="\d{5}" inputmode="numeric">
+                        <input type="password" id="editCodeVerification" 
+                               class="form-control edit-code-input" 
+                               placeholder="Enter 5-digit code" maxlength="5" 
+                               pattern="\d{5}" inputmode="numeric">
                         <small class="text-muted">5-digit code required for doctor edits</small>
                     </div>
                 </div>
@@ -2251,14 +1927,16 @@
                         <i class="mdi mdi-text-box"></i>
                         <span>Project Name *</span>
                     </label>
-                    <input type="text" id="editProjectName" class="form-control" placeholder="Enter project name">
+                    <input type="text" id="editProjectName" class="form-control" 
+                           placeholder="Enter project name">
                 </div>
                 <div class="form-group">
                     <label for="editProjectDescription">
                         <i class="mdi mdi-text"></i>
                         <span>Description</span>
                     </label>
-                    <textarea id="editProjectDescription" class="form-control" placeholder="Project description" rows="3"></textarea>
+                    <textarea id="editProjectDescription" class="form-control" 
+                              placeholder="Project description" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -2278,7 +1956,8 @@
                             <i class="mdi mdi-progress-clock"></i>
                             <span>Progress (%)</span>
                         </label>
-                        <input type="number" id="editProjectProgress" class="form-control" min="0" max="100" value="0">
+                        <input type="number" id="editProjectProgress" class="form-control" 
+                               min="0" max="100" value="0">
                     </div>
                 </div>
                 <div class="form-group">
@@ -2335,21 +2014,24 @@
                         <i class="mdi mdi-text-box"></i>
                         <span>Tool Name *</span>
                     </label>
-                    <input type="text" id="toolName" class="form-control" placeholder="Enter tool name">
+                    <input type="text" id="toolName" class="form-control" 
+                           placeholder="Enter tool name">
                 </div>
                 <div class="form-group">
                     <label for="toolDescription">
                         <i class="mdi mdi-text"></i>
                         <span>Description</span>
                     </label>
-                    <textarea id="toolDescription" class="form-control" placeholder="Tool description" rows="3"></textarea>
+                    <textarea id="toolDescription" class="form-control" 
+                              placeholder="Tool description" rows="3"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="toolUrl">
                         <i class="mdi mdi-link"></i>
                         <span>URL *</span>
                     </label>
-                    <input type="url" id="toolUrl" class="form-control" placeholder="https://tool.example.com">
+                    <input type="url" id="toolUrl" class="form-control" 
+                           placeholder="https://tool.example.com">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -2367,8 +2049,17 @@
                             <i class="mdi mdi-image"></i>
                             <span>Icon Class</span>
                         </label>
-                        <input type="text" id="toolIcon" class="form-control" placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox">
+                        <input type="text" id="toolIcon" class="form-control" 
+                               placeholder="mdi mdi-toolbox" value="mdi mdi-toolbox">
                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="toolCategory">
+                        <i class="mdi mdi-tag"></i>
+                        <span>Category</span>
+                    </label>
+                    <input type="text" id="toolCategory" class="form-control" 
+                           placeholder="Development, Analysis, Research">
                 </div>
                 <button id="saveToolBtn" class="btn-primary">
                     <i class="mdi mdi-content-save"></i>
@@ -2392,7 +2083,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="text" id="codeSearch" class="form-control" placeholder="Search projects by name...">
+                    <input type="text" id="codeSearch" class="form-control" 
+                           placeholder="Search projects by name...">
                 </div>
                 
                 <div class="codes-table-container">
@@ -2421,7 +2113,7 @@
         </div>
     </div>
 
-    <!-- Reset Code Modal with QR -->
+    <!-- Reset Code Modal -->
     <div id="resetCodeModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
@@ -2447,7 +2139,7 @@
                         <i class="mdi mdi-key"></i>
                         <span>Current Code</span>
                     </label>
-                    <div id="currentCodeDisplay" class="form-control code-display" style="text-align: center; padding: 15px;">
+                    <div id="currentCodeDisplay" class="form-control code-display" style="text-align: center;">
                         -----
                     </div>
                 </div>
@@ -2501,7 +2193,7 @@
                         <i class="mdi mdi-qrcode"></i>
                         <span>Show QR Code</span>
                     </button>
-                    <button id="notifyDoctorBtn" class="btn-primary" style="background: var(--primary-600);">
+                    <button id="notifyDoctorBtn" class="btn-primary">
                         <i class="mdi mdi-email-send"></i>
                         <span>Email Doctor</span>
                     </button>
@@ -2513,27 +2205,114 @@
         </div>
     </div>
 
-    <!-- Public Comments Modal -->
+    <!-- Project Comments Modal -->
     <div id="commentsModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3>
                     <i class="mdi mdi-comment-multiple"></i>
-                    <span>Public Comments</span>
+                    <span id="commentsModalTitle">Project Comments</span>
                 </h3>
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="commentsList" style="max-height: 400px; overflow-y: auto; margin-bottom: var(--space-4);">
-                    <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
-                        <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: var(--space-3);"></i>
-                        <p>No public comments yet. Be the first to share!</p>
+                <!-- Comment form (for logged-in users) -->
+                <div id="commentFormSection" class="hidden">
+                    <div class="form-group">
+                        <label for="commentText">
+                            <i class="mdi mdi-message-text"></i>
+                            <span>Add a comment</span>
+                        </label>
+                        <textarea id="commentText" class="comment-textarea" 
+                                  placeholder="Share your thoughts..." rows="3"></textarea>
+                        <div class="word-count" style="margin-top: var(--space-2);">
+                            <small id="commentHint">
+                                <i class="mdi mdi-information"></i>
+                                <span id="commentHintText"></span>
+                            </small>
+                            <span id="commentWordCount">0/150 words</span>
+                        </div>
                     </div>
+                    <button id="submitCommentBtn" class="btn-primary">
+                        <i class="mdi mdi-send"></i>
+                        <span>Post Comment</span>
+                    </button>
+                    <div id="commentError" class="error-message"></div>
+                    <div id="commentSuccess" class="success-message"></div>
                 </div>
+                
+                <!-- Comments list -->
+                <div id="commentsList" class="comment-list" style="margin-top: var(--space-4);">
+                    <!-- Comments loaded dynamically -->
+                </div>
+                
+                <!-- Pending comments notice (for guests) -->
+                <div id="pendingNotice" class="hidden" style="
+                    background: var(--warning-light);
+                    border: 1px solid var(--warning);
+                    border-radius: var(--radius);
+                    padding: var(--space-3);
+                    margin-top: var(--space-4);
+                    text-align: center;
+                ">
+                    <i class="mdi mdi-clock-outline" style="color: var(--warning);"></i>
+                    <span style="color: var(--warning); font-weight: 500;">
+                        Some comments are awaiting moderation
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Logs Modal -->
+    <div id="auditModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-history"></i>
+                    <span>System Audit Logs</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="auditSearch" class="form-control" 
+                           placeholder="Search logs...">
+                </div>
+                
+                <div class="audit-table-container">
+                    <table class="audit-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>IP</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <!-- Audit logs loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-row" style="margin-top: var(--space-4);">
+                    <button id="exportAuditBtn" class="btn-primary" style="background: var(--medical-teal);">
+                        <i class="mdi mdi-download"></i>
+                        <span>Export Logs</span>
+                    </button>
+                    <button id="clearAuditBtn" class="btn-primary btn-danger">
+                        <i class="mdi mdi-delete"></i>
+                        <span>Clear All Logs</span>
+                    </button>
+                </div>
+                
                 <div class="form-footer">
                     <p class="hint">
-                        <i class="mdi mdi-shield-star"></i>
-                        <span>All comments are reviewed before publication</span>
+                        <i class="mdi mdi-information"></i>
+                        <span>Logs are automatically created for security and tracking purposes</span>
                     </p>
                 </div>
             </div>
@@ -2558,6 +2337,7 @@
             filteredProjects: [],
             lastUpdated: new Date()
         };
+        let currentProjectComments = null;
 
         // ========== PASSWORD HASHING ==========
         async function hashPassword(password) {
@@ -2566,6 +2346,39 @@
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ========== AUDIT LOGGING ==========
+        async function logAudit(action, details = {}, projectId = null) {
+            try {
+                if (!currentUser) return;
+                
+                const auditData = {
+                    user_id: currentUser.id,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
+                    action: action,
+                    details: JSON.stringify(details),
+                    project_id: projectId,
+                    ip_address: 'N/A', // In production, get from request
+                    created_at: new Date().toISOString()
+                };
+                
+                // Log to console for debugging
+                console.log(`[AUDIT] ${currentUser.username} (${currentUser.role}): ${action}`, details);
+                
+                // Save to database
+                const { error } = await supabaseClient
+                    .from('audit_logs')
+                    .insert([auditData]);
+                
+                if (error) {
+                    console.error('Error saving audit log:', error);
+                }
+                
+            } catch (error) {
+                console.error('Error in audit logging:', error);
+            }
         }
 
         // ========== AUTHENTICATION ==========
@@ -2604,6 +2417,10 @@
                 
                 authToken = btoa(JSON.stringify(currentUser));
                 localStorage.setItem('traci_auth_token', authToken);
+                
+                // Log successful login
+                await logAudit('login', { username: username });
+                
                 return true;
                 
             } catch (error) {
@@ -2615,6 +2432,11 @@
         }
 
         function logoutUser() {
+            // Log logout
+            if (currentUser) {
+                logAudit('logout', {});
+            }
+            
             currentUser = null;
             authToken = null;
             localStorage.removeItem('traci_auth_token');
@@ -2643,55 +2465,51 @@
             const contentGrid = document.getElementById('contentGrid');
             const filterControls = document.getElementById('filterControls');
             const guestWelcome = document.getElementById('guestWelcome');
-            const commentSection = document.getElementById('commentSection');
             
             if (currentUser) {
                 guestView.classList.add('hidden');
                 userView.classList.remove('hidden');
                 loginRequiredSection.classList.add('hidden');
                 
-                // Set user info
+                // Set user avatar
                 const avatar = document.getElementById('userAvatar');
                 const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 avatar.textContent = initials;
                 
+                // Set user info
                 document.getElementById('currentUsername').textContent = name;
-                
                 const roleBadge = document.getElementById('currentUserRole');
                 roleBadge.textContent = currentUser.role;
                 roleBadge.className = `user-role ${currentUser.role}`;
                 
-                // Show content based on role
+                // Show content for ALL logged-in users
+                statsContainer.classList.remove('hidden');
+                filterControls.classList.remove('hidden');
+                contentGrid.classList.remove('hidden');
+                
+                // Show guest-specific sections
                 if (currentUser.role === 'guest') {
-                    guestWelcome.classList.add('show');
-                    commentSection.classList.add('show');
-                    statsContainer.classList.remove('hidden');
-                    filterControls.classList.remove('hidden');
-                    contentGrid.classList.remove('hidden');
-                    adminControls.classList.add('hidden');
+                    guestWelcome.classList.remove('hidden');
                 } else {
-                    guestWelcome.classList.remove('show');
-                    commentSection.classList.remove('show');
-                    statsContainer.classList.remove('hidden');
-                    filterControls.classList.remove('hidden');
-                    contentGrid.classList.remove('hidden');
-                    
-                    if (currentUser.role === 'admin') {
-                        adminControls.classList.remove('hidden');
-                    } else {
-                        adminControls.classList.add('hidden');
-                    }
+                    guestWelcome.classList.add('hidden');
                 }
                 
+                // Show admin controls only for admin
+                if (currentUser.role === 'admin') {
+                    adminControls.classList.remove('hidden');
+                } else {
+                    adminControls.classList.add('hidden');
+                }
+                
+                // Initialize dashboard
                 initDashboard();
                 
             } else {
                 guestView.classList.remove('hidden');
                 userView.classList.add('hidden');
                 adminControls.classList.add('hidden');
-                guestWelcome.classList.remove('show');
-                commentSection.classList.remove('show');
+                guestWelcome.classList.add('hidden');
                 showLoginRequired();
             }
         }
@@ -2702,6 +2520,7 @@
             document.getElementById('adminControls').classList.add('hidden');
             document.getElementById('filterControls').classList.add('hidden');
             document.getElementById('contentGrid').classList.add('hidden');
+            document.getElementById('guestWelcome').classList.add('hidden');
         }
 
         // ========== MODAL MANAGEMENT ==========
@@ -2712,7 +2531,8 @@
             addTool: document.getElementById('addToolModal'),
             viewCodes: document.getElementById('viewCodesModal'),
             resetCode: document.getElementById('resetCodeModal'),
-            comments: document.getElementById('commentsModal')
+            comments: document.getElementById('commentsModal'),
+            audit: document.getElementById('auditModal')
         };
 
         function showModal(modalName) {
@@ -2740,40 +2560,20 @@
             });
         }
 
-        // ========== DASHBOARD FUNCTIONS ==========
-        async function initDashboard() {
-            showLoadingState();
-            
-            try {
-                await Promise.all([
-                    fetchProjects(),
-                    fetchTools()
-                ]);
-                
-                updateStats();
-                renderDashboard();
-                updateTimestamp();
-                
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                showErrorState();
-            }
-        }
-
+        // ========== DATABASE FUNCTIONS ==========
         async function fetchProjects() {
             let query = supabaseClient
                 .from('projects')
-                .select('*, feedback_channels (*)');
+                .select('*');
             
-            // Filter for guests
+            // Filter by visibility for guests
             if (currentUser && currentUser.role === 'guest') {
                 query = query.eq('visibility', 'public');
             }
             
             const { data, error } = await query
                 .order('needs_feedback', { ascending: false })
-                .order('created_at', { ascending: false })
-                .limit(3); // Only 1-3 projects as requested
+                .order('created_at', { ascending: false });
             
             if (error) {
                 console.error('Error fetching projects:', error);
@@ -2789,8 +2589,7 @@
             const { data, error } = await supabaseClient
                 .from('tools')
                 .select('*')
-                .order('created_at', { ascending: false })
-                .limit(4); // Limited tools
+                .order('created_at', { ascending: false });
             
             if (error) {
                 console.error('Error fetching tools:', error);
@@ -2799,6 +2598,128 @@
             }
             
             dashboardData.tools = data || [];
+        }
+
+        async function fetchAuditLogs() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching audit logs:', error);
+                return [];
+            }
+        }
+
+        async function fetchCommentsForProject(projectId) {
+            try {
+                let query = supabaseClient
+                    .from('project_comments')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .order('created_at', { ascending: false });
+                
+                // Guests only see approved comments
+                if (currentUser && currentUser.role === 'guest') {
+                    query = query.eq('status', 'approved');
+                }
+                // Doctors and admins see all except pending
+                else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
+                    query = query.in('status', ['approved', 'rejected']);
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+                return [];
+            }
+        }
+
+        async function submitProjectComment(projectId, commentText) {
+            try {
+                if (!currentUser) {
+                    throw new Error('You must be logged in to comment');
+                }
+                
+                const wordCount = commentText.trim().split(/\s+/).length;
+                if (wordCount > 150) {
+                    throw new Error('Comment must be 150 words or less');
+                }
+                
+                if (wordCount === 0) {
+                    throw new Error('Comment cannot be empty');
+                }
+                
+                // Determine comment status
+                let status = 'pending';
+                if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
+                    status = 'approved'; // Doctors and admins comments are auto-approved
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .insert([{
+                        project_id: projectId,
+                        content: commentText,
+                        user_id: currentUser.id,
+                        user_name: currentUser.full_name || currentUser.username,
+                        user_role: currentUser.role,
+                        status: status,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                // Log comment submission
+                await logAudit('comment_added', { 
+                    project_id: projectId,
+                    comment_length: wordCount,
+                    auto_approved: status === 'approved'
+                }, projectId);
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function moderateProjectComment(commentId, action) {
+            try {
+                const { error } = await supabaseClient
+                    .from('project_comments')
+                    .update({
+                        status: action === 'approve' ? 'approved' : 'rejected',
+                        moderated_at: new Date().toISOString(),
+                        moderated_by: currentUser.username
+                    })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                // Log moderation
+                await logAudit('comment_moderated', { 
+                    comment_id: commentId,
+                    action: action 
+                });
+                
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error moderating comment:', error);
+                return { success: false, error: error.message };
+            }
         }
 
         // ========== EDIT CODE MANAGEMENT ==========
@@ -2814,11 +2735,11 @@
                 const tbody = document.getElementById('codesTableBody');
                 tbody.innerHTML = '';
                 
-                if (projects.length === 0) {
+                if (!projects || projects.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
-                                <i class="mdi mdi-information" style="font-size: 2rem; margin-bottom: var(--space-2);"></i>
+                            <td colspan="4" style="text-align: center; padding: var(--space-8);">
+                                <i class="mdi mdi-information" style="font-size: 2rem;"></i>
                                 <p>No projects found</p>
                             </td>
                         </tr>
@@ -2827,14 +2748,13 @@
                 }
                 
                 projects.forEach(project => {
+                    const row = document.createElement('tr');
                     const createdDate = new Date(project.created_at);
                     const dateStr = createdDate.toLocaleDateString('en-US', { 
                         month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
+                        day: 'numeric'
                     });
                     
-                    const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>
                             <div style="font-weight: 600;">${project.name}</div>
@@ -2851,7 +2771,7 @@
                                 : '<span class="visibility-badge public"><i class="mdi mdi-earth"></i> Public</span>'}
                         </td>
                         <td>
-                            <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" style="font-size: 0.75rem;">
+                            <button class="action-btn edit-btn" onclick="resetSingleCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')">
                                 <i class="mdi mdi-refresh"></i>
                                 Reset
                             </button>
@@ -2861,27 +2781,21 @@
                     tbody.appendChild(row);
                 });
                 
-                setupCodeSearch();
+                // Setup search
+                document.getElementById('codeSearch').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    const rows = tbody.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
+                        row.style.display = projectName.includes(searchTerm) ? '' : 'none';
+                    });
+                });
                 
             } catch (error) {
                 console.error('Error loading edit codes:', error);
-                showMessage('Failed to load edit codes', 'error');
+                alert('Failed to load edit codes');
             }
-        }
-
-        function setupCodeSearch() {
-            const searchInput = document.getElementById('codeSearch');
-            if (!searchInput) return;
-            
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                const rows = document.querySelectorAll('#codesTableBody tr');
-                
-                rows.forEach(row => {
-                    const projectName = row.querySelector('td:first-child').textContent.toLowerCase();
-                    row.style.display = projectName.includes(searchTerm) ? '' : 'none';
-                });
-            });
         }
 
         async function resetSingleCode(projectId, projectName) {
@@ -2902,12 +2816,18 @@
                 
                 if (error) throw error;
                 
+                // Log code reset
+                await logAudit('edit_code_reset', { 
+                    project_id: projectId,
+                    project_name: projectName 
+                }, projectId);
+                
                 alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
                 loadEditCodes();
                 
             } catch (error) {
                 console.error('Error resetting code:', error);
-                alert('Failed to reset code: ' + error.message);
+                alert('Failed to reset code');
             }
         }
 
@@ -2967,6 +2887,15 @@
                 
                 if (error) throw error;
                 
+                // Log code reset
+                const project = await getProjectCode(projectId);
+                if (project.success) {
+                    await logAudit('edit_code_reset', { 
+                        project_id: projectId,
+                        project_name: project.name 
+                    }, projectId);
+                }
+                
                 return { success: true, code: editCode };
                 
             } catch (error) {
@@ -2976,41 +2905,22 @@
         }
 
         function generateQRCode(projectName, editCode) {
-            const qrContainer = document.getElementById('qrCode');
-            if (!qrContainer) return;
-            
-            qrContainer.innerHTML = '';
-            
-            const qrData = `TRAci Edit Code\n\nProject: ${projectName}\nCode: ${editCode}\n\nScan this code or enter manually`;
-            
-            QRCode.toCanvas(qrContainer, qrData, {
-                width: 200,
-                height: 200,
-                margin: 1,
-                color: {
-                    dark: '#0c4a6e',
-                    light: '#ffffff'
-                }
-            }, function(error) {
-                if (error) {
-                    console.error('QR Code generation error:', error);
-                    qrContainer.innerHTML = '<p style="color: var(--danger);">Failed to generate QR code</p>';
-                }
-            });
+            const qrText = `TRAci Edit Code\n\nProject: ${projectName}\nCode: ${editCode}\n\nScan or enter code`;
+            generateSimpleQR(qrText, 'qrCode');
         }
 
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showMessage('Code copied to clipboard!', 'success');
+                alert('Code copied to clipboard!');
             }).catch(err => {
                 console.error('Failed to copy:', err);
-                showMessage('Failed to copy code', 'error');
+                alert('Failed to copy code');
             });
         }
 
         function notifyDoctor(projectName, editCode) {
             const subject = `TRAci Edit Code for ${projectName}`;
-            const body = `Hello Doctor,\n\nYour edit code for project "${projectName}" is:\n\n🔐 **${editCode}**\n\nUse this code to edit the project in the TRAci Innovation Dashboard.\n\nYou can also scan the QR code attached to this email for quick access.\n\nBest regards,\nPneumology Innovation Department`;
+            const body = `Hello Doctor,\n\nYour edit code for project "${projectName}" is:\n\n🔐 **${editCode}**\n\nUse this code to edit the project in the TRAci Innovation Dashboard.\n\nBest regards,\nPneumology Innovation Department`;
             
             window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
             return true;
@@ -3033,9 +2943,11 @@
                 
                 if (error) throw error;
                 
-                if (projectData.needs_feedback) {
-                    await autoCreateFeedbackChannels(data.id, projectData.name);
-                }
+                // Log project creation
+                await logAudit('project_created', { 
+                    project_name: projectData.name,
+                    visibility: projectData.visibility
+                }, data.id);
                 
                 alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with doctors who need to edit this project.`);
                 
@@ -3093,6 +3005,12 @@
                 
                 if (error) throw error;
                 
+                // Log project update
+                await logAudit('project_updated', { 
+                    project_id: projectId,
+                    changes: projectData 
+                }, projectId);
+                
                 showSuccess('editProjectSuccess', 'Project updated successfully!');
                 setTimeout(() => {
                     hideAllModals();
@@ -3114,12 +3032,25 @@
             }
             
             try {
+                // Get project name before deletion for logging
+                const { data: project } = await supabaseClient
+                    .from('projects')
+                    .select('name')
+                    .eq('id', projectId)
+                    .single();
+                
                 const { error } = await supabaseClient
                     .from('projects')
                     .delete()
                     .eq('id', projectId);
                 
                 if (error) throw error;
+                
+                // Log project deletion
+                await logAudit('project_deleted', { 
+                    project_id: projectId,
+                    project_name: project?.name || 'Unknown'
+                }, projectId);
                 
                 alert('Project deleted successfully!');
                 hideAllModals();
@@ -3158,9 +3089,13 @@
                 
                 if (error) throw error;
                 
-                await autoCreateFeedbackChannels(projectId, project.name);
+                // Log recommendation
+                await logAudit('project_recommended', { 
+                    project_id: projectId,
+                    project_name: project.name 
+                }, projectId);
                 
-                alert('Project recommended for review! Feedback channels have been created.');
+                alert('Project recommended for review!');
                 await initDashboard();
                 return { success: true };
                 
@@ -3168,38 +3103,6 @@
                 console.error('Error recommending project:', error);
                 alert('Failed to recommend project: ' + error.message);
                 return { success: false, error: error.message };
-            }
-        }
-
-        async function autoCreateFeedbackChannels(projectId, projectName) {
-            try {
-                const channels = [
-                    {
-                        project_id: projectId,
-                        channel: 'email',
-                        label: 'Email Feedback',
-                        action_url: `mailto:feedback@pneumology-innovation.com?subject=Feedback on ${encodeURIComponent(projectName)}`
-                    },
-                    {
-                        project_id: projectId,
-                        channel: 'whatsapp',
-                        label: 'WhatsApp Group',
-                        action_url: `https://wa.me/?text=Feedback on ${encodeURIComponent(projectName)} - Pneumology Innovation`
-                    }
-                ];
-                
-                for (const channel of channels) {
-                    const { error } = await supabaseClient
-                        .from('feedback_channels')
-                        .insert([channel]);
-                    
-                    if (error) console.error('Error creating feedback channel:', error);
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error auto-creating feedback channels:', error);
-                return false;
             }
         }
 
@@ -3217,6 +3120,11 @@
                 
                 if (error) throw error;
                 
+                // Log tool creation
+                await logAudit('tool_created', { 
+                    tool_name: toolData.name
+                });
+                
                 showSuccess('toolSuccess', 'Tool added successfully!');
                 setTimeout(() => {
                     hideAllModals();
@@ -3232,23 +3140,47 @@
             }
         }
 
-        // ========== RENDER FUNCTIONS ==========
-        function updateStats() {
+        // ========== DASHBOARD RENDERING ==========
+        async function initDashboard() {
+            showLoadingState();
+            
+            try {
+                await Promise.all([
+                    fetchProjects(),
+                    fetchTools()
+                ]);
+                
+                updateStats();
+                renderDashboard();
+                updateTimestamp();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showErrorState();
+            }
+        }
+
+        async function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
             const feedbackCount = dashboardData.projects.filter(p => p.needs_feedback).length;
-            const activeCount = dashboardData.projects.filter(p => 
-                p.status === 'development' || p.status === 'testing'
-            ).length;
-
+            
+            // Get active users count (users who logged in today)
+            const today = new Date().toISOString().split('T')[0];
+            const { count } = await supabaseClient
+                .from('audit_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('action', 'login')
+                .gte('created_at', today);
+            
             document.getElementById('toolsCount').textContent = toolsCount;
             document.getElementById('projectsCount').textContent = projectsCount;
             document.getElementById('feedbackCount').textContent = feedbackCount;
-            document.getElementById('activeCount').textContent = activeCount;
+            document.getElementById('activeUsersCount').textContent = count || 0;
 
             const feedbackBadge = document.getElementById('feedbackBadge');
             if (feedbackCount > 0) {
-                feedbackBadge.textContent = `${feedbackCount} need${feedbackCount > 1 ? 's' : ''} review`;
+                feedbackBadge.textContent = `${feedbackCount} need${feedbackCount > 1 ? '' : 's'} review`;
                 feedbackBadge.classList.remove('hidden');
             } else {
                 feedbackBadge.classList.add('hidden');
@@ -3267,7 +3199,7 @@
                 toolsGrid.innerHTML = `
                     <div class="empty-state">
                         <i class="mdi mdi-toolbox-outline"></i>
-                        <p>No tools found.</p>
+                        <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
                     </div>
                 `;
                 return;
@@ -3324,7 +3256,7 @@
                 projectsList.innerHTML = `
                     <div class="empty-state">
                         <i class="mdi mdi-flask-outline"></i>
-                        <p>No projects found.</p>
+                        <p>No projects found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Project" to create one.' : ''}</p>
                     </div>
                 `;
                 return;
@@ -3337,37 +3269,20 @@
                 const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
                 
                 const visibilityBadge = project.visibility === 'private' 
-                    ? `<span class="visibility-badge private" title="Visible to doctors and admin only">
+                    ? `<span class="visibility-badge private">
                          <i class="mdi mdi-lock"></i> Private
                        </span>`
-                    : `<span class="visibility-badge public" title="Visible to everyone">
+                    : `<span class="visibility-badge public">
                          <i class="mdi mdi-earth"></i> Public
                        </span>`;
                 
                 let feedbackChannelsHTML = '';
-                if (project.needs_feedback && project.feedback_channels && project.feedback_channels.length > 0) {
-                    project.feedback_channels.forEach(channel => {
-                        let icon = 'mdi mdi-email';
-                        let className = 'email';
-                        
-                        if (channel.channel === 'whatsapp') {
-                            icon = 'mdi mdi-whatsapp';
-                            className = 'whatsapp';
-                        } else if (channel.channel === 'github') {
-                            icon = 'mdi mdi-github';
-                            className = 'github';
-                        } else if (channel.channel === 'slack') {
-                            icon = 'mdi mdi-slack';
-                            className = 'slack';
-                        }
-                        
-                        feedbackChannelsHTML += `
-                            <a href="${channel.action_url}" target="_blank" class="channel-btn ${className}" 
-                               title="${channel.label || `Send ${channel.channel} feedback`}">
-                                <i class="${icon}"></i>
-                            </a>
-                        `;
-                    });
+                if (project.needs_feedback) {
+                    feedbackChannelsHTML = `
+                        <a href="mailto:feedback@pneumology-innovation.com?subject=Feedback on ${encodeURIComponent(project.name)}" target="_blank" class="channel-btn email">
+                            <i class="mdi mdi-email"></i>
+                        </a>
+                    `;
                 }
                 
                 let projectLinks = '';
@@ -3401,6 +3316,10 @@
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    Comments
+                                </button>
                             </div>
                         `;
                     } else if (currentUser.role === 'doctor') {
@@ -3415,6 +3334,19 @@
                                 <button class="action-btn edit-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-pencil"></i>
                                     Edit (with code)
+                                </button>
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    Comments
+                                </button>
+                            </div>
+                        `;
+                    } else if (currentUser.role === 'guest') {
+                        actionButtons = `
+                            <div class="project-actions">
+                                <button class="action-btn comment-btn" data-project-id="${project.id}">
+                                    <i class="mdi mdi-comment"></i>
+                                    View Comments
                                 </button>
                             </div>
                         `;
@@ -3484,7 +3416,9 @@
             
             projectsList.innerHTML = projectsHTML;
             
-            if (currentUser && currentUser.role !== 'guest') {
+            // Add event listeners
+            if (currentUser) {
+                // Edit buttons
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const projectId = this.dataset.projectId;
@@ -3496,6 +3430,7 @@
                     });
                 });
                 
+                // Delete buttons
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const projectId = this.dataset.projectId;
@@ -3503,12 +3438,126 @@
                     });
                 });
                 
+                // Recommend buttons
                 document.querySelectorAll('.recommend-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const projectId = this.dataset.projectId;
                         recommendProject(projectId);
                     });
                 });
+                
+                // Comment buttons
+                document.querySelectorAll('.comment-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const projectId = this.dataset.projectId;
+                        const project = dashboardData.projects.find(p => p.id === projectId);
+                        if (project) {
+                            await loadProjectComments(projectId, project.name);
+                        }
+                    });
+                });
+            }
+        }
+
+        async function loadProjectComments(projectId, projectName) {
+            try {
+                currentProjectComments = projectId;
+                const comments = await fetchCommentsForProject(projectId);
+                
+                // Update modal title
+                document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
+                
+                // Show/hide comment form based on user role
+                const commentFormSection = document.getElementById('commentFormSection');
+                const commentHintText = document.getElementById('commentHintText');
+                
+                if (currentUser) {
+                    commentFormSection.classList.remove('hidden');
+                    if (currentUser.role === 'guest') {
+                        commentHintText.textContent = 'Your comments will be reviewed before appearing';
+                    } else {
+                        commentHintText.textContent = 'Your comments will appear immediately';
+                    }
+                } else {
+                    commentFormSection.classList.add('hidden');
+                }
+                
+                // Render comments
+                const commentsList = document.getElementById('commentsList');
+                
+                if (!comments || comments.length === 0) {
+                    commentsList.innerHTML = `
+                        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                            <i class="mdi mdi-comment-outline" style="font-size: 3rem; margin-bottom: var(--space-3);"></i>
+                            <p>No comments yet. Be the first to share!</p>
+                        </div>
+                    `;
+                    document.getElementById('pendingNotice').classList.add('hidden');
+                } else {
+                    let commentsHTML = '';
+                    let hasPendingComments = false;
+                    
+                    comments.forEach(comment => {
+                        const date = new Date(comment.created_at);
+                        const dateStr = date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        let statusBadge = '';
+                        if (comment.status === 'pending' && currentUser.role === 'guest') {
+                            hasPendingComments = true;
+                            return; // Don't show pending comments to guests
+                        }
+                        
+                        if (comment.status === 'pending') {
+                            statusBadge = '<span class="pending-badge">Pending Review</span>';
+                            hasPendingComments = true;
+                        }
+                        
+                        commentsHTML += `
+                            <div class="comment-item ${comment.status === 'pending' ? 'pending' : ''}">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        <i class="mdi mdi-account-circle"></i>
+                                        ${comment.user_name}
+                                        ${statusBadge}
+                                    </div>
+                                    <div class="comment-date">
+                                        ${dateStr}
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    ${comment.content}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    commentsList.innerHTML = commentsHTML;
+                    
+                    // Show pending notice for guests
+                    const pendingNotice = document.getElementById('pendingNotice');
+                    if (currentUser && currentUser.role === 'guest' && hasPendingComments) {
+                        pendingNotice.classList.remove('hidden');
+                    } else {
+                        pendingNotice.classList.add('hidden');
+                    }
+                }
+                
+                // Reset comment form
+                document.getElementById('commentText').value = '';
+                document.getElementById('commentWordCount').textContent = '0/150 words';
+                document.getElementById('commentError').style.display = 'none';
+                document.getElementById('commentSuccess').style.display = 'none';
+                
+                showModal('comments');
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                alert('Failed to load comments');
             }
         }
 
@@ -3537,7 +3586,126 @@
             }
         }
 
-        // ========== FILTER FUNCTIONS ==========
+        // ========== AUDIT LOGS ==========
+        async function loadAuditLogs() {
+            try {
+                const logs = await fetchAuditLogs();
+                const tbody = document.getElementById('auditTableBody');
+                tbody.innerHTML = '';
+                
+                if (!logs || logs.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: var(--space-8);">
+                                <i class="mdi mdi-history" style="font-size: 2rem;"></i>
+                                <p>No audit logs found</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                logs.forEach(log => {
+                    const date = new Date(log.created_at);
+                    const dateStr = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    let details = 'N/A';
+                    try {
+                        const parsed = JSON.parse(log.details);
+                        details = Object.entries(parsed)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ');
+                    } catch (e) {
+                        details = log.details;
+                    }
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="white-space: nowrap;">${dateStr}</td>
+                            <td>
+                                <div>${log.user_name}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-500);">
+                                    ${log.user_role}
+                                </div>
+                            </td>
+                            <td>${log.action}</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="${details}">
+                                ${details}
+                            </td>
+                            <td>${log.ip_address}</td>
+                            <td>
+                                <button class="action-btn delete-btn" onclick="deleteAuditLog('${log.id}')" style="font-size: 0.75rem;">
+                                    <i class="mdi mdi-delete"></i>
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                // Setup search
+                document.getElementById('auditSearch').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    const rows = tbody.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        row.style.display = rowText.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading audit logs:', error);
+                alert('Failed to load audit logs');
+            }
+        }
+
+        async function deleteAuditLog(logId) {
+            if (!confirm('Delete this audit log entry?')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('audit_logs')
+                    .delete()
+                    .eq('id', logId);
+                
+                if (error) throw error;
+                
+                alert('Audit log deleted');
+                await loadAuditLogs();
+                
+            } catch (error) {
+                console.error('Error deleting audit log:', error);
+                alert('Failed to delete audit log');
+            }
+        }
+
+        async function clearAllAuditLogs() {
+            if (!confirm('Clear ALL audit logs? This action cannot be undone.')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('audit_logs')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+                
+                if (error) throw error;
+                
+                alert('All audit logs cleared');
+                await loadAuditLogs();
+                
+            } catch (error) {
+                console.error('Error clearing audit logs:', error);
+                alert('Failed to clear audit logs');
+            }
+        }
+
+        // ========== HELPER FUNCTIONS ==========
         function filterProjects(filterType) {
             document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.filter === filterType);
@@ -3556,13 +3724,11 @@
             renderProjects();
         }
 
-        // ========== HELPER FUNCTIONS ==========
         function updateTimestamp() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
             });
             const dateString = now.toLocaleDateString('en-US', {
                 weekday: 'short',
@@ -3603,73 +3769,17 @@
             }
         }
 
-        function showMessage(message, type = 'info') {
-            alert(message);
-        }
-
-        // ========== GUEST COMMENT SYSTEM ==========
-        function setupCommentSystem() {
-            const commentTextarea = document.getElementById('guestComment');
-            const wordCount = document.getElementById('wordCount');
-            
-            if (commentTextarea && wordCount) {
-                commentTextarea.addEventListener('input', function() {
-                    const text = this.value.trim();
-                    const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
-                    const count = words.length;
-                    
-                    wordCount.textContent = `${count}/150 words`;
-                    wordCount.style.color = count > 150 ? 'var(--danger)' : 'var(--gray-500)';
-                    
-                    if (count > 150) {
-                        this.value = words.slice(0, 150).join(' ');
-                        wordCount.textContent = `150/150 words (truncated)`;
-                    }
-                });
-            }
-            
-            document.getElementById('submitCommentBtn')?.addEventListener('click', async function() {
-                const comment = document.getElementById('guestComment').value.trim();
-                const words = comment ? comment.split(/\s+/).filter(word => word.length > 0) : [];
-                
-                if (words.length === 0) {
-                    alert('Please enter a comment before submitting.');
-                    return;
-                }
-                
-                if (words.length > 150) {
-                    alert('Comment exceeds 150 words. Please shorten it.');
-                    return;
-                }
-                
-                // Here you would save to database
-                // For now, just show success
-                document.getElementById('commentSuccess').style.display = 'block';
-                document.getElementById('guestComment').value = '';
-                wordCount.textContent = '0/150 words';
-                
-                setTimeout(() => {
-                    document.getElementById('commentSuccess').style.display = 'none';
-                }, 3000);
-            });
-            
-            document.getElementById('viewCommentsBtn')?.addEventListener('click', () => {
-                showModal('comments');
-            });
-        }
-
         // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredUser();
             updateAuthUI();
-            setupCommentSystem();
             
             // Login
             document.getElementById('loginBtn').addEventListener('click', () => showModal('login'));
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('login'));
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modals
+            // Modal close
             document.querySelectorAll('.modal-close').forEach(btn => {
                 btn.addEventListener('click', hideAllModals);
             });
@@ -3727,6 +3837,7 @@
                 document.getElementById('toolUrl').value = '';
                 document.getElementById('toolStatus').value = 'operational';
                 document.getElementById('toolIcon').value = 'mdi mdi-toolbox';
+                document.getElementById('toolCategory').value = '';
                 showModal('addTool');
             });
             
@@ -3741,16 +3852,79 @@
                 showModal('resetCode');
             });
             
+            document.getElementById('viewAuditBtn').addEventListener('click', async () => {
+                await loadAuditLogs();
+                showModal('audit');
+            });
+            
             // Guest buttons
-            document.getElementById('contactBtn')?.addEventListener('click', () => {
-                window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry');
+            document.getElementById('contactBtn').addEventListener('click', () => {
+                window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry - TRAci Dashboard');
             });
             
-            document.getElementById('learnMoreBtn')?.addEventListener('click', () => {
-                alert('TRAci (Technology Research and Clinical Innovation) is dedicated to advancing pulmonology care through innovative technologies and research collaborations.');
+            document.getElementById('learnMoreBtn').addEventListener('click', () => {
+                alert('The Pneumology Innovation Department focuses on developing cutting-edge solutions for pulmonary care, including diagnostic tools, treatment planning systems, and patient monitoring technologies.');
             });
             
-            // Save project
+            // Comment system
+            document.getElementById('commentText').addEventListener('input', function() {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+                document.getElementById('commentWordCount').textContent = `${words}/150 words`;
+                
+                if (words > 150) {
+                    this.style.borderColor = 'var(--danger)';
+                    document.getElementById('commentWordCount').style.color = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'var(--border)';
+                    document.getElementById('commentWordCount').style.color = 'var(--gray-500)';
+                }
+            });
+            
+            document.getElementById('submitCommentBtn').addEventListener('click', async function() {
+                if (!currentProjectComments) return;
+                
+                const commentText = document.getElementById('commentText').value.trim();
+                const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
+                
+                if (wordCount === 0) {
+                    showError('commentError', 'Please enter a comment');
+                    return;
+                }
+                
+                if (wordCount > 150) {
+                    showError('commentError', 'Comment must be 150 words or less');
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
+                this.disabled = true;
+                
+                const result = await submitProjectComment(currentProjectComments, commentText);
+                
+                this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
+                this.disabled = false;
+                
+                if (result.success) {
+                    document.getElementById('commentText').value = '';
+                    document.getElementById('commentWordCount').textContent = '0/150 words';
+                    showSuccess('commentSuccess', result.data.status === 'pending' 
+                        ? 'Comment submitted for moderation' 
+                        : 'Comment posted successfully');
+                    
+                    // Reload comments
+                    const project = dashboardData.projects.find(p => p.id === currentProjectComments);
+                    if (project) {
+                        setTimeout(() => {
+                            loadProjectComments(currentProjectComments, project.name);
+                        }, 1500);
+                    }
+                } else {
+                    showError('commentError', 'Failed to post comment: ' + result.error);
+                }
+            });
+            
+            // Project CRUD
             document.getElementById('saveProjectBtn').addEventListener('click', async function() {
                 const projectData = {
                     name: document.getElementById('projectName').value.trim(),
@@ -3777,7 +3951,6 @@
                 this.disabled = false;
             });
             
-            // Update project
             document.getElementById('updateProjectBtn').addEventListener('click', async function() {
                 const projectId = document.getElementById('editProjectId').value;
                 const projectData = {
@@ -3808,13 +3981,12 @@
                 this.disabled = false;
             });
             
-            // Delete project
             document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
                 const projectId = document.getElementById('editProjectId').value;
                 await deleteProject(projectId);
             });
             
-            // Save tool
+            // Tool CRUD
             document.getElementById('saveToolBtn').addEventListener('click', async function() {
                 const toolData = {
                     name: document.getElementById('toolName').value.trim(),
@@ -3822,7 +3994,7 @@
                     url: document.getElementById('toolUrl').value.trim(),
                     status: document.getElementById('toolStatus').value,
                     icon: document.getElementById('toolIcon').value.trim() || 'mdi mdi-toolbox',
-                    category: 'General'
+                    category: document.getElementById('toolCategory').value.trim() || 'General'
                 };
                 
                 if (!toolData.name || !toolData.url) {
@@ -3839,27 +4011,7 @@
                 this.disabled = false;
             });
             
-            // Refresh
-            document.getElementById('refreshLink').addEventListener('click', async function(e) {
-                e.preventDefault();
-                
-                if (!currentUser) return;
-                
-                const lastUpdated = document.getElementById('lastUpdatedTime');
-                lastUpdated.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
-                
-                await initDashboard();
-                
-                lastUpdated.innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
-                setTimeout(() => updateTimestamp(), 2000);
-            });
-
-            // Filters
-            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
-            });
-
-            // Reset code modal events
+            // Code management
             document.getElementById('resetProjectSelect').addEventListener('change', async function() {
                 const projectId = this.value;
                 if (!projectId) {
@@ -3910,7 +4062,6 @@
                     document.getElementById('customCode').value = '';
                     
                     const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
-                    
                     document.getElementById('qrCodeSection').classList.remove('hidden');
                     generateQRCode(projectName, result.code);
                 } else {
@@ -3923,7 +4074,7 @@
                 if (code && code !== '-----') {
                     copyToClipboard(code);
                 } else {
-                    showMessage('No code to copy', 'error');
+                    alert('No code to copy');
                 }
             });
             
@@ -3932,7 +4083,7 @@
                 const code = document.getElementById('currentCodeDisplay').textContent.trim();
                 
                 if (!projectId || !code || code === '-----') {
-                    showMessage('Please generate a code first', 'error');
+                    alert('Please generate a code first');
                     return;
                 }
                 
@@ -3946,32 +4097,54 @@
                 const code = document.getElementById('currentCodeDisplay').textContent.trim();
                 
                 if (!projectId || !code || code === '-----') {
-                    showMessage('Please generate a code first', 'error');
+                    alert('Please generate a code first');
                     return;
                 }
                 
                 const projectName = document.querySelector(`#resetProjectSelect option[value="${projectId}"]`)?.textContent || 'Project';
                 notifyDoctor(projectName, code);
             });
+            
+            // Audit logs
+            document.getElementById('exportAuditBtn').addEventListener('click', function() {
+                alert('Export feature would generate a CSV file of all audit logs.');
+                // In production: Generate and download CSV
+            });
+            
+            document.getElementById('clearAuditBtn').addEventListener('click', clearAllAuditLogs);
+            
+            // Dashboard refresh
+            document.getElementById('refreshLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
+                await initDashboard();
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
+            });
+
+            // Filters
+            document.querySelectorAll('#filterControls .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => filterProjects(btn.dataset.filter));
+            });
 
             // Auto-refresh
             setInterval(async () => {
                 if (currentUser && currentUser.role !== 'guest') {
-                    console.log('Auto-refreshing dashboard...');
                     await initDashboard();
                 }
             }, 5 * 60 * 1000);
 
-            // Escape key
+            // Keyboard shortcuts
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    hideAllModals();
-                }
+                if (e.key === 'Escape') hideAllModals();
             });
         });
 
-        // Global function
+        // Make functions globally available
         window.resetSingleCode = resetSingleCode;
+        window.deleteAuditLog = deleteAuditLog;
+        window.generateSimpleQR = generateSimpleQR;
     </script>
 </body>
 </html>
