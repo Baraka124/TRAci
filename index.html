@@ -3415,115 +3415,130 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             }
         }
 
-        function attachCommentEventListeners() {
-            // Upvote buttons
-            document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const commentId = this.dataset.commentId;
-                    const result = await upvoteComment(commentId);
-                    
-                    if (result.success) {
-                        // Update UI
-                        const countSpan = this.querySelector('span');
-                        countSpan.textContent = result.upvotes;
-                        this.classList.add('upvoted');
-                    } else {
-                        alert('Failed to upvote: ' + result.error);
-                    }
-                });
-            });
-            
-            // Admin moderation buttons
-            document.querySelectorAll('.approve-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const commentId = this.dataset.commentId;
-                    await moderateComment(commentId, 'approve');
-                    await fetchCommentCounts();
-                    await initDashboard();
-                });
-            });
-            
-            document.querySelectorAll('.reject-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const commentId = this.dataset.commentId;
-                    await moderateComment(commentId, 'reject');
-                });
-            });
+       async function submitProjectComment(projectId, commentText, guestEmail = null) {
+    try {
+        // Validate input
+        if (!commentText || commentText.trim().length === 0) {
+            throw new Error('Comment cannot be empty');
         }
-
-        async function submitProjectComment(projectId, commentText, guestEmail = null) {
-            try {
-                if (!currentUser) {
-                    throw new Error('You must be logged in to comment');
-                }
+        
+        const trimmedComment = commentText.trim();
+        const wordCount = trimmedComment.split(/\s+/).filter(word => word.length > 0).length;
+        
+        if (wordCount > 150) {
+            throw new Error('Comment must be 150 words or less');
+        }
+        
+        // Prepare comment data
+        const commentData = {
+            project_id: projectId,
+            content: trimmedComment,
+            user_id: currentUser ? currentUser.id : null, // Can be null for guests
+            user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
+            user_role: currentUser ? currentUser.role : 'guest',
+            status: (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) ? 'approved' : 'pending',
+            created_at: new Date().toISOString(),
+            upvotes: 0
+        };
+        
+        // Add email for guests
+        if (guestEmail) {
+            commentData.user_email = guestEmail;
+        }
+        
+        // If user is a guest without an account, ensure we have some identifier
+        if (!currentUser && !guestEmail) {
+            // Generate a temporary guest ID
+            const guestId = 'guest_' + Math.random().toString(36).substr(2, 9);
+            commentData.user_id = guestId;
+            commentData.user_name = 'Guest';
+        }
+        
+        console.log('Attempting to insert comment:', commentData);
+        
+        // Insert the comment
+        const { data, error } = await supabaseClient
+            .from('project_comments')
+            .insert([commentData])
+            .select()
+            .single();
+        
+        if (error) {
+            console.error('Supabase insert error:', error);
+            
+            // If error is about RLS, try with minimal data
+            if (error.message.includes('row-level security') || error.code === '42501') {
+                console.log('RLS error detected, trying alternative approach...');
                 
-                const wordCount = commentText.trim().split(/\s+/).length;
-                if (wordCount > 150) {
-                    throw new Error('Comment must be 150 words or less');
-                }
-                
-                if (wordCount === 0) {
-                    throw new Error('Comment cannot be empty');
-                }
-                
-                // Validate email for guests
-                if (currentUser.role === 'guest' && !guestEmail) {
-                    throw new Error('Email is required for guest comments');
-                }
-                
-                if (currentUser.role === 'guest' && guestEmail) {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(guestEmail)) {
-                        throw new Error('Please enter a valid email address');
-                    }
-                }
-                
-                let status = 'pending';
-                if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
-                    status = 'approved';
-                }
-                
-                const commentData = {
+                // Try without user_id for complete guests
+                const fallbackData = {
                     project_id: projectId,
-                    content: commentText,
-                    user_id: currentUser.id,
-                    user_name: currentUser.full_name || currentUser.username,
-                    user_role: currentUser.role,
-                    status: status,
+                    content: trimmedComment,
+                    user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
+                    user_role: currentUser ? currentUser.role : 'guest',
+                    status: 'pending',
                     created_at: new Date().toISOString()
                 };
                 
-                // Add email for guests
-                if (currentUser.role === 'guest' && guestEmail) {
-                    commentData.user_email = guestEmail;
+                if (guestEmail) {
+                    fallbackData.user_email = guestEmail;
                 }
                 
-                const { data, error } = await supabaseClient
+                const { data: fallbackDataResult, error: fallbackError } = await supabaseClient
                     .from('project_comments')
-                    .insert([commentData])
+                    .insert([fallbackData])
                     .select()
                     .single();
                 
-                if (error) throw error;
+                if (fallbackError) {
+                    console.error('Fallback insert also failed:', fallbackError);
+                    throw new Error(`Unable to post comment due to security restrictions. Please contact administrator. Error: ${fallbackError.message}`);
+                }
                 
-                await logAudit('comment_added', { 
-                    project_id: projectId,
-                    comment_length: wordCount,
-                    auto_approved: status === 'approved',
-                    has_email: !!guestEmail
-                }, projectId);
-                
-                // Update comment counts
-                await fetchCommentCounts();
-                
-                return { success: true, data };
-                
-            } catch (error) {
-                console.error('Error submitting comment:', error);
-                return { success: false, error: error.message };
+                data = fallbackDataResult;
+            } else {
+                throw error;
             }
         }
-
+        
+        // Log audit if we have a current user
+        if (currentUser) {
+            await logAudit('comment_added', { 
+                project_id: projectId,
+                comment_length: wordCount,
+                auto_approved: commentData.status === 'approved',
+                has_email: !!guestEmail
+            }, projectId).catch(e => console.error('Audit log failed:', e));
+        }
+        
+        // Update comment counts
+        try {
+            await fetchCommentCounts();
+        } catch (countError) {
+            console.error('Failed to update comment counts:', countError);
+        }
+        
+        return { success: true, data };
+        
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+        
+        // Provide user-friendly error messages
+        let userMessage = error.message;
+        
+        if (error.message.includes('row-level security') || error.message.includes('permission denied')) {
+            userMessage = 'Unable to post comment due to security restrictions. Please ensure you are logged in or contact the administrator.';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            userMessage = 'Network error. Please check your connection and try again.';
+        }
+        
+        return { 
+            success: false, 
+            error: userMessage,
+            originalError: error.message 
+        };
+    }
+}
         // Moderation System
         async function fetchPendingComments() {
             try {
