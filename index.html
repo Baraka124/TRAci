@@ -1,3 +1,4 @@
+TRAci--original
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1475,21 +1476,21 @@
             </div>
         </header>
 
-        <!-- Guest Welcome - Show to ALL non-logged in users -->
-        <div id="guestWelcome" class="guest-welcome">
+        <!-- Guest Welcome -->
+        <div id="guestWelcome" class="guest-welcome hidden">
             <div class="guest-welcome-content">
                 <div class="guest-welcome-icon">
                     <i class="mdi mdi-hand-wave"></i>
                 </div>
                 <div>
-                    <h3 style="margin-bottom: 8px;">Welcome to TRAci Innovation Platform!</h3>
+                    <h3 style="margin-bottom: 8px;">Welcome, Guest!</h3>
                     <p style="margin-bottom: 16px;">
-                        Explore our research projects, tools, and collaborations. Login to contribute, comment, or submit project ideas.
+                        You're viewing our public innovation portfolio. You can post projects (admin approval required), comment, and explore collaborations.
                     </p>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button id="guestLoginBtn" class="auth-btn" style="background: var(--primary-600);">
-                            <i class="mdi mdi-login"></i>
-                            <span>Login to Contribute</span>
+                        <button id="guestPostProjectBtn" class="auth-btn" style="background: var(--primary-600);">
+                            <i class="mdi mdi-plus-circle"></i>
+                            <span>Post Project Idea</span>
                         </button>
                         <button id="contactBtn" class="auth-btn" style="background: var(--medical-teal);">
                             <i class="mdi mdi-email-send"></i>
@@ -1501,7 +1502,7 @@
         </div>
 
         <!-- Admin Controls -->
-        <div class="admin-controls hidden" id="adminControls">
+        <div class="admin-controls" id="adminControls" class="hidden">
             <button class="admin-btn" id="addProjectBtn">
                 <i class="mdi mdi-plus-circle"></i>
                 <span>Add Project</span>
@@ -1525,7 +1526,7 @@
         </div>
 
         <!-- Stats Overview -->
-        <div class="stats-container hidden" id="statsContainer">
+        <div class="stats-container" id="statsContainer" class="hidden">
             <div class="stat-card">
                 <div class="stat-icon tools">
                     <i class="mdi mdi-toolbox"></i>
@@ -1566,7 +1567,7 @@
         </div>
 
         <!-- Filter Controls -->
-        <div class="filter-controls hidden" id="filterControls">
+        <div class="filter-controls" id="filterControls" class="hidden">
             <button class="filter-btn active" data-filter="all">
                 <i class="mdi mdi-view-grid"></i>
                 <span>All Projects</span>
@@ -1578,6 +1579,14 @@
             <button class="filter-btn" data-filter="proposals">
                 <i class="mdi mdi-lightbulb-on"></i>
                 <span>Proposals</span>
+            </button>
+            <button class="filter-btn" data-filter="imported">
+                <i class="mdi mdi-import"></i>
+                <span>Imported</span>
+            </button>
+            <button class="filter-btn" data-filter="published">
+                <i class="mdi mdi-share"></i>
+                <span>Published</span>
             </button>
             <button class="filter-btn" data-filter="private">
                 <i class="mdi mdi-lock"></i>
@@ -1594,7 +1603,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="content-grid hidden" id="contentGrid">
+        <div class="content-grid" id="contentGrid" class="hidden">
             <!-- Tools Section -->
             <div class="section">
                 <div class="section-header">
@@ -1624,6 +1633,24 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Login Required -->
+        <div class="login-required" id="loginRequiredSection">
+            <div style="font-size: 64px; color: var(--primary-300); margin-bottom: 24px;">
+                <i class="mdi mdi-lock-outline"></i>
+            </div>
+            <h2 style="font-family: var(--font-heading); margin-bottom: 16px;">
+                Secure Innovation Dashboard
+            </h2>
+            <p style="max-width: 500px; margin: 0 auto 32px; color: var(--gray-600);">
+                Access to the Pneumology Innovation Dashboard is restricted to authorized personnel only. 
+                Please login with your credentials to continue.
+            </p>
+            <button id="loginRequiredBtn" class="auth-btn" style="max-width: 200px; margin: 0 auto;">
+                <i class="mdi mdi-login"></i>
+                <span>Login to Continue</span>
+            </button>
         </div>
 
         <!-- Footer -->
@@ -2012,6 +2039,62 @@
         </div>
     </div>
 
+    <!-- Sync to ThoraxLab Modal (Admin Only) -->
+    <div id="syncToThoraxLabModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="mdi mdi-share-variant"></i>
+                    <span>Publish to ThoraxLab</span>
+                </h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="syncProjectId">
+                
+                <div class="form-group">
+                    <label for="syncVisibility">Visibility on ThoraxLab *</label>
+                    <select id="syncVisibility" class="form-control">
+                        <option value="internal">🔒 Internal (Registered professionals only)</option>
+                        <option value="public">🌍 Public (Open to all collaborators)</option>
+                    </select>
+                    <small style="font-size: 0.75rem; color: var(--gray-500);">
+                        Internal: Only registered clinical/industry professionals<br>
+                        Public: Visible to all ThoraxLab users including guests
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="syncDescription">Additional Notes (Optional)</label>
+                    <textarea id="syncDescription" class="form-control" 
+                              placeholder="Add any notes for ThoraxLab collaborators..." rows="2"></textarea>
+                </div>
+                
+                <div class="moderation-panel">
+                    <h4 style="margin-bottom: 8px; color: var(--warning);">
+                        <i class="mdi mdi-alert-circle"></i>
+                        Sync Information
+                    </h4>
+                    <ul style="font-size: 0.875rem; color: var(--gray-600); padding-left: 20px; margin: 8px 0;">
+                        <li>Project will appear as "Clinical-led" on ThoraxLab</li>
+                        <li>A discussion thread will be automatically created</li>
+                        <li>Project owner will be listed as "TRAci Platform"</li>
+                        <li>Sync will be recorded in audit logs</li>
+                        <li>Project gets "Published" sticker in TRAci</li>
+                    </ul>
+                </div>
+                
+                <button id="confirmSyncBtn" class="auth-btn" style="width: 100%; margin-top: 16px; background: linear-gradient(135deg, var(--medical-purple), #9333ea);">
+                    <i class="mdi mdi-rocket-launch"></i>
+                    <span>Publish to ThoraxLab</span>
+                </button>
+                
+                <div id="syncError" class="error-message"></div>
+                <div id="syncSuccess" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- PDF Export Modal -->
     <div id="pdfExportModal" class="modal-overlay">
         <div class="modal-content">
@@ -2061,14 +2144,15 @@
     <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
-   const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-// ========== SUPABASE INITIALIZATION ==========
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ========== SUPABASE INITIALIZATION ==========
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========== STATE MANAGEMENT ==========
         let currentUser = null;
+        let authToken = localStorage.getItem('traci_auth_token');
         let dashboardData = {
             projects: [],
             tools: [],
@@ -2080,53 +2164,9 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
         let pendingComments = [];
         let pendingProjects = [];
 
-        // ========== TOAST NOTIFICATION SYSTEM ==========
-        function showToast(message, type = 'info') {
-            // Remove existing toasts
-            document.querySelectorAll('.toast-message').forEach(toast => toast.remove());
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-message';
-            toast.innerHTML = `
-                <div style="position: fixed; top: 20px; right: 20px; z-index: 9999; 
-                           padding: 12px 20px; border-radius: 8px; 
-                           background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'}; 
-                           color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                           animation: slideIn 0.3s ease; max-width: 300px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="mdi mdi-${type === 'error' ? 'alert-circle' : type === 'success' ? 'check-circle' : 'information'}"></i>
-                        <span>${message}</span>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 5000);
-        }
+        // ========== CORE FUNCTIONS ==========
 
-        // Add CSS for toast animations
-        if (!document.querySelector('#toast-styles')) {
-            const style = document.createElement('style');
-            style.id = 'toast-styles';
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // ========== PASSWORD HASHING ==========
+        // Password Hashing
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -2135,103 +2175,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ========== AUTHENTICATION ==========
-        async function loginUser(username, password) {
-    const errorEl = document.getElementById('loginError');
-    errorEl.style.display = 'none';
-    
-    try {
-        // Hash the password
-        const hashedPassword = await hashPassword(password);
-        
-        console.log('Attempting login for:', username);
-        console.log('Hashed password:', hashedPassword);
-        
-        // Query the dashboard_users table using supabaseClient
-        const { data, error } = await supabaseClient
-            .from('dashboard_users')
-            .select('*')
-            .eq('username', username)
-            .single();
-        
-        console.log('Query result:', { data, error });
-        
-        if (error) {
-            console.error('Login query error:', error);
-            errorEl.textContent = 'Invalid username or password';
-            errorEl.style.display = 'block';
-            return false;
-        }
-        
-        if (!data) {
-            errorEl.textContent = 'Invalid username or password';
-            errorEl.style.display = 'block';
-            return false;
-        }
-        
-        // Check password
-        const storedPassword = data.password_hash || data.password;
-        console.log('Stored password hash:', storedPassword);
-        console.log('Provided password hash:', hashedPassword);
-        
-        if (storedPassword !== hashedPassword) {
-            errorEl.textContent = 'Invalid username or password';
-            errorEl.style.display = 'block';
-            return false;
-        }
-        
-        // Set current user
-        currentUser = {
-            id: data.id,
-            username: data.username,
-            full_name: data.full_name || data.username,
-            role: data.role || 'guest',
-            department: data.department || 'Unknown',
-            email: data.email
-        };
-        
-        console.log('Login successful! User:', currentUser);
-        
-        // Store in localStorage
-        localStorage.setItem('traci_user', JSON.stringify(currentUser));
-        
-        // Log successful login
-        await logAudit('login', { username: username });
-        
-        return true;
-        
-    } catch (err) {
-        console.error('Login error:', err);
-        errorEl.textContent = 'Login failed. Please try again.';
-        errorEl.style.display = 'block';
-        return false;
-    }
-}
-
-        function logoutUser() {
-            if (currentUser) {
-                logAudit('logout', {});
-            }
-            
-            currentUser = null;
-            localStorage.removeItem('traci_user');
-            updateAuthUI();
-        }
-
-        function loadStoredUser() {
-            try {
-                const storedUser = localStorage.getItem('traci_user');
-                if (storedUser) {
-                    currentUser = JSON.parse(storedUser);
-                    console.log('Loaded stored user:', currentUser);
-                }
-            } catch (err) {
-                console.error('Failed to load stored user:', err);
-                localStorage.removeItem('traci_user');
-            }
-        }
-
-        // ========== AUDIT LOGGING ==========
+        // Audit Logging
         async function logAudit(action, details = {}, projectId = null) {
             try {
                 if (!currentUser) return;
@@ -2243,54 +2187,140 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                     action: action,
                     details: JSON.stringify(details),
                     project_id: projectId,
+                    ip_address: 'N/A',
                     created_at: new Date().toISOString()
                 };
                 
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('audit_logs')
                     .insert([auditData]);
                 
-                if (error) {
-                    console.warn('Audit log failed:', error);
-                }
+                if (error) console.error('Error saving audit log:', error);
                 
-            } catch (err) {
-                console.warn('Audit logging error:', err);
+            } catch (error) {
+                console.error('Error in audit logging:', error);
             }
         }
 
-        // ========== UI MANAGEMENT ==========
+        // Authentication
+        async function loginUser(username, password) {
+            const errorEl = document.getElementById('loginError');
+            errorEl.style.display = 'none';
+            
+            try {
+                const hashedPassword = await hashPassword(password);
+                
+                const { data, error } = await supabaseClient
+                    .from('dashboard_users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+                
+                if (error || !data) {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                    return false;
+                }
+                
+                // Check both password_hash and password columns
+                const storedPassword = data.password_hash || data.password;
+                
+                if (storedPassword !== hashedPassword) {
+                    errorEl.textContent = 'Invalid username or password';
+                    errorEl.style.display = 'block';
+                    return false;
+                }
+                
+                currentUser = {
+                    id: data.id,
+                    username: data.username,
+                    full_name: data.full_name,
+                    role: data.role || 'guest',
+                    department: data.department,
+                    email: data.email
+                };
+                
+                authToken = btoa(JSON.stringify(currentUser));
+                localStorage.setItem('traci_auth_token', authToken);
+                
+                await logAudit('login', { username: username });
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorEl.textContent = 'Login failed. Please try again.';
+                errorEl.style.display = 'block';
+                return false;
+            }
+        }
+
+        function logoutUser() {
+            if (currentUser) {
+                logAudit('logout', {});
+            }
+            
+            currentUser = null;
+            authToken = null;
+            localStorage.removeItem('traci_auth_token');
+            updateAuthUI();
+            showLoginRequired();
+        }
+
+        function loadStoredUser() {
+            if (authToken) {
+                try {
+                    currentUser = JSON.parse(atob(authToken));
+                } catch (e) {
+                    console.error('Failed to parse auth token:', e);
+                    localStorage.removeItem('traci_auth_token');
+                }
+            }
+        }
+
+        // UI Management
         function updateAuthUI() {
             const guestView = document.getElementById('guestView');
             const userView = document.getElementById('userView');
-            const guestWelcome = document.getElementById('guestWelcome');
-            const statusPanel = document.getElementById('statusPanel');
+            const loginRequiredSection = document.getElementById('loginRequiredSection');
             const statsContainer = document.getElementById('statsContainer');
             const adminControls = document.getElementById('adminControls');
             const contentGrid = document.getElementById('contentGrid');
+            const guestWelcome = document.getElementById('guestWelcome');
+            const statusPanel = document.getElementById('statusPanel');
             const filterControls = document.getElementById('filterControls');
             
             if (currentUser) {
-                // User is logged in
                 guestView.classList.add('hidden');
                 userView.classList.remove('hidden');
-                guestWelcome.classList.add('hidden');
-                statusPanel.classList.add('visible');
+                loginRequiredSection.classList.add('hidden');
                 
-                // Set user info
+                // Set user avatar
+                const avatar = document.getElementById('userAvatar');
                 const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                document.getElementById('userAvatar').textContent = initials;
-                document.getElementById('currentUsername').textContent = name;
+                avatar.textContent = initials;
                 
+                // Set user info
+                document.getElementById('currentUsername').textContent = name;
                 const roleBadge = document.getElementById('currentUserRole');
                 roleBadge.textContent = currentUser.role;
                 roleBadge.className = `user-role ${currentUser.role}`;
                 
-                // Show dashboard content
+                // Show status panel
+                statusPanel.classList.add('visible');
+                
+                // Show content
                 statsContainer.classList.remove('hidden');
                 contentGrid.classList.remove('hidden');
                 filterControls.classList.remove('hidden');
+                
+                // Guest-specific sections
+                if (currentUser.role === 'guest') {
+                    guestWelcome.classList.remove('hidden');
+                } else {
+                    guestWelcome.classList.add('hidden');
+                }
                 
                 // Admin controls
                 if (currentUser.role === 'admin') {
@@ -2305,33 +2335,32 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 initDashboard();
                 
             } else {
-                // User is NOT logged in
                 guestView.classList.remove('hidden');
                 userView.classList.add('hidden');
-                guestWelcome.classList.remove('hidden');
-                statusPanel.classList.remove('visible');
-                statsContainer.classList.add('hidden');
                 adminControls.classList.add('hidden');
-                contentGrid.classList.add('hidden');
+                guestWelcome.classList.add('hidden');
+                statusPanel.classList.remove('visible');
                 filterControls.classList.add('hidden');
-                
-                // Clear any dashboard data
-                dashboardData = {
-                    projects: [],
-                    tools: [],
-                    filteredProjects: [],
-                    lastUpdated: new Date()
-                };
+                showLoginRequired();
             }
         }
 
-        // ========== MODAL MANAGEMENT ==========
-        function showModal(modalId) {
+        function showLoginRequired() {
+            document.getElementById('loginRequiredSection').classList.remove('hidden');
+            document.getElementById('statsContainer').classList.add('hidden');
+            document.getElementById('adminControls').classList.add('hidden');
+            document.getElementById('contentGrid').classList.add('hidden');
+            document.getElementById('guestWelcome').classList.add('hidden');
+            document.getElementById('filterControls').classList.add('hidden');
+        }
+
+        // Modal Management
+        function showModal(modalName) {
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 modal.style.display = 'none';
             });
             
-            const modal = document.getElementById(modalId);
+            const modal = document.getElementById(modalName);
             if (modal) {
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
@@ -2353,85 +2382,61 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             });
         }
 
-        // ========== DATABASE QUERIES ==========
+        // Database Functions
         async function fetchProjects() {
-            try {
-                let query = supabase
-                    .from('projects')
-                    .select('*');
-                
-                // Apply visibility filters based on user role
-                if (currentUser) {
-                    if (currentUser.role === 'guest') {
-                        // Guests see public projects and their own proposals
-                        query = query.or(`visibility.eq.public,and(doctor_id.eq.${currentUser.id},visibility.eq.private)`);
-                    } else if (currentUser.role === 'doctor') {
-                        // Doctors see public + private
-                        query = query.in('visibility', ['public', 'private']);
-                    }
-                    // Admin sees everything
-                } else {
-                    // Non-logged in users see only public
-                    query = query.eq('visibility', 'public');
-                }
-                
-                const { data, error } = await query
-                    .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error('Error fetching projects:', error);
-                    dashboardData.projects = [];
-                    dashboardData.filteredProjects = [];
-                    return;
-                }
-                
-                dashboardData.projects = data || [];
-                dashboardData.filteredProjects = [...dashboardData.projects];
-                
-            } catch (err) {
-                console.error('Failed to fetch projects:', err);
-                dashboardData.projects = [];
-                dashboardData.filteredProjects = [];
-                showToast('Failed to load projects. Please refresh.', 'error');
+            let query = supabaseClient
+                .from('projects')
+                .select('*');
+            
+            // Guests see public projects and their own proposals
+            if (currentUser && currentUser.role === 'guest') {
+                query = query.or(`visibility.eq.public,doctor_id.eq.${currentUser.id}`);
             }
+            
+            // Doctors see public + private
+            if (currentUser && currentUser.role === 'doctor') {
+                query = query.or('visibility.eq.public,visibility.eq.private');
+            }
+            
+            const { data, error } = await query
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching projects:', error);
+                dashboardData.projects = [];
+                return;
+            }
+            
+            dashboardData.projects = data || [];
+            dashboardData.filteredProjects = [...dashboardData.projects];
         }
 
         async function fetchTools() {
-            try {
-                const { data, error } = await supabase
-                    .from('tools')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error('Error fetching tools:', error);
-                    dashboardData.tools = [];
-                    return;
-                }
-                
-                dashboardData.tools = data || [];
-                
-            } catch (err) {
-                console.error('Failed to fetch tools:', err);
+            const { data, error } = await supabaseClient
+                .from('tools')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error fetching tools:', error);
                 dashboardData.tools = [];
+                return;
             }
+            
+            dashboardData.tools = data || [];
         }
 
+        // Comment Count System - FIXED
         async function fetchCommentCounts() {
             try {
+                // Get approved comments for projects
                 const { data, error } = await supabaseClient
-
                     .from('project_comments')
                     .select('project_id')
                     .eq('status', 'approved');
                 
-                if (error) {
-                    console.warn('Could not fetch comment counts:', error);
-                    commentCounts = {};
-                    return;
-                }
+                if (error) throw error;
                 
-                // Count comments per project
                 commentCounts = {};
                 if (data) {
                     data.forEach(comment => {
@@ -2439,9 +2444,10 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                     });
                 }
                 
-            } catch (err) {
-                console.error('Error fetching comment counts:', err);
-                commentCounts = {};
+                return commentCounts;
+            } catch (error) {
+                console.error('Error fetching comment counts:', error);
+                return {};
             }
         }
 
@@ -2449,7 +2455,285 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             return commentCounts[projectId] || 0;
         }
 
-        // ========== DASHBOARD FUNCTIONS ==========
+        // Upvote System
+        async function upvoteComment(commentId) {
+            try {
+                if (!currentUser) {
+                    throw new Error('You must be logged in to upvote');
+                }
+                
+                // Get current upvote count
+                const { data: comment, error: fetchError } = await supabaseClient
+                    .from('project_comments')
+                    .select('upvotes')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // Increment upvote count
+                const newUpvotes = (comment.upvotes || 0) + 1;
+                
+                const { error } = await supabaseClient
+                    .from('project_comments')
+                    .update({ upvotes: newUpvotes })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                // Record in comment_interactions for tracking
+                await supabaseClient
+                    .from('comment_interactions')
+                    .insert([{
+                        comment_id: commentId,
+                        user_id: currentUser.id,
+                        interaction_type: 'upvote',
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                return { success: true, upvotes: newUpvotes };
+                
+            } catch (error) {
+                console.error('Error upvoting comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function getCommentUpvotes(commentId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .select('upvotes')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (error) throw error;
+                return data.upvotes || 0;
+            } catch (error) {
+                console.error('Error getting upvotes:', error);
+                return 0;
+            }
+        }
+
+        // Project CRUD with new proposal logic
+        async function addProject(projectData) {
+            try {
+                const editCode = currentUser.role === 'doctor' ? 
+                    Math.floor(10000 + Math.random() * 90000).toString() : null;
+                
+                // Determine if this is a proposal (guest submission)
+                const isProposal = currentUser.role === 'guest';
+                
+                const projectToInsert = {
+                    ...projectData,
+                    last_updated: new Date().toISOString(),
+                    edit_code: editCode,
+                    review_status: projectData.needs_feedback ? 'needs_review' : 'none',
+                    is_proposal: isProposal,
+                    status: isProposal ? 'planning' : projectData.status
+                };
+                
+                // Guest proposals are always private pending review
+                if (isProposal) {
+                    projectToInsert.visibility = 'private';
+                    projectToInsert.review_status = 'pending_review';
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([projectToInsert])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                const action = isProposal ? 'project_proposal_submitted' : 'project_created';
+                await logAudit(action, { 
+                    project_name: projectData.name,
+                    visibility: projectData.visibility,
+                    is_proposal: isProposal
+                }, data.id);
+                
+                if (isProposal) {
+                    alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
+                } else if (currentUser.role === 'doctor') {
+                    alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
+                } else {
+                    alert('✅ Project added successfully!');
+                }
+                
+                if (document.getElementById('projectSuccess')) {
+                    document.getElementById('projectSuccess').textContent = 
+                        isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
+                    document.getElementById('projectSuccess').style.display = 'block';
+                }
+                
+                return { success: true, data, code: editCode, isProposal: isProposal };
+                
+            } catch (error) {
+                console.error('Error adding project:', error);
+                if (document.getElementById('projectError')) {
+                    document.getElementById('projectError').textContent = 'Failed to add project: ' + error.message;
+                    document.getElementById('projectError').style.display = 'block';
+                }
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function updateProject(projectId, projectData) {
+            try {
+                // Check if doctor needs edit code
+                if (currentUser && currentUser.role === 'doctor') {
+                    const enteredCode = document.getElementById('editCodeVerification')?.value;
+                    
+                    if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
+                        document.getElementById('editProjectError').textContent = 'Valid 5-digit edit code required';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Invalid edit code format' };
+                    }
+                    
+                    const { data: project, error: fetchError } = await supabaseClient
+                        .from('projects')
+                        .select('edit_code, is_proposal')
+                        .eq('id', projectId)
+                        .single();
+                    
+                    if (fetchError || !project) {
+                        document.getElementById('editProjectError').textContent = 'Project not found';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Project not found' };
+                    }
+                    
+                    // Doctors can't edit proposals (only admin can approve)
+                    if (project.is_proposal) {
+                        document.getElementById('editProjectError').textContent = 'Proposals can only be edited by admin';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Proposal editing restricted' };
+                    }
+                    
+                    if (enteredCode !== project.edit_code) {
+                        document.getElementById('editProjectError').textContent = 'Invalid edit code';
+                        document.getElementById('editProjectError').style.display = 'block';
+                        return { success: false, error: 'Invalid edit code' };
+                    }
+                }
+                
+                const updateData = {
+                    ...projectData,
+                    last_updated: new Date().toISOString(),
+                    review_status: projectData.needs_feedback ? 'needs_review' : 'none'
+                };
+                
+                // Only admin can change visibility
+                if (currentUser && currentUser.role === 'admin') {
+                    updateData.visibility = document.getElementById('editProjectVisibility').value;
+                    
+                    // If admin is approving a proposal
+                    if (updateData.is_proposal === false) {
+                        updateData.review_status = 'approved';
+                        updateData.is_proposal = false;
+                    }
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .update(updateData)
+                    .eq('id', projectId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('project_updated', { 
+                    project_id: projectId,
+                    changes: projectData,
+                    user_role: currentUser.role
+                }, projectId);
+                
+                if (document.getElementById('editProjectSuccess')) {
+                    document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
+                    document.getElementById('editProjectSuccess').style.display = 'block';
+                }
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error updating project:', error);
+                if (document.getElementById('editProjectError')) {
+                    document.getElementById('editProjectError').textContent = 'Failed to update project: ' + error.message;
+                    document.getElementById('editProjectError').style.display = 'block';
+                }
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function deleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                return { success: false, error: 'Cancelled by user' };
+            }
+            
+            try {
+                const { data: project } = await supabaseClient
+                    .from('projects')
+                    .select('name, is_proposal')
+                    .eq('id', projectId)
+                    .single();
+                
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                await logAudit('project_deleted', { 
+                    project_id: projectId,
+                    project_name: project?.name || 'Unknown',
+                    was_proposal: project?.is_proposal || false
+                }, projectId);
+                
+                alert('Project deleted successfully!');
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                alert('Failed to delete project: ' + error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Tool CRUD
+        async function addTool(toolData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([{
+                        ...toolData,
+                        last_checked: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                await logAudit('tool_created', { 
+                    tool_name: toolData.name
+                });
+                
+                document.getElementById('toolSuccess').textContent = 'Tool added successfully!';
+                document.getElementById('toolSuccess').style.display = 'block';
+                
+                return { success: true, data };
+                
+            } catch (error) {
+                console.error('Error adding tool:', error);
+                document.getElementById('toolError').textContent = 'Failed to add tool: ' + error.message;
+                document.getElementById('toolError').style.display = 'block';
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Dashboard Functions
         async function initDashboard() {
             showLoadingState();
             
@@ -2464,44 +2748,38 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 renderDashboard();
                 updateTimestamp();
                 
-            } catch (err) {
-                console.error('Error loading dashboard:', err);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
                 showErrorState();
-                showToast('Failed to load dashboard data', 'error');
             }
         }
 
         async function updateStats() {
-            try {
-                const toolsCount = dashboardData.tools.length;
-                const projectsCount = dashboardData.projects.length;
-                
-                // Calculate total comments
-                let totalComments = 0;
-                Object.values(commentCounts).forEach(count => {
-                    totalComments += count;
-                });
-                
-                // Get active users (logins today) - only for admin
-                let activeUsersCount = 0;
-                if (currentUser && currentUser.role === 'admin') {
-                    const today = new Date().toISOString().split('T')[0];
-                    const { count } = await supabase
-                        .from('audit_logs')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('action', 'login')
-                        .gte('created_at', today);
-                    activeUsersCount = count || 0;
-                }
-                
-                document.getElementById('toolsCount').textContent = toolsCount;
-                document.getElementById('projectsCount').textContent = projectsCount;
-                document.getElementById('commentsCount').textContent = totalComments;
-                document.getElementById('activeUsersCount').textContent = activeUsersCount;
-                
-            } catch (err) {
-                console.error('Error updating stats:', err);
+            const toolsCount = dashboardData.tools.length;
+            const projectsCount = dashboardData.projects.length;
+            
+            // Calculate total comments
+            let totalComments = 0;
+            Object.values(commentCounts).forEach(count => {
+                totalComments += count;
+            });
+            
+            // Get active users (logins today) - only for admin
+            let activeUsersCount = 0;
+            if (currentUser && currentUser.role === 'admin') {
+                const today = new Date().toISOString().split('T')[0];
+                const { count } = await supabaseClient
+                    .from('audit_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('action', 'login')
+                    .gte('created_at', today);
+                activeUsersCount = count || 0;
             }
+            
+            document.getElementById('toolsCount').textContent = toolsCount;
+            document.getElementById('projectsCount').textContent = projectsCount;
+            document.getElementById('commentsCount').textContent = totalComments;
+            document.getElementById('activeUsersCount').textContent = activeUsersCount;
         }
 
         function renderDashboard() {
@@ -2569,8 +2847,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             let projectsHTML = '';
             
             dashboardData.filteredProjects.forEach(project => {
-                const statusClass = `status-${project.status || 'planning'}`;
-                const statusText = (project.status || 'planning').charAt(0).toUpperCase() + (project.status || 'planning').slice(1);
+                const statusClass = `status-${project.status}`;
+                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
                 
                 const visibilityBadge = project.visibility === 'private' 
                     ? `<span class="visibility-badge private">
@@ -2588,11 +2866,27 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                         ${commentCount}
                     </span>` : '';
                 
-                // Project Stickers
+                // Review Sticker
+                let reviewSticker = '';
+                if (project.review_status === 'needs_review') {
+                    reviewSticker = `<span class="review-sticker needs-review"><i class="mdi mdi-alert"></i> Needs Review</span>`;
+                } else if (project.review_status === 'reviewed') {
+                    reviewSticker = `<span class="review-sticker reviewed"><i class="mdi mdi-check-circle"></i> Reviewed</span>`;
+                } else if (project.review_status === 'feedback_provided') {
+                    reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
+                }
+                
+                // NEW: Project Stickers
                 let projectStickers = '';
+                
+                // Proposal sticker
                 if (project.is_proposal) {
                     projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
                 }
+                
+                // Imported sticker (check sync table)
+                // Published sticker (check sync table)
+                // Archived sticker
                 if (project.status === 'archived') {
                     projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
                 }
@@ -2606,6 +2900,18 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 // Action Buttons
                 let actionButtons = '';
                 if (currentUser) {
+                    // Sync button (Admin only for TRAci → ThoraxLab)
+                    let syncButton = '';
+                    if (currentUser.role === 'admin' && !project.is_proposal && project.status !== 'archived') {
+                        syncButton = `
+                            <button class="action-btn sync-btn" data-project-id="${project.id}" 
+                                    onclick="showSyncModal('${project.id}', '${project.name}')">
+                                <i class="mdi mdi-share-variant"></i>
+                                Publish
+                            </button>
+                        `;
+                    }
+                    
                     if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
@@ -2617,6 +2923,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
+                                ${syncButton}
                                 <button class="action-btn upvote-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-thumb-up"></i>
                                     <span>Upvote</span>
@@ -2681,6 +2988,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                                 <i class="mdi mdi-flask"></i>
                                 ${project.name}
                                 ${visibilityBadge}
+                                ${reviewSticker}
                                 ${projectStickers}
                                 ${commentBadge}
                             </div>
@@ -2728,7 +3036,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             attachProjectEventListeners();
         }
 
-        // ========== FILTERING ==========
+        // Filtering with new categories
         function filterProjects(filterType) {
             if (filterType === 'all') {
                 dashboardData.filteredProjects = [...dashboardData.projects];
@@ -2736,12 +3044,64 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'needs_review');
             } else if (filterType === 'proposals') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.is_proposal === true);
+            } else if (filterType === 'imported') {
+                // Will need to check sync table
+                filterProjectsBySync('imported');
+                return;
+            } else if (filterType === 'published') {
+                // Will need to check sync table
+                filterProjectsBySync('published');
+                return;
+            } else if (filterType === 'reviewed') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'reviewed');
             } else if (filterType === 'private') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
             } else if (filterType === 'public') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'public');
             } else if (filterType === 'most_commented') {
-                // Sort by comment count
+                filterProjectsByComments('most_commented');
+                return;
+            }
+            
+            renderProjects();
+        }
+
+        async function filterProjectsBySync(filterType) {
+            try {
+                let query = supabaseClient
+                    .from('project_sync')
+                    .select('traci_project_id, thoraxlab_project_id, sync_direction');
+                
+                const { data: syncs, error } = await query;
+                
+                if (error) throw error;
+                
+                const syncedProjectIds = new Set();
+                syncs.forEach(sync => {
+                    if (filterType === 'imported' && sync.sync_direction === 'thoraxlab_to_traci') {
+                        syncedProjectIds.add(sync.traci_project_id);
+                    } else if (filterType === 'published' && sync.sync_direction === 'traci_to_thoraxlab') {
+                        syncedProjectIds.add(sync.traci_project_id);
+                    }
+                });
+                
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => 
+                    syncedProjectIds.has(p.id)
+                );
+                
+                renderProjects();
+                
+            } catch (error) {
+                console.error('Error filtering by sync:', error);
+                dashboardData.filteredProjects = [];
+                renderProjects();
+            }
+        }
+
+        async function filterProjectsByComments(filterType) {
+            await fetchCommentCounts();
+            
+            if (filterType === 'most_commented') {
                 dashboardData.filteredProjects = [...dashboardData.projects].sort((a, b) => {
                     return (commentCounts[b.id] || 0) - (commentCounts[a.id] || 0);
                 });
@@ -2750,7 +3110,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             renderProjects();
         }
 
-        // ========== PROJECT EVENT LISTENERS ==========
+        // Event Listeners
         function attachProjectEventListeners() {
             if (!currentUser) return;
             
@@ -2803,7 +3163,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             document.querySelectorAll('.upvote-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const projectId = this.dataset.projectId;
-                    showToast('Project upvoting feature coming soon!', 'info');
+                    alert('Project upvoting feature coming soon!');
                 });
             });
             
@@ -2818,281 +3178,27 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             });
         }
 
-        // ========== PROJECT CRUD ==========
-        async function addProject(projectData) {
-            try {
-                const editCode = currentUser.role === 'doctor' ? 
-                    Math.floor(10000 + Math.random() * 90000).toString() : null;
-                
-                const isProposal = currentUser.role === 'guest';
-                
-                const projectToInsert = {
-                    name: projectData.name,
-                    description: projectData.description || '',
-                    status: isProposal ? 'planning' : (projectData.status || 'development'),
-                    progress: parseInt(projectData.progress) || 0,
-                    needs_feedback: projectData.needs_feedback || false,
-                    visibility: isProposal ? 'private' : (projectData.visibility || 'public'),
-                    doctor_id: currentUser.id,
-                    last_updated: new Date().toISOString(),
-                    edit_code: editCode,
-                    review_status: isProposal ? 'pending_review' : (projectData.needs_feedback ? 'needs_review' : 'none'),
-                    is_proposal: isProposal
-                };
-                
-                const { data, error } = await supabase
-                    .from('projects')
-                    .insert([projectToInsert])
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                // Log success
-                const action = isProposal ? 'project_proposal_submitted' : 'project_created';
-                await logAudit(action, { 
-                    project_name: projectData.name,
-                    visibility: projectData.visibility,
-                    is_proposal: isProposal
-                }, data.id);
-                
-                // Show success message
-                let successMessage;
-                if (isProposal) {
-                    successMessage = '✅ Project proposal submitted!\n\nYour proposal is now pending admin review.';
-                } else if (currentUser.role === 'doctor' && editCode) {
-                    successMessage = `✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}`;
-                } else {
-                    successMessage = '✅ Project added successfully!';
-                }
-                
-                showToast(successMessage.split('\n\n')[0], 'success');
-                
-                if (isProposal) {
-                    alert(successMessage);
-                } else if (currentUser.role === 'doctor' && editCode) {
-                    alert(successMessage);
-                }
-                
-                if (document.getElementById('projectSuccess')) {
-                    document.getElementById('projectSuccess').textContent = 
-                        isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
-                    document.getElementById('projectSuccess').style.display = 'block';
-                }
-                
-                return { success: true, data: data, code: editCode, isProposal: isProposal };
-                
-            } catch (err) {
-                console.error('Error adding project:', err);
-                
-                let errorMessage = 'Failed to add project. ';
-                if (err.message.includes('permission denied')) {
-                    errorMessage += 'You do not have permission to add projects.';
-                } else if (err.message.includes('network') || err.message.includes('fetch')) {
-                    errorMessage += 'Network error. Please check your connection.';
-                } else {
-                    errorMessage += err.message;
-                }
-                
-                showToast(errorMessage, 'error');
-                
-                if (document.getElementById('projectError')) {
-                    document.getElementById('projectError').textContent = errorMessage;
-                    document.getElementById('projectError').style.display = 'block';
-                }
-                
-                return { success: false, error: err.message };
-            }
-        }
-
-        async function updateProject(projectId, projectData) {
-            try {
-                // Check if doctor needs edit code
-                if (currentUser && currentUser.role === 'doctor') {
-                    const enteredCode = document.getElementById('editCodeVerification')?.value;
-                    
-                    if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
-                        throw new Error('Valid 5-digit edit code required');
-                    }
-                    
-                    const { data: project, error: fetchError } = await supabase
-                        .from('projects')
-                        .select('edit_code, is_proposal')
-                        .eq('id', projectId)
-                        .single();
-                    
-                    if (fetchError || !project) {
-                        throw new Error('Project not found');
-                    }
-                    
-                    // Doctors can't edit proposals
-                    if (project.is_proposal) {
-                        throw new Error('Proposals can only be edited by admin');
-                    }
-                    
-                    if (enteredCode !== project.edit_code) {
-                        throw new Error('Invalid edit code');
-                    }
-                }
-                
-                const updateData = {
-                    ...projectData,
-                    last_updated: new Date().toISOString()
-                };
-                
-                // Add optional fields if they exist
-                if (projectData.needs_feedback !== undefined) {
-                    updateData.review_status = projectData.needs_feedback ? 'needs_review' : 'none';
-                }
-                
-                // Only admin can change visibility
-                if (currentUser && currentUser.role === 'admin') {
-                    updateData.visibility = document.getElementById('editProjectVisibility').value;
-                    
-                    // If admin is approving a proposal
-                    const project = dashboardData.projects.find(p => p.id === projectId);
-                    if (project && project.is_proposal) {
-                        updateData.is_proposal = false;
-                        updateData.review_status = 'approved';
-                    }
-                }
-                
-                const { data, error } = await supabase
-                    .from('projects')
-                    .update(updateData)
-                    .eq('id', projectId)
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                await logAudit('project_updated', { 
-                    project_id: projectId,
-                    changes: projectData,
-                    user_role: currentUser.role
-                }, projectId);
-                
-                showToast('Project updated successfully!', 'success');
-                
-                if (document.getElementById('editProjectSuccess')) {
-                    document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
-                    document.getElementById('editProjectSuccess').style.display = 'block';
-                }
-                
-                return { success: true, data };
-                
-            } catch (err) {
-                console.error('Error updating project:', err);
-                showToast(`Update failed: ${err.message}`, 'error');
-                
-                if (document.getElementById('editProjectError')) {
-                    document.getElementById('editProjectError').textContent = err.message;
-                    document.getElementById('editProjectError').style.display = 'block';
-                }
-                return { success: false, error: err.message };
-            }
-        }
-
-        async function deleteProject(projectId) {
-            if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-                return { success: false, error: 'Cancelled by user' };
-            }
-            
-            try {
-                const { data: project } = await supabase
-                    .from('projects')
-                    .select('name, is_proposal')
-                    .eq('id', projectId)
-                    .single();
-                
-                const { error } = await supabase
-                    .from('projects')
-                    .delete()
-                    .eq('id', projectId);
-                
-                if (error) throw error;
-                
-                await logAudit('project_deleted', { 
-                    project_id: projectId,
-                    project_name: project?.name || 'Unknown',
-                    was_proposal: project?.is_proposal || false
-                }, projectId);
-                
-                showToast('Project deleted successfully!', 'success');
-                return { success: true };
-                
-            } catch (err) {
-                console.error('Error deleting project:', err);
-                showToast(`Delete failed: ${err.message}`, 'error');
-                return { success: false, error: err.message };
-            }
-        }
-
-        // ========== TOOL CRUD ==========
-        async function addTool(toolData) {
-            try {
-                const { data, error } = await supabase
-                    .from('tools')
-                    .insert([{
-                        ...toolData,
-                        last_checked: new Date().toISOString()
-                    }])
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                await logAudit('tool_created', { 
-                    tool_name: toolData.name
-                });
-                
-                showToast('Tool added successfully!', 'success');
-                
-                document.getElementById('toolSuccess').textContent = 'Tool added successfully!';
-                document.getElementById('toolSuccess').style.display = 'block';
-                
-                return { success: true, data };
-                
-            } catch (err) {
-                console.error('Error adding tool:', err);
-                showToast(`Failed to add tool: ${err.message}`, 'error');
-                document.getElementById('toolError').textContent = 'Failed to add tool: ' + err.message;
-                document.getElementById('toolError').style.display = 'block';
-                return { success: false, error: err.message };
-            }
-        }
-
-        // ========== COMMENTS SYSTEM ==========
+        // Comments System - FIXED
         async function fetchCommentsForProject(projectId) {
             try {
-                let query = supabase
+                let query = supabaseClient
                     .from('project_comments')
                     .select('*')
                     .eq('project_id', projectId)
                     .order('created_at', { ascending: false });
                 
-                // Filter based on user role
-                if (currentUser) {
-                    if (currentUser.role === 'guest') {
-                        query = query.eq('status', 'approved');
-                    } else if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
-                        query = query.in('status', ['approved', 'pending']);
-                    }
-                } else {
+                if (currentUser && currentUser.role === 'guest') {
                     query = query.eq('status', 'approved');
+                } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
+                    query = query.in('status', ['approved', 'pending']);
                 }
                 
                 const { data, error } = await query;
                 
-                if (error) {
-                    console.error('Error fetching comments:', error);
-                    return [];
-                }
-                
+                if (error) throw error;
                 return data || [];
-                
-            } catch (err) {
-                console.error('Failed to fetch comments:', err);
+            } catch (error) {
+                console.error('Error fetching comments:', error);
                 return [];
             }
         }
@@ -3100,25 +3206,10 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
         async function loadProjectComments(projectId, projectName) {
             try {
                 currentProjectComments = projectId;
-                
-                // Show loading state
-                const commentsList = document.getElementById('commentsList');
-                commentsList.innerHTML = `
-                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
-                        <i class="mdi mdi-loading mdi-spin" style="font-size: 2rem; margin-bottom: 12px;"></i>
-                        <p>Loading comments...</p>
-                    </div>
-                `;
+                const comments = await fetchCommentsForProject(projectId);
                 
                 document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
                 
-                // Show modal immediately
-                showModal('commentsModal');
-                
-                // Fetch comments
-                const comments = await fetchCommentsForProject(projectId);
-                
-                // Update comment form visibility
                 const commentFormSection = document.getElementById('commentFormSection');
                 const commentHintText = document.getElementById('commentHintText');
                 const guestEmailField = document.getElementById('guestEmailField');
@@ -3126,6 +3217,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 if (currentUser) {
                     commentFormSection.classList.remove('hidden');
                     
+                    // Show email field for guests only
                     if (currentUser.role === 'guest') {
                         guestEmailField.classList.remove('hidden');
                         commentHintText.textContent = 'Your comments will be reviewed before appearing';
@@ -3138,7 +3230,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                     guestEmailField.classList.add('hidden');
                 }
                 
-                // Render comments
+                const commentsList = document.getElementById('commentsList');
+                
                 if (!comments || comments.length === 0) {
                     commentsList.innerHTML = `
                         <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
@@ -3157,6 +3250,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                             minute: '2-digit'
                         });
                         
+                        // Determine comment class
                         let commentClass = 'comment-item';
                         if (comment.user_role === 'guest') commentClass += ' external';
                         if (comment.status === 'pending') commentClass += ' pending';
@@ -3173,75 +3267,131 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                                     <div class="comment-date">${dateStr}</div>
                                 </div>
                                 <div class="comment-content">${comment.content}</div>
+                                <div class="comment-actions">
+                                    <button class="comment-upvote-btn" data-comment-id="${comment.id}">
+                                        <i class="mdi mdi-thumb-up"></i>
+                                        <span>${comment.upvotes || 0}</span>
+                                    </button>
+                                </div>
+                                ${currentUser && currentUser.role === 'admin' && comment.status === 'pending' ? `
+                                    <div class="moderation-panel">
+                                        <div class="moderation-actions">
+                                            <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
+                                                <i class="mdi mdi-check-circle"></i> Approve
+                                            </button>
+                                            <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
+                                                <i class="mdi mdi-close-circle"></i> Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                ` : ''}
                             </div>
                         `;
                     });
                     
                     commentsList.innerHTML = commentsHTML;
+                    
+                    // Add event listeners to comment buttons
+                    attachCommentEventListeners();
                 }
                 
                 // Reset form
                 document.getElementById('commentText').value = '';
-                if (document.getElementById('guestEmail')) {
-                    document.getElementById('guestEmail').value = '';
-                }
+                document.getElementById('guestEmail').value = '';
                 document.getElementById('commentWordCount').textContent = '0/150 words';
                 
-            } catch (err) {
-                console.error('Error loading comments:', err);
+                showModal('commentsModal');
                 
-                const commentsList = document.getElementById('commentsList');
-                commentsList.innerHTML = `
-                    <div style="text-align: center; padding: 48px 16px; color: var(--danger);">
-                        <i class="mdi mdi-alert-circle" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                        <h3>Failed to load comments</h3>
-                        <p>Error: ${err.message}</p>
-                        <button onclick="loadProjectComments('${projectId}', '${projectName.replace(/'/g, "\\'")}')" 
-                                style="margin-top: 16px; padding: 8px 16px; background: var(--primary-600); color: white; border: none; border-radius: 6px; cursor: pointer;">
-                            Retry
-                        </button>
-                    </div>
-                `;
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                alert('Failed to load comments');
             }
+        }
+
+        function attachCommentEventListeners() {
+            // Upvote buttons
+            document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    const result = await upvoteComment(commentId);
+                    
+                    if (result.success) {
+                        // Update UI
+                        const countSpan = this.querySelector('span');
+                        countSpan.textContent = result.upvotes;
+                        this.classList.add('upvoted');
+                    } else {
+                        alert('Failed to upvote: ' + result.error);
+                    }
+                });
+            });
+            
+            // Admin moderation buttons
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'approve');
+                    await fetchCommentCounts();
+                    await initDashboard();
+                });
+            });
+            
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'reject');
+                });
+            });
         }
 
         async function submitProjectComment(projectId, commentText, guestEmail = null) {
             try {
-                // Validate input
-                if (!commentText || commentText.trim().length === 0) {
-                    throw new Error('Comment cannot be empty');
+                if (!currentUser) {
+                    throw new Error('You must be logged in to comment');
                 }
                 
-                const trimmedComment = commentText.trim();
-                const wordCount = trimmedComment.split(/\s+/).filter(word => word.length > 0).length;
-                
+                const wordCount = commentText.trim().split(/\s+/).length;
                 if (wordCount > 150) {
                     throw new Error('Comment must be 150 words or less');
                 }
                 
-                // Prepare comment data
+                if (wordCount === 0) {
+                    throw new Error('Comment cannot be empty');
+                }
+                
+                // Validate email for guests
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    throw new Error('Email is required for guest comments');
+                }
+                
+                if (currentUser.role === 'guest' && guestEmail) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(guestEmail)) {
+                        throw new Error('Please enter a valid email address');
+                    }
+                }
+                
+                let status = 'pending';
+                if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
+                    status = 'approved';
+                }
+                
                 const commentData = {
                     project_id: projectId,
-                    content: trimmedComment,
-                    user_id: currentUser ? currentUser.id : null,
-                    user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
-                    user_role: currentUser ? currentUser.role : 'guest',
-                    status: (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) ? 'approved' : 'pending',
+                    content: commentText,
+                    user_id: currentUser.id,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
+                    status: status,
                     created_at: new Date().toISOString()
                 };
                 
                 // Add email for guests
-                if (guestEmail) {
+                if (currentUser.role === 'guest' && guestEmail) {
                     commentData.user_email = guestEmail;
                 }
                 
-                // If user is a guest without an account
-                if (!currentUser && !guestEmail) {
-                    commentData.user_id = 'guest_' + Math.random().toString(36).substr(2, 9);
-                    commentData.user_name = 'Guest';
-                }
-                
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('project_comments')
                     .insert([commentData])
                     .select()
@@ -3249,63 +3399,459 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 
                 if (error) throw error;
                 
-                // Log audit if we have a current user
-                if (currentUser) {
-                    await logAudit('comment_added', { 
-                        project_id: projectId,
-                        comment_length: wordCount,
-                        auto_approved: commentData.status === 'approved',
-                        has_email: !!guestEmail
-                    }, projectId);
-                }
+                await logAudit('comment_added', { 
+                    project_id: projectId,
+                    comment_length: wordCount,
+                    auto_approved: status === 'approved',
+                    has_email: !!guestEmail
+                }, projectId);
                 
                 // Update comment counts
                 await fetchCommentCounts();
                 
-                // Show success message
-                const successMessage = commentData.status === 'pending' 
-                    ? 'Comment submitted for moderation. It will appear after approval.' 
-                    : 'Comment posted successfully!';
+                return { success: true, data };
                 
-                showToast(successMessage, 'success');
-                
-                if (document.getElementById('commentSuccess')) {
-                    document.getElementById('commentSuccess').textContent = successMessage;
-                    document.getElementById('commentSuccess').style.display = 'block';
-                }
-                
-                return { success: true, data: data };
-                
-            } catch (err) {
-                console.error('Error submitting comment:', err);
-                
-                let userMessage = 'Failed to post comment. ';
-                if (err.message.includes('permission denied')) {
-                    userMessage += 'You do not have permission to post comments.';
-                } else if (err.message.includes('network') || err.message.includes('fetch')) {
-                    userMessage += 'Network error. Please check your connection.';
-                } else {
-                    userMessage += err.message;
-                }
-                
-                showToast(userMessage, 'error');
-                
-                if (document.getElementById('commentError')) {
-                    document.getElementById('commentError').textContent = userMessage;
-                    document.getElementById('commentError').style.display = 'block';
-                }
-                
-                return { 
-                    success: false, 
-                    error: userMessage
-                };
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                return { success: false, error: error.message };
             }
         }
 
-        // ========== EDIT CODE MANAGEMENT ==========
+        // Moderation System
+        async function fetchPendingComments() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .select(`
+                        *,
+                        projects!inner (name)
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                pendingComments = data || [];
+                return pendingComments;
+            } catch (error) {
+                console.error('Error fetching pending comments:', error);
+                return [];
+            }
+        }
+
+        async function fetchPendingProjects() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('is_proposal', true)
+                    .eq('review_status', 'pending_review')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                pendingProjects = data || [];
+                return pendingProjects;
+            } catch (error) {
+                console.error('Error fetching pending projects:', error);
+                return [];
+            }
+        }
+
+        async function moderateComment(commentId, action) {
+            try {
+                const { error } = await supabaseClient
+                    .from('project_comments')
+                    .update({
+                        status: action === 'approve' ? 'approved' : 'rejected',
+                        moderated_at: new Date().toISOString(),
+                        moderated_by: currentUser.username
+                    })
+                    .eq('id', commentId);
+                
+                if (error) throw error;
+                
+                await logAudit('comment_moderated', { 
+                    comment_id: commentId,
+                    action: action 
+                });
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Error moderating comment:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function moderateProject(projectId, action) {
+            try {
+                if (action === 'approve') {
+                    const { error } = await supabaseClient
+                        .from('projects')
+                        .update({
+                            is_proposal: false,
+                            review_status: 'approved',
+                            visibility: 'public', // Make approved proposals public
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('id', projectId);
+                    
+                    if (error) throw error;
+                    
+                    await logAudit('project_proposal_approved', { 
+                        project_id: projectId
+                    });
+                    
+                } else if (action === 'reject') {
+                    const { error } = await supabaseClient
+                        .from('projects')
+                        .update({
+                            review_status: 'rejected',
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('id', projectId);
+                    
+                    if (error) throw error;
+                    
+                    await logAudit('project_proposal_rejected', { 
+                        project_id: projectId
+                    });
+                }
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Error moderating project:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // NEW: Sync to ThoraxLab Function
+        async function syncToThoraxLab(projectId, visibility, notes = '') {
+            try {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    throw new Error('Only admin can publish to ThoraxLab');
+                }
+                
+                // Get TRAci project
+                const { data: traciProject, error: fetchError } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (fetchError) throw fetchError;
+                
+                // Check if already synced
+                const { data: existingSync } = await supabaseClient
+                    .from('project_sync')
+                    .select('thoraxlab_project_id')
+                    .eq('traci_project_id', projectId)
+                    .maybeSingle();
+                
+                if (existingSync) {
+                    const proceed = confirm('This project is already published to ThoraxLab. Update it?');
+                    if (!proceed) return;
+                }
+                
+                // Transform to ThoraxLab format
+                const thoraxlabProject = {
+                    title: traciProject.name,
+                    description: `[Published from TRAci Platform]\n\n${traciProject.description}\n\n${notes}`,
+                    project_type: 'clinical',
+                    visibility: visibility,
+                    status: 'active',
+                    owner_id: 'traci-platform', // System account
+                    target_audience: ['clinical_professionals', 'industry_partners'],
+                    discussion_type: 'collaboration',
+                                        tags: ['pulmonology', 'clinical_research', 'traci_platform'],
+                    source_traci_project_id: projectId,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                let thoraxlabProjectId;
+                
+                if (existingSync) {
+                    // Update existing ThoraxLab project
+                    const { data: updatedProject, error: updateError } = await supabaseClient
+                        .from('thoraxlab_projects')
+                        .update(thoraxlabProject)
+                        .eq('id', existingSync.thoraxlab_project_id)
+                        .select()
+                        .single();
+                    
+                    if (updateError) throw updateError;
+                    thoraxlabProjectId = updatedProject.id;
+                    
+                    // Update sync record
+                    await supabaseClient
+                        .from('project_sync')
+                        .update({
+                            sync_purpose: 'update',
+                            status: 'updated',
+                            sync_notes: notes,
+                            initiated_at: new Date().toISOString()
+                        })
+                        .eq('traci_project_id', projectId);
+                    
+                } else {
+                    // Create new ThoraxLab project
+                    const { data: newProject, error: createError } = await supabaseClient
+                        .from('thoraxlab_projects')
+                        .insert([thoraxlabProject])
+                        .select()
+                        .single();
+                    
+                    if (createError) throw createError;
+                    thoraxlabProjectId = newProject.id;
+                    
+                    // Record sync
+                    await supabaseClient
+                        .from('project_sync')
+                        .insert([{
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            sync_direction: 'traci_to_thoraxlab',
+                            sync_purpose: 'industry_collaboration',
+                            initiated_by: currentUser.id,
+                            initiated_at: new Date().toISOString(),
+                            status: 'completed',
+                            sync_notes: notes
+                        }]);
+                    
+                    // Auto-create discussion thread
+                    await supabaseClient
+                        .from('thoraxlab_discussions')
+                        .insert([{
+                            title: `Discussion: ${traciProject.name}`,
+                            content: `This clinical project was published from our internal TRAci platform for industry collaboration.\n\n**Clinical Context:** ${traciProject.description || 'No description'}\n\n**Status:** ${traciProject.status}\n**Progress:** ${traciProject.progress || 0}%\n\n**Notes from TRAci:** ${notes}`,
+                            project_id: thoraxlabProjectId,
+                            author_id: currentUser.id,
+                            created_at: new Date().toISOString()
+                        }]);
+                }
+                
+                // Update TRAci project with "published" status
+                await supabaseClient
+                    .from('projects')
+                    .update({
+                        last_updated: new Date().toISOString(),
+                        review_status: 'published_to_thoraxlab'
+                    })
+                    .eq('id', projectId);
+                
+                // Audit log
+                await logAudit('project_published_to_thoraxlab', {
+                    traci_project_id: projectId,
+                    thoraxlab_project_id: thoraxlabProjectId,
+                    visibility: visibility,
+                    notes: notes
+                }, projectId);
+                
+                // Cross-platform audit
+                await supabaseClient
+                    .from('cross_platform_audit')
+                    .insert([{
+                        user_name: currentUser.full_name || currentUser.username,
+                        action: 'project_published',
+                        platform: 'traci',
+                        details: `Published project "${traciProject.name}" to ThoraxLab`,
+                        metadata: { 
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            visibility: visibility
+                        },
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                alert(`✅ Project published to ThoraxLab!\n\nVisibility: ${visibility}\n\nProject is now available for industry collaboration.`);
+                
+                hideAllModals();
+                await initDashboard();
+                
+                return { success: true, thoraxlabProjectId };
+                
+            } catch (error) {
+                console.error('Error syncing to ThoraxLab:', error);
+                document.getElementById('syncError').textContent = 'Failed to publish: ' + error.message;
+                document.getElementById('syncError').style.display = 'block';
+                return { success: false, error: error.message };
+            }
+        }
+
+        // PDF Export
+        async function exportProjectToPDF(projectId) {
+            try {
+                const includeDetails = document.getElementById('includeDetails').checked;
+                const includeComments = document.getElementById('includeComments').checked;
+                const includeAudit = document.getElementById('includeAudit').checked;
+                
+                // Fetch project data
+                const { data: project, error: projectError } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (projectError) throw projectError;
+                
+                // Fetch comments if requested
+                let comments = [];
+                if (includeComments) {
+                    const { data: commentsData, error: commentsError } = await supabaseClient
+                        .from('project_comments')
+                        .select('*')
+                        .eq('project_id', projectId)
+                        .eq('status', 'approved')
+                        .order('created_at', { ascending: false });
+                    
+                    if (commentsError) throw commentsError;
+                    comments = commentsData || [];
+                }
+                
+                // Fetch audit logs if requested
+                let auditLogs = [];
+                if (includeAudit) {
+                    const { data: auditData, error: auditError } = await supabaseClient
+                        .from('audit_logs')
+                        .select('*')
+                        .eq('project_id', projectId)
+                        .order('created_at', { ascending: false })
+                        .limit(50);
+                    
+                    if (auditError) throw auditError;
+                    auditLogs = auditData || [];
+                }
+                
+                // Generate PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(20);
+                doc.setTextColor(2, 132, 199);
+                doc.text(`Project: ${project.name}`, 20, 20);
+                
+                // Add timestamp
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Exported from TRAci on: ${new Date().toLocaleDateString()}`, 20, 30);
+                
+                let yPosition = 40;
+                
+                // Add project details
+                if (includeDetails) {
+                    doc.setFontSize(16);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Project Details', 20, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(12);
+                    doc.text(`Description: ${project.description || 'No description'}`, 20, yPosition);
+                    yPosition += 10;
+                    doc.text(`Status: ${project.status}`, 20, yPosition);
+                    yPosition += 10;
+                    doc.text(`Progress: ${project.progress}%`, 20, yPosition);
+                    yPosition += 10;
+                    doc.text(`Visibility: ${project.visibility}`, 20, yPosition);
+                    yPosition += 10;
+                    doc.text(`Review Status: ${project.review_status || 'none'}`, 20, yPosition);
+                    yPosition += 15;
+                }
+                
+                // Add comments
+                if (includeComments && comments.length > 0) {
+                    doc.addPage();
+                    yPosition = 20;
+                    
+                    doc.setFontSize(16);
+                    doc.text(`Comments (${comments.length})`, 20, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    comments.forEach((comment, index) => {
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${comment.user_name} (${comment.user_role}):`, 20, yPosition);
+                        yPosition += 5;
+                        
+                        doc.setFont('helvetica', 'normal');
+                        const commentLines = doc.splitTextToSize(comment.content, 170);
+                        commentLines.forEach(line => {
+                            doc.text(line, 20, yPosition);
+                            yPosition += 5;
+                        });
+                        
+                        doc.setFontSize(8);
+                        doc.text(`Posted: ${new Date(comment.created_at).toLocaleDateString()}`, 20, yPosition);
+                        yPosition += 10;
+                    });
+                }
+                
+                // Add audit logs
+                if (includeAudit && auditLogs.length > 0) {
+                    doc.addPage();
+                    yPosition = 20;
+                    
+                    doc.setFontSize(16);
+                    doc.text('Audit Trail', 20, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    auditLogs.forEach((log, index) => {
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.text(`${new Date(log.created_at).toLocaleDateString()} - ${log.user_name} (${log.user_role}):`, 20, yPosition);
+                        yPosition += 5;
+                        
+                        doc.text(`Action: ${log.action}`, 25, yPosition);
+                        yPosition += 5;
+                        
+                        if (log.details && log.details !== '{}') {
+                            try {
+                                const details = JSON.parse(log.details);
+                                const detailStr = Object.entries(details).map(([k, v]) => `${k}: ${v}`).join(', ');
+                                doc.text(`Details: ${detailStr}`, 25, yPosition);
+                                yPosition += 5;
+                            } catch (e) {
+                                // Skip if not valid JSON
+                            }
+                        }
+                        
+                        yPosition += 5;
+                    });
+                }
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`TRAci Innovation Dashboard - Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
+                }
+                
+                // Save PDF
+                doc.save(`TRAci-Project-${project.name.replace(/[^a-z0-9]/gi, '-')}.pdf`);
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Error exporting PDF:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Edit Code Management
         async function loadEditCodes() {
             try {
-                const { data: projects, error } = await supabase
+                const { data: projects, error } = await supabaseClient
                     .from('projects')
                     .select('id, name, edit_code, visibility, created_at, is_proposal')
                     .order('name');
@@ -3381,8 +3927,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                     });
                 }
                 
-            } catch (err) {
-                console.error('Error loading edit codes:', err);
+            } catch (error) {
+                console.error('Error loading edit codes:', error);
                 alert('Failed to load edit codes');
             }
         }
@@ -3395,7 +3941,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             try {
                 const newCode = Math.floor(10000 + Math.random() * 90000).toString();
                 
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('projects')
                     .update({ 
                         edit_code: newCode,
@@ -3408,121 +3954,13 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 alert(`✅ New code for "${projectName}": ${newCode}\n\nShare this code with doctors who need to edit this project.`);
                 loadEditCodes();
                 
-            } catch (err) {
-                console.error('Error resetting code:', err);
+            } catch (error) {
+                console.error('Error resetting code:', error);
                 alert('Failed to reset code');
             }
         }
 
-        // ========== MODERATION SYSTEM ==========
-        async function fetchPendingComments() {
-            try {
-                const { data, error } = await supabase
-                    .from('project_comments')
-                    .select(`
-                        *,
-                        projects!inner (name)
-                    `)
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                pendingComments = data || [];
-                return pendingComments;
-            } catch (err) {
-                console.error('Error fetching pending comments:', err);
-                return [];
-            }
-        }
-
-        async function fetchPendingProjects() {
-            try {
-                const { data, error } = await supabase
-                    .from('projects')
-                    .select('*')
-                    .eq('is_proposal', true)
-                    .eq('review_status', 'pending_review')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                pendingProjects = data || [];
-                return pendingProjects;
-            } catch (err) {
-                console.error('Error fetching pending projects:', err);
-                return [];
-            }
-        }
-
-        async function moderateComment(commentId, action) {
-            try {
-                const { error } = await supabase
-                    .from('project_comments')
-                    .update({
-                        status: action === 'approve' ? 'approved' : 'rejected',
-                        moderated_at: new Date().toISOString(),
-                        moderated_by: currentUser.username
-                    })
-                    .eq('id', commentId);
-                
-                if (error) throw error;
-                
-                await logAudit('comment_moderated', { 
-                    comment_id: commentId,
-                    action: action 
-                });
-                
-                return { success: true };
-            } catch (err) {
-                console.error('Error moderating comment:', err);
-                return { success: false, error: err.message };
-            }
-        }
-
-        async function moderateProject(projectId, action) {
-            try {
-                if (action === 'approve') {
-                    const { error } = await supabase
-                        .from('projects')
-                        .update({
-                            is_proposal: false,
-                            review_status: 'approved',
-                            visibility: 'public',
-                            last_updated: new Date().toISOString()
-                        })
-                        .eq('id', projectId);
-                    
-                    if (error) throw error;
-                    
-                    await logAudit('project_proposal_approved', { 
-                        project_id: projectId
-                    });
-                    
-                } else if (action === 'reject') {
-                    const { error } = await supabase
-                        .from('projects')
-                        .update({
-                            review_status: 'rejected',
-                            last_updated: new Date().toISOString()
-                        })
-                        .eq('id', projectId);
-                    
-                    if (error) throw error;
-                    
-                    await logAudit('project_proposal_rejected', { 
-                        project_id: projectId
-                    });
-                }
-                
-                return { success: true };
-            } catch (err) {
-                console.error('Error moderating project:', err);
-                return { success: false, error: err.message };
-            }
-        }
-
-        // ========== HELPER FUNCTIONS ==========
+        // Helper Functions
         function loadProjectForEdit(project) {
             document.getElementById('editProjectId').value = project.id;
             document.getElementById('editProjectName').value = project.name || '';
@@ -3563,8 +4001,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                     option.textContent = project.name + (project.is_proposal ? ' (Proposal)' : '');
                     select.appendChild(option);
                 });
-            } catch (err) {
-                console.error('Error loading projects for PDF:', err);
+            } catch (error) {
+                console.error('Error loading projects for PDF:', error);
             }
         }
 
@@ -3594,18 +4032,56 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
         }
 
-        // ========== EVENT LISTENERS SETUP ==========
+        // NEW: Show sync modal
+        function showSyncModal(projectId, projectName) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                alert('Only admin can publish projects to ThoraxLab');
+                return;
+            }
+            
+            document.getElementById('syncProjectId').value = projectId;
+            document.getElementById('syncError').style.display = 'none';
+            document.getElementById('syncSuccess').style.display = 'none';
+            document.getElementById('syncDescription').value = '';
+            
+            // Update modal title with project name
+            const modalHeader = document.querySelector('#syncToThoraxLabModal .modal-header h3');
+            if (modalHeader) {
+                modalHeader.innerHTML = `<i class="mdi mdi-share-variant"></i><span>Publish "${projectName}" to ThoraxLab</span>`;
+            }
+            
+            showModal('syncToThoraxLabModal');
+        }
+
+        // NEW: Load moderation data
+        async function loadModerationData() {
+            await Promise.all([
+                fetchPendingComments(),
+                fetchPendingProjects()
+            ]);
+            showModerationModal();
+        }
+
+        // ========== EVENT LISTENERS ==========
         document.addEventListener('DOMContentLoaded', function() {
-            // Load stored user
             loadStoredUser();
             updateAuthUI();
             
-            // Login button
+            // Login
             document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('guestLoginBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Modal close buttons
+            // Guest post project
+            document.getElementById('guestPostProjectBtn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showModal('loginModal');
+                } else {
+                    showModal('addProjectModal');
+                }
+            });
+            
+            // Modal close
             document.querySelectorAll('.modal-close').forEach(btn => {
                 btn.addEventListener('click', hideAllModals);
             });
@@ -3722,36 +4198,24 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 if (!currentProjectComments) return;
                 
                 const commentText = document.getElementById('commentText').value.trim();
-                const guestEmail = document.getElementById('guestEmail')?.value.trim();
+                const guestEmail = document.getElementById('guestEmail').value.trim();
                 const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
                 
-                // Clear previous messages
-                const commentError = document.getElementById('commentError');
-                const commentSuccess = document.getElementById('commentSuccess');
-                if (commentError) commentError.style.display = 'none';
-                if (commentSuccess) commentSuccess.style.display = 'none';
-                
                 if (wordCount === 0) {
-                    if (commentError) {
-                        commentError.textContent = 'Please enter a comment';
-                        commentError.style.display = 'block';
-                    }
+                    document.getElementById('commentError').textContent = 'Please enter a comment';
+                    document.getElementById('commentError').style.display = 'block';
                     return;
                 }
                 
                 if (wordCount > 150) {
-                    if (commentError) {
-                        commentError.textContent = 'Comment must be 150 words or less';
-                        commentError.style.display = 'block';
-                    }
+                    document.getElementById('commentError').textContent = 'Comment must be 150 words or less';
+                    document.getElementById('commentError').style.display = 'block';
                     return;
                 }
                 
-                if (currentUser?.role === 'guest' && !guestEmail) {
-                    if (commentError) {
-                        commentError.textContent = 'Email is required for guest comments';
-                        commentError.style.display = 'block';
-                    }
+                if (currentUser.role === 'guest' && !guestEmail) {
+                    document.getElementById('commentError').textContent = 'Email is required for guest comments';
+                    document.getElementById('commentError').style.display = 'block';
                     return;
                 }
                 
@@ -3765,24 +4229,22 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 
                 if (result.success) {
                     document.getElementById('commentText').value = '';
-                    if (document.getElementById('guestEmail')) {
-                        document.getElementById('guestEmail').value = '';
-                    }
+                    document.getElementById('guestEmail').value = '';
                     document.getElementById('commentWordCount').textContent = '0/150 words';
+                    document.getElementById('commentSuccess').textContent = result.data.status === 'pending' 
+                        ? 'Comment submitted for moderation' 
+                        : 'Comment posted successfully';
+                    document.getElementById('commentSuccess').style.display = 'block';
                     
-                    // Refresh comments after a delay
-                    setTimeout(async () => {
-                        const project = dashboardData.projects.find(p => p.id === currentProjectComments);
-                        if (project) {
-                            await loadProjectComments(currentProjectComments, project.name);
-                        }
-                    }, 1500);
-                    
-                    // Refresh dashboard to update comment counts
-                    setTimeout(async () => {
-                        await fetchCommentCounts();
-                        renderProjects();
-                    }, 2000);
+                    const project = dashboardData.projects.find(p => p.id === currentProjectComments);
+                    if (project) {
+                        setTimeout(() => {
+                            loadProjectComments(currentProjectComments, project.name);
+                        }, 1500);
+                    }
+                } else {
+                    document.getElementById('commentError').textContent = 'Failed to post comment: ' + result.error;
+                    document.getElementById('commentError').style.display = 'block';
                 }
             });
             
@@ -3901,28 +4363,17 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating PDF...';
                 this.disabled = true;
                 
-                // Simple PDF export (basic implementation)
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                const project = dashboardData.projects.find(p => p.id === projectId);
-                if (project) {
-                    doc.setFontSize(20);
-                    doc.text(`Project: ${project.name}`, 20, 20);
-                    
-                    doc.setFontSize(12);
-                    doc.text(`Description: ${project.description || 'No description'}`, 20, 40);
-                    doc.text(`Status: ${project.status}`, 20, 50);
-                    doc.text(`Progress: ${project.progress}%`, 20, 60);
-                    doc.text(`Visibility: ${project.visibility}`, 20, 70);
-                    
-                    doc.save(`TRAci-Project-${project.name.replace(/[^a-z0-9]/gi, '-')}.pdf`);
-                    
-                    hideAllModals();
-                }
+                const result = await exportProjectToPDF(projectId);
                 
                 this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
                 this.disabled = false;
+                
+                if (!result.success) {
+                    document.getElementById('pdfError').textContent = 'Error: ' + result.error;
+                    document.getElementById('pdfError').style.display = 'block';
+                } else {
+                    hideAllModals();
+                }
             });
             
             // Dashboard refresh
@@ -3935,6 +4386,21 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
             });
             
+            // NEW: Sync to ThoraxLab
+            document.getElementById('confirmSyncBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('syncProjectId').value;
+                const visibility = document.getElementById('syncVisibility').value;
+                const notes = document.getElementById('syncDescription').value.trim();
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Publishing...';
+                this.disabled = true;
+                
+                await syncToThoraxLab(projectId, visibility, notes);
+                
+                this.innerHTML = '<i class="mdi mdi-rocket-launch"></i> Publish to ThoraxLab';
+                this.disabled = false;
+            });
+            
             // Auto-refresh every 5 minutes
             setInterval(async () => {
                 if (currentUser) {
@@ -3943,7 +4409,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             }, 5 * 60 * 1000);
         });
 
-        // ========== MODERATION MODAL FUNCTIONS ==========
+        // Moderation modal display
         function showCommentsModerationModal() {
             const list = document.getElementById('moderationList');
             
@@ -4075,10 +4541,18 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
             }
         }
 
-        // ========== GLOBAL FUNCTIONS ==========
-        window.resetSingleCode = resetSingleCode;
-        window.loadProjectForEditDashboard = loadProjectForEdit;
-        window.moderateProjectFromModal = async function(projectId, action) {
+        // Helper functions for moderation
+        async function loadProjectForEditDashboard(projectId) {
+            const project = dashboardData.projects.find(p => p.id === projectId) || 
+                           pendingProjects.find(p => p.id === projectId);
+            if (project) {
+                loadProjectForEdit(project);
+                hideAllModals();
+                showModal('editProjectModal');
+            }
+        }
+
+        async function moderateProjectFromModal(projectId, action) {
             const result = await moderateProject(projectId, action);
             if (result.success) {
                 await fetchPendingProjects();
@@ -4086,7 +4560,13 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
                 await initDashboard();
                 alert(`Project ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
             }
-        };
+        }
+
+        // Make functions globally available
+        window.resetSingleCode = resetSingleCode;
+        window.showSyncModal = showSyncModal;
+        window.loadProjectForEditDashboard = loadProjectForEditDashboard;
+        window.moderateProjectFromModal = moderateProjectFromModal;
     </script>
 </body>
 </html>
