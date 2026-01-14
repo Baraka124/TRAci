@@ -2061,28 +2061,11 @@
     <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
-        const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
+   const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
-        // ========== SUPABASE INITIALIZATION ==========
-        // ========== SUPABASE INITIALIZATION ==========
-let supabaseClient = null;
-
-// Initialize Supabase client
-function initSupabaseClient() {
-    if (!supabaseClient) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-    return supabaseClient;
-}
-
-// Get Supabase client (initialize if needed)
-function getSupabase() {
-    if (!supabaseClient) {
-        initSupabaseClient();
-    }
-    return supabaseClient;
-}
+// ========== SUPABASE INITIALIZATION ==========
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========== STATE MANAGEMENT ==========
         let currentUser = null;
@@ -2154,66 +2137,76 @@ function getSupabase() {
 
         // ========== AUTHENTICATION ==========
         async function loginUser(username, password) {
-            const errorEl = document.getElementById('loginError');
-            errorEl.style.display = 'none';
-            
-            try {
-                // Hash the password
-                const hashedPassword = await hashPassword(password);
-                
-                // Query the dashboard_users table
-                const { data, error } = await supabase
-                    .from('dashboard_users')
-                    .select('*')
-                    .eq('username', username)
-                    .single();
-                
-                if (error) {
-                    console.error('Login query error:', error);
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
-                if (!data) {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
-                // Check password
-                const storedPassword = data.password_hash || data.password;
-                if (storedPassword !== hashedPassword) {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
-                // Set current user
-                currentUser = {
-                    id: data.id,
-                    username: data.username,
-                    full_name: data.full_name || data.username,
-                    role: data.role || 'guest',
-                    department: data.department || 'Unknown',
-                    email: data.email
-                };
-                
-                // Store in localStorage
-                localStorage.setItem('traci_user', JSON.stringify(currentUser));
-                
-                // Log successful login
-                await logAudit('login', { username: username });
-                
-                return true;
-                
-            } catch (err) {
-                console.error('Login error:', err);
-                errorEl.textContent = 'Login failed. Please try again.';
-                errorEl.style.display = 'block';
-                return false;
-            }
+    const errorEl = document.getElementById('loginError');
+    errorEl.style.display = 'none';
+    
+    try {
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
+        
+        console.log('Attempting login for:', username);
+        console.log('Hashed password:', hashedPassword);
+        
+        // Query the dashboard_users table using supabaseClient
+        const { data, error } = await supabaseClient
+            .from('dashboard_users')
+            .select('*')
+            .eq('username', username)
+            .single();
+        
+        console.log('Query result:', { data, error });
+        
+        if (error) {
+            console.error('Login query error:', error);
+            errorEl.textContent = 'Invalid username or password';
+            errorEl.style.display = 'block';
+            return false;
         }
+        
+        if (!data) {
+            errorEl.textContent = 'Invalid username or password';
+            errorEl.style.display = 'block';
+            return false;
+        }
+        
+        // Check password
+        const storedPassword = data.password_hash || data.password;
+        console.log('Stored password hash:', storedPassword);
+        console.log('Provided password hash:', hashedPassword);
+        
+        if (storedPassword !== hashedPassword) {
+            errorEl.textContent = 'Invalid username or password';
+            errorEl.style.display = 'block';
+            return false;
+        }
+        
+        // Set current user
+        currentUser = {
+            id: data.id,
+            username: data.username,
+            full_name: data.full_name || data.username,
+            role: data.role || 'guest',
+            department: data.department || 'Unknown',
+            email: data.email
+        };
+        
+        console.log('Login successful! User:', currentUser);
+        
+        // Store in localStorage
+        localStorage.setItem('traci_user', JSON.stringify(currentUser));
+        
+        // Log successful login
+        await logAudit('login', { username: username });
+        
+        return true;
+        
+    } catch (err) {
+        console.error('Login error:', err);
+        errorEl.textContent = 'Login failed. Please try again.';
+        errorEl.style.display = 'block';
+        return false;
+    }
+}
 
         function logoutUser() {
             if (currentUser) {
