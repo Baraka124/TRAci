@@ -2140,7 +2140,7 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+       <!-- JavaScript -->
     <script>
         // ========== CONFIGURATION ==========
         const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
@@ -2162,6 +2162,65 @@
         let commentCounts = {};
         let pendingComments = [];
         let pendingProjects = [];
+
+        // ========== TOAST NOTIFICATION SYSTEM ==========
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast-message').forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `toast-message`;
+            toast.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; z-index: 9999; 
+                           padding: 12px 20px; border-radius: 8px; 
+                           background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'}; 
+                           color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                           animation: slideIn 0.3s ease; max-width: 300px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="mdi mdi-${type === 'error' ? 'alert-circle' : type === 'success' ? 'check-circle' : 'information'}"></i>
+                        <span>${message}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Add CSS for toast animations
+        if (!document.querySelector('#toast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'toast-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ========== ERROR HANDLING UTILITIES ==========
+        async function fetchWithRetry(queryFn, maxRetries = 2, delay = 1000) {
+            for (let i = 0; i <= maxRetries; i++) {
+                try {
+                    return await queryFn();
+                } catch (error) {
+                    if (i === maxRetries) throw error;
+                    console.log(`Retry ${i + 1}/${maxRetries} after error:`, error.message);
+                    await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+                }
+            }
+        }
 
         // ========== CORE FUNCTIONS ==========
 
@@ -2194,10 +2253,10 @@
                     .from('audit_logs')
                     .insert([auditData]);
                 
-                if (error) console.error('Error saving audit log:', error);
+                if (error) console.warn('Audit log failed:', error);
                 
             } catch (error) {
-                console.error('Error in audit logging:', error);
+                console.warn('Audit logging error:', error);
             }
         }
 
@@ -2221,7 +2280,6 @@
                     return false;
                 }
                 
-                // Check both password_hash and password columns
                 const storedPassword = data.password_hash || data.password;
                 
                 if (storedPassword !== hashedPassword) {
@@ -2383,58 +2441,85 @@
 
         // Database Functions
         async function fetchProjects() {
-            let query = supabaseClient
-                .from('projects')
-                .select('*');
-            
-            // Guests see public projects and their own proposals
-            if (currentUser && currentUser.role === 'guest') {
-                query = query.or(`visibility.eq.public,doctor_id.eq.${currentUser.id}`);
-            }
-            
-            // Doctors see public + private
-            if (currentUser && currentUser.role === 'doctor') {
-                query = query.or('visibility.eq.public,visibility.eq.private');
-            }
-            
-            const { data, error } = await query
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Error fetching projects:', error);
+            try {
+                let query = supabaseClient
+                    .from('projects')
+                    .select('*');
+                
+                // Guests see public projects and their own proposals
+                if (currentUser && currentUser.role === 'guest') {
+                    query = query.or(`visibility.eq.public,doctor_id.eq.${currentUser.id}`);
+                }
+                
+                // Doctors see public + private
+                if (currentUser && currentUser.role === 'doctor') {
+                    query = query.or('visibility.eq.public,visibility.eq.private');
+                }
+                
+                const { data, error } = await fetchWithRetry(() => 
+                    query.order('created_at', { ascending: false })
+                );
+                
+                if (error) {
+                    console.error('Error fetching projects:', error);
+                    // Try with minimal columns if full select fails
+                    const { data: simpleData } = await supabaseClient
+                        .from('projects')
+                        .select('id, name, description, status, progress, visibility, doctor_id, created_at')
+                        .order('created_at', { ascending: false });
+                    
+                    dashboardData.projects = simpleData || [];
+                    dashboardData.filteredProjects = [...dashboardData.projects];
+                    return;
+                }
+                
+                dashboardData.projects = data || [];
+                dashboardData.filteredProjects = [...dashboardData.projects];
+                
+            } catch (error) {
+                console.error('Failed to fetch projects:', error);
                 dashboardData.projects = [];
-                return;
+                dashboardData.filteredProjects = [];
+                showToast('Failed to load projects. Please refresh.', 'error');
             }
-            
-            dashboardData.projects = data || [];
-            dashboardData.filteredProjects = [...dashboardData.projects];
         }
 
         async function fetchTools() {
-            const { data, error } = await supabaseClient
-                .from('tools')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Error fetching tools:', error);
+            try {
+                const { data, error } = await fetchWithRetry(() => 
+                    supabaseClient
+                        .from('tools')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                );
+                
+                if (error) {
+                    console.error('Error fetching tools:', error);
+                    dashboardData.tools = [];
+                    return;
+                }
+                
+                dashboardData.tools = data || [];
+                
+            } catch (error) {
+                console.error('Failed to fetch tools:', error);
                 dashboardData.tools = [];
-                return;
             }
-            
-            dashboardData.tools = data || [];
         }
 
-        // Comment Count System - FIXED
+        // Comment Count System
         async function fetchCommentCounts() {
             try {
-                // Get approved comments for projects
                 const { data, error } = await supabaseClient
                     .from('project_comments')
                     .select('project_id')
                     .eq('status', 'approved');
                 
-                if (error) throw error;
+                if (error) {
+                    console.warn('Could not fetch comment counts:', error);
+                    commentCounts = {};
+                    return {};
+                }
                 
                 commentCounts = {};
                 if (data) {
@@ -2461,7 +2546,6 @@
                     throw new Error('You must be logged in to upvote');
                 }
                 
-                // Get current upvote count
                 const { data: comment, error: fetchError } = await supabaseClient
                     .from('project_comments')
                     .select('upvotes')
@@ -2470,7 +2554,6 @@
                 
                 if (fetchError) throw fetchError;
                 
-                // Increment upvote count
                 const newUpvotes = (comment.upvotes || 0) + 1;
                 
                 const { error } = await supabaseClient
@@ -2480,7 +2563,6 @@
                 
                 if (error) throw error;
                 
-                // Record in comment_interactions for tracking
                 await supabaseClient
                     .from('comment_interactions')
                     .insert([{
@@ -2498,195 +2580,140 @@
             }
         }
 
-        async function getCommentUpvotes(commentId) {
+        // Project CRUD
+        async function addProject(projectData) {
             try {
-                const { data, error } = await supabaseClient
-                    .from('project_comments')
-                    .select('upvotes')
-                    .eq('id', commentId)
-                    .single();
+                const editCode = currentUser.role === 'doctor' ? 
+                    Math.floor(10000 + Math.random() * 90000).toString() : null;
                 
-                if (error) throw error;
-                return data.upvotes || 0;
-            } catch (error) {
-                console.error('Error getting upvotes:', error);
-                return 0;
-            }
-        }
-
-       // Project CRUD with new proposal logic
-async function addProject(projectData) {
-    try {
-        const editCode = currentUser.role === 'doctor' ? 
-            Math.floor(10000 + Math.random() * 90000).toString() : null;
-        
-        // Determine if this is a proposal (guest submission)
-        const isProposal = currentUser.role === 'guest';
-        
-        // Build base project data with guaranteed columns
-        const baseProjectData = {
-            name: projectData.name,
-            description: projectData.description || '',
-            status: isProposal ? 'planning' : (projectData.status || 'development'),
-            progress: parseInt(projectData.progress) || 0,
-            needs_feedback: projectData.needs_feedback || false,
-            visibility: isProposal ? 'private' : (projectData.visibility || 'public'),
-            doctor_id: currentUser.id,
-            last_updated: new Date().toISOString(),
-            edit_code: editCode
-        };
-        
-        // Try inserting with optional columns first
-        let projectToInsert = { ...baseProjectData };
-        
-        // Add optional columns that might not exist yet
-        const optionalColumns = {
-            review_status: isProposal ? 'pending_review' : (projectData.needs_feedback ? 'needs_review' : 'none'),
-            is_proposal: isProposal
-        };
-        
-        // First attempt: Try with all columns
-        try {
-            const { data, error } = await supabaseClient
-                .from('projects')
-                .insert([{ ...projectToInsert, ...optionalColumns }])
-                .select()
-                .single();
-            
-            if (error) throw error;
-            
-            // Success with all columns
-            return handleAddProjectSuccess(data, projectData, isProposal, editCode);
-            
-        } catch (firstError) {
-            console.warn('First insert attempt failed:', firstError.message);
-            
-            // If error is about missing columns, try without optional columns
-            if (firstError.message.includes('is_proposal') || 
-                firstError.message.includes('review_status') ||
-                firstError.message.includes('column')) {
+                const isProposal = currentUser.role === 'guest';
                 
-                console.log('Retrying without optional columns...');
+                // Build project data with safe defaults
+                const baseProjectData = {
+                    name: projectData.name,
+                    description: projectData.description || '',
+                    status: isProposal ? 'planning' : (projectData.status || 'development'),
+                    progress: parseInt(projectData.progress) || 0,
+                    needs_feedback: projectData.needs_feedback || false,
+                    visibility: isProposal ? 'private' : (projectData.visibility || 'public'),
+                    doctor_id: currentUser.id,
+                    last_updated: new Date().toISOString(),
+                    edit_code: editCode
+                };
                 
-                // Second attempt: Insert without problematic columns
+                // Try different insert strategies
+                let result;
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('projects')
-                        .insert([projectToInsert])
-                        .select()
-                        .single();
-                    
-                    if (error) throw error;
-                    
-                    // If this was a proposal, try to update review status separately
-                    if (isProposal) {
-                        try {
-                            await supabaseClient
-                                .from('projects')
-                                .update({ 
-                                    visibility: 'private',
-                                    status: 'planning'
-                                })
-                                .eq('id', data.id);
-                        } catch (updateError) {
-                            console.warn('Could not update proposal status:', updateError.message);
-                        }
-                    }
-                    
-                    return handleAddProjectSuccess(data, projectData, isProposal, editCode);
-                    
-                } catch (secondError) {
-                    console.error('Second insert attempt failed:', secondError);
-                    
-                    // Third attempt: Try with minimal columns only
-                    const minimalProjectData = {
-                        name: projectData.name,
-                        description: projectData.description || '',
-                        status: 'development',
-                        doctor_id: currentUser.id,
-                        last_updated: new Date().toISOString()
+                    // Strategy 1: Try with all columns
+                    const fullProjectData = {
+                        ...baseProjectData,
+                        review_status: isProposal ? 'pending_review' : (projectData.needs_feedback ? 'needs_review' : 'none'),
+                        is_proposal: isProposal
                     };
                     
                     const { data, error } = await supabaseClient
                         .from('projects')
-                        .insert([minimalProjectData])
+                        .insert([fullProjectData])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    result = data;
+                    
+                } catch (error) {
+                    console.warn('Full insert failed, trying minimal columns:', error);
+                    
+                    // Strategy 2: Try without optional columns
+                    const { data, error } = await supabaseClient
+                        .from('projects')
+                        .insert([baseProjectData])
                         .select()
                         .single();
                     
                     if (error) {
-                        console.error('All insert attempts failed:', error);
-                        throw new Error(`Failed to add project: ${error.message}`);
+                        console.warn('Minimal insert failed, trying absolute minimum:', error);
+                        
+                        // Strategy 3: Absolute minimum
+                        const minimalData = {
+                            name: projectData.name,
+                            description: projectData.description || '',
+                            status: 'development',
+                            doctor_id: currentUser.id,
+                            last_updated: new Date().toISOString()
+                        };
+                        
+                        const { data: minimalResult, error: minimalError } = await supabaseClient
+                            .from('projects')
+                            .insert([minimalData])
+                            .select()
+                            .single();
+                        
+                        if (minimalError) throw minimalError;
+                        result = minimalResult;
+                    } else {
+                        result = data;
                     }
-                    
-                    return handleAddProjectSuccess(data, projectData, isProposal, editCode);
                 }
                 
-            } else {
-                // Some other error, re-throw it
-                throw firstError;
+                // Log success
+                const action = isProposal ? 'project_proposal_submitted' : 'project_created';
+                await logAudit(action, { 
+                    project_name: projectData.name,
+                    visibility: projectData.visibility,
+                    is_proposal: isProposal
+                }, result.id);
+                
+                // Show success message
+                let successMessage;
+                if (isProposal) {
+                    successMessage = '✅ Project proposal submitted!\n\nYour proposal is now pending admin review.';
+                } else if (currentUser.role === 'doctor' && editCode) {
+                    successMessage = `✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}`;
+                } else {
+                    successMessage = '✅ Project added successfully!';
+                }
+                
+                showToast(successMessage.split('\n\n')[0], 'success');
+                
+                if (isProposal) {
+                    alert(successMessage);
+                } else if (currentUser.role === 'doctor' && editCode) {
+                    alert(successMessage);
+                }
+                
+                if (document.getElementById('projectSuccess')) {
+                    document.getElementById('projectSuccess').textContent = 
+                        isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
+                    document.getElementById('projectSuccess').style.display = 'block';
+                }
+                
+                return { success: true, data: result, code: editCode, isProposal: isProposal };
+                
+            } catch (error) {
+                console.error('Error adding project:', error);
+                
+                let errorMessage = 'Failed to add project. ';
+                if (error.message.includes('column') && error.message.includes('does not exist')) {
+                    errorMessage += 'Please contact administrator to update database schema.';
+                } else if (error.message.includes('permission denied')) {
+                    errorMessage += 'You do not have permission to add projects.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage += 'Network error. Please check your connection.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                showToast(errorMessage, 'error');
+                
+                if (document.getElementById('projectError')) {
+                    document.getElementById('projectError').textContent = errorMessage;
+                    document.getElementById('projectError').style.display = 'block';
+                }
+                
+                return { success: false, error: error.message };
             }
         }
-        
-    } catch (error) {
-        console.error('Error adding project:', error);
-        
-        // Show user-friendly error message
-        let errorMessage = 'Failed to add project. ';
-        
-        if (error.message.includes('column') && error.message.includes('does not exist')) {
-            errorMessage += 'Database schema issue detected. Please contact administrator.';
-        } else if (error.message.includes('permission denied')) {
-            errorMessage += 'Permission denied. You may not have the required access.';
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-            errorMessage += 'Network error. Please check your connection.';
-        } else {
-            errorMessage += error.message;
-        }
-        
-        if (document.getElementById('projectError')) {
-            document.getElementById('projectError').textContent = errorMessage;
-            document.getElementById('projectError').style.display = 'block';
-        } else {
-            alert(errorMessage);
-        }
-        
-        return { success: false, error: error.message };
-    }
-}
 
-// Helper function to handle successful project addition
-function handleAddProjectSuccess(projectData, originalData, isProposal, editCode) {
-    const action = isProposal ? 'project_proposal_submitted' : 'project_created';
-    
-    logAudit(action, { 
-        project_name: originalData.name,
-        visibility: originalData.visibility || (isProposal ? 'private' : 'public'),
-        is_proposal: isProposal
-    }, projectData.id).catch(e => console.error('Audit log failed:', e));
-    
-    // Show success message based on user role
-    if (isProposal) {
-        alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
-    } else if (currentUser.role === 'doctor' && editCode) {
-        alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
-    } else {
-        alert('✅ Project added successfully!');
-    }
-    
-    // Update UI success message if modal is open
-    if (document.getElementById('projectSuccess')) {
-        document.getElementById('projectSuccess').textContent = 
-            isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
-        document.getElementById('projectSuccess').style.display = 'block';
-    }
-    
-    return { 
-        success: true, 
-        data: projectData, 
-        code: editCode, 
-        isProposal: isProposal 
-    };
-}
         async function updateProject(projectId, projectData) {
             try {
                 // Check if doctor needs edit code
@@ -2694,9 +2721,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     const enteredCode = document.getElementById('editCodeVerification')?.value;
                     
                     if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
-                        document.getElementById('editProjectError').textContent = 'Valid 5-digit edit code required';
-                        document.getElementById('editProjectError').style.display = 'block';
-                        return { success: false, error: 'Invalid edit code format' };
+                        throw new Error('Valid 5-digit edit code required');
                     }
                     
                     const { data: project, error: fetchError } = await supabaseClient
@@ -2706,39 +2731,38 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                         .single();
                     
                     if (fetchError || !project) {
-                        document.getElementById('editProjectError').textContent = 'Project not found';
-                        document.getElementById('editProjectError').style.display = 'block';
-                        return { success: false, error: 'Project not found' };
+                        throw new Error('Project not found');
                     }
                     
-                    // Doctors can't edit proposals (only admin can approve)
+                    // Doctors can't edit proposals
                     if (project.is_proposal) {
-                        document.getElementById('editProjectError').textContent = 'Proposals can only be edited by admin';
-                        document.getElementById('editProjectError').style.display = 'block';
-                        return { success: false, error: 'Proposal editing restricted' };
+                        throw new Error('Proposals can only be edited by admin');
                     }
                     
                     if (enteredCode !== project.edit_code) {
-                        document.getElementById('editProjectError').textContent = 'Invalid edit code';
-                        document.getElementById('editProjectError').style.display = 'block';
-                        return { success: false, error: 'Invalid edit code' };
+                        throw new Error('Invalid edit code');
                     }
                 }
                 
                 const updateData = {
                     ...projectData,
-                    last_updated: new Date().toISOString(),
-                    review_status: projectData.needs_feedback ? 'needs_review' : 'none'
+                    last_updated: new Date().toISOString()
                 };
+                
+                // Add optional fields if they exist
+                if (projectData.needs_feedback !== undefined) {
+                    updateData.review_status = projectData.needs_feedback ? 'needs_review' : 'none';
+                }
                 
                 // Only admin can change visibility
                 if (currentUser && currentUser.role === 'admin') {
                     updateData.visibility = document.getElementById('editProjectVisibility').value;
                     
                     // If admin is approving a proposal
-                    if (updateData.is_proposal === false) {
-                        updateData.review_status = 'approved';
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project && project.is_proposal) {
                         updateData.is_proposal = false;
+                        updateData.review_status = 'approved';
                     }
                 }
                 
@@ -2757,6 +2781,8 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     user_role: currentUser.role
                 }, projectId);
                 
+                showToast('Project updated successfully!', 'success');
+                
                 if (document.getElementById('editProjectSuccess')) {
                     document.getElementById('editProjectSuccess').textContent = 'Project updated successfully!';
                     document.getElementById('editProjectSuccess').style.display = 'block';
@@ -2766,8 +2792,10 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                 
             } catch (error) {
                 console.error('Error updating project:', error);
+                showToast(`Update failed: ${error.message}`, 'error');
+                
                 if (document.getElementById('editProjectError')) {
-                    document.getElementById('editProjectError').textContent = 'Failed to update project: ' + error.message;
+                    document.getElementById('editProjectError').textContent = error.message;
                     document.getElementById('editProjectError').style.display = 'block';
                 }
                 return { success: false, error: error.message };
@@ -2799,12 +2827,12 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     was_proposal: project?.is_proposal || false
                 }, projectId);
                 
-                alert('Project deleted successfully!');
+                showToast('Project deleted successfully!', 'success');
                 return { success: true };
                 
             } catch (error) {
                 console.error('Error deleting project:', error);
-                alert('Failed to delete project: ' + error.message);
+                showToast(`Delete failed: ${error.message}`, 'error');
                 return { success: false, error: error.message };
             }
         }
@@ -2827,6 +2855,8 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     tool_name: toolData.name
                 });
                 
+                showToast('Tool added successfully!', 'success');
+                
                 document.getElementById('toolSuccess').textContent = 'Tool added successfully!';
                 document.getElementById('toolSuccess').style.display = 'block';
                 
@@ -2834,6 +2864,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                 
             } catch (error) {
                 console.error('Error adding tool:', error);
+                showToast(`Failed to add tool: ${error.message}`, 'error');
                 document.getElementById('toolError').textContent = 'Failed to add tool: ' + error.message;
                 document.getElementById('toolError').style.display = 'block';
                 return { success: false, error: error.message };
@@ -2858,35 +2889,40 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 showErrorState();
+                showToast('Failed to load dashboard data', 'error');
             }
         }
 
         async function updateStats() {
-            const toolsCount = dashboardData.tools.length;
-            const projectsCount = dashboardData.projects.length;
-            
-            // Calculate total comments
-            let totalComments = 0;
-            Object.values(commentCounts).forEach(count => {
-                totalComments += count;
-            });
-            
-            // Get active users (logins today) - only for admin
-            let activeUsersCount = 0;
-            if (currentUser && currentUser.role === 'admin') {
-                const today = new Date().toISOString().split('T')[0];
-                const { count } = await supabaseClient
-                    .from('audit_logs')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('action', 'login')
-                    .gte('created_at', today);
-                activeUsersCount = count || 0;
+            try {
+                const toolsCount = dashboardData.tools.length;
+                const projectsCount = dashboardData.projects.length;
+                
+                // Calculate total comments
+                let totalComments = 0;
+                Object.values(commentCounts).forEach(count => {
+                    totalComments += count;
+                });
+                
+                // Get active users (logins today) - only for admin
+                let activeUsersCount = 0;
+                if (currentUser && currentUser.role === 'admin') {
+                    const today = new Date().toISOString().split('T')[0];
+                    const { count } = await supabaseClient
+                        .from('audit_logs')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('action', 'login')
+                        .gte('created_at', today);
+                    activeUsersCount = count || 0;
+                }
+                
+                document.getElementById('toolsCount').textContent = toolsCount;
+                document.getElementById('projectsCount').textContent = projectsCount;
+                document.getElementById('commentsCount').textContent = totalComments;
+                document.getElementById('activeUsersCount').textContent = activeUsersCount;
+            } catch (error) {
+                console.error('Error updating stats:', error);
             }
-            
-            document.getElementById('toolsCount').textContent = toolsCount;
-            document.getElementById('projectsCount').textContent = projectsCount;
-            document.getElementById('commentsCount').textContent = totalComments;
-            document.getElementById('activeUsersCount').textContent = activeUsersCount;
         }
 
         function renderDashboard() {
@@ -2954,8 +2990,8 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             let projectsHTML = '';
             
             dashboardData.filteredProjects.forEach(project => {
-                const statusClass = `status-${project.status}`;
-                const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+                const statusClass = `status-${project.status || 'planning'}`;
+                const statusText = (project.status || 'planning').charAt(0).toUpperCase() + (project.status || 'planning').slice(1);
                 
                 const visibilityBadge = project.visibility === 'private' 
                     ? `<span class="visibility-badge private">
@@ -2983,17 +3019,11 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
                 }
                 
-                // NEW: Project Stickers
+                // Project Stickers
                 let projectStickers = '';
-                
-                // Proposal sticker
                 if (project.is_proposal) {
                     projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
                 }
-                
-                // Imported sticker (check sync table)
-                // Published sticker (check sync table)
-                // Archived sticker
                 if (project.status === 'archived') {
                     projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
                 }
@@ -3007,7 +3037,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                 // Action Buttons
                 let actionButtons = '';
                 if (currentUser) {
-                    // Sync button (Admin only for TRAci → ThoraxLab)
+                    // Sync button (Admin only)
                     let syncButton = '';
                     if (currentUser.role === 'admin' && !project.is_proposal && project.status !== 'archived') {
                         syncButton = `
@@ -3143,7 +3173,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             attachProjectEventListeners();
         }
 
-        // Filtering with new categories
+        // Filtering
         function filterProjects(filterType) {
             if (filterType === 'all') {
                 dashboardData.filteredProjects = [...dashboardData.projects];
@@ -3152,11 +3182,9 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             } else if (filterType === 'proposals') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.is_proposal === true);
             } else if (filterType === 'imported') {
-                // Will need to check sync table
                 filterProjectsBySync('imported');
                 return;
             } else if (filterType === 'published') {
-                // Will need to check sync table
                 filterProjectsBySync('published');
                 return;
             } else if (filterType === 'reviewed') {
@@ -3270,7 +3298,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             document.querySelectorAll('.upvote-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const projectId = this.dataset.projectId;
-                    alert('Project upvoting feature coming soon!');
+                    showToast('Project upvoting feature coming soon!', 'info');
                 });
             });
             
@@ -3285,38 +3313,97 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             });
         }
 
-        // Comments System - FIXED
+        // Comments System - FIXED VERSION
         async function fetchCommentsForProject(projectId) {
             try {
-                let query = supabaseClient
+                console.log(`Fetching comments for project ${projectId}`);
+                
+                // First try to get all comments
+                const { data, error } = await supabaseClient
                     .from('project_comments')
                     .select('*')
                     .eq('project_id', projectId)
                     .order('created_at', { ascending: false });
                 
-                if (currentUser && currentUser.role === 'guest') {
-                    query = query.eq('status', 'approved');
-                } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
-                    query = query.in('status', ['approved', 'pending']);
+                if (error) {
+                    console.error('Error fetching comments:', error);
+                    
+                    // If RLS error, try a simpler query
+                    if (error.code === '42501' || error.message.includes('row-level security')) {
+                        console.log('RLS issue detected, trying public query...');
+                        
+                        // Try to get only approved comments
+                        const { data: publicData, error: publicError } = await supabaseClient
+                            .from('project_comments')
+                            .select('*')
+                            .eq('project_id', projectId)
+                            .eq('status', 'approved')
+                            .order('created_at', { ascending: false });
+                        
+                        if (publicError) {
+                            console.error('Public query also failed:', publicError);
+                            return [];
+                        }
+                        
+                        return publicData || [];
+                    }
+                    
+                    // If column doesn't exist error
+                    if (error.message.includes('column') && error.message.includes('does not exist')) {
+                        console.warn('Comments table schema issue');
+                        return [];
+                    }
+                    
+                    return [];
                 }
                 
-                const { data, error } = await query;
+                console.log(`Successfully fetched ${data?.length || 0} comments`);
                 
-                if (error) throw error;
-                return data || [];
+                // Filter comments based on user role
+                let filteredComments = data || [];
+                
+                if (currentUser && currentUser.role === 'guest') {
+                    filteredComments = filteredComments.filter(comment => comment.status === 'approved');
+                } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
+                    filteredComments = filteredComments.filter(comment => 
+                        comment.status === 'approved' || comment.status === 'pending'
+                    );
+                } else {
+                    // No user or unknown role - only show approved
+                    filteredComments = filteredComments.filter(comment => comment.status === 'approved');
+                }
+                
+                return filteredComments;
+                
             } catch (error) {
-                console.error('Error fetching comments:', error);
+                console.error('Failed to fetch comments:', error);
                 return [];
             }
         }
 
         async function loadProjectComments(projectId, projectName) {
             try {
+                console.log(`Loading comments for project: ${projectName}`);
                 currentProjectComments = projectId;
-                const comments = await fetchCommentsForProject(projectId);
+                
+                // Show loading state
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
+                        <i class="mdi mdi-loading mdi-spin" style="font-size: 2rem; margin-bottom: 12px;"></i>
+                        <p>Loading comments...</p>
+                    </div>
+                `;
                 
                 document.getElementById('commentsModalTitle').textContent = `Comments: ${projectName}`;
                 
+                // Show modal immediately
+                showModal('commentsModal');
+                
+                // Fetch comments
+                const comments = await fetchCommentsForProject(projectId);
+                
+                // Update comment form visibility
                 const commentFormSection = document.getElementById('commentFormSection');
                 const commentHintText = document.getElementById('commentHintText');
                 const guestEmailField = document.getElementById('guestEmailField');
@@ -3324,7 +3411,6 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                 if (currentUser) {
                     commentFormSection.classList.remove('hidden');
                     
-                    // Show email field for guests only
                     if (currentUser.role === 'guest') {
                         guestEmailField.classList.remove('hidden');
                         commentHintText.textContent = 'Your comments will be reviewed before appearing';
@@ -3337,8 +3423,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     guestEmailField.classList.add('hidden');
                 }
                 
-                const commentsList = document.getElementById('commentsList');
-                
+                // Render comments
                 if (!comments || comments.length === 0) {
                     commentsList.innerHTML = `
                         <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
@@ -3357,7 +3442,6 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                             minute: '2-digit'
                         });
                         
-                        // Determine comment class
                         let commentClass = 'comment-item';
                         if (comment.user_role === 'guest') commentClass += ' external';
                         if (comment.status === 'pending') commentClass += ' pending';
@@ -3397,148 +3481,233 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                     });
                     
                     commentsList.innerHTML = commentsHTML;
-                    
-                    // Add event listeners to comment buttons
                     attachCommentEventListeners();
                 }
                 
                 // Reset form
                 document.getElementById('commentText').value = '';
-                document.getElementById('guestEmail').value = '';
+                if (document.getElementById('guestEmail')) {
+                    document.getElementById('guestEmail').value = '';
+                }
                 document.getElementById('commentWordCount').textContent = '0/150 words';
-                
-                showModal('commentsModal');
                 
             } catch (error) {
                 console.error('Error loading comments:', error);
-                alert('Failed to load comments');
+                
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = `
+                    <div style="text-align: center; padding: 48px 16px; color: var(--danger);">
+                        <i class="mdi mdi-alert-circle" style="font-size: 3rem; margin-bottom: 12px;"></i>
+                        <h3>Failed to load comments</h3>
+                        <p>Error: ${error.message}</p>
+                        <button onclick="loadProjectComments('${projectId}', '${projectName.replace(/'/g, "\\'")}')" 
+                                style="margin-top: 16px; padding: 8px 16px; background: var(--primary-600); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            Retry
+                        </button>
+                    </div>
+                `;
             }
         }
 
-       async function submitProjectComment(projectId, commentText, guestEmail = null) {
-    try {
-        // Validate input
-        if (!commentText || commentText.trim().length === 0) {
-            throw new Error('Comment cannot be empty');
-        }
-        
-        const trimmedComment = commentText.trim();
-        const wordCount = trimmedComment.split(/\s+/).filter(word => word.length > 0).length;
-        
-        if (wordCount > 150) {
-            throw new Error('Comment must be 150 words or less');
-        }
-        
-        // Prepare comment data
-        const commentData = {
-            project_id: projectId,
-            content: trimmedComment,
-            user_id: currentUser ? currentUser.id : null, // Can be null for guests
-            user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
-            user_role: currentUser ? currentUser.role : 'guest',
-            status: (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) ? 'approved' : 'pending',
-            created_at: new Date().toISOString(),
-            upvotes: 0
-        };
-        
-        // Add email for guests
-        if (guestEmail) {
-            commentData.user_email = guestEmail;
-        }
-        
-        // If user is a guest without an account, ensure we have some identifier
-        if (!currentUser && !guestEmail) {
-            // Generate a temporary guest ID
-            const guestId = 'guest_' + Math.random().toString(36).substr(2, 9);
-            commentData.user_id = guestId;
-            commentData.user_name = 'Guest';
-        }
-        
-        console.log('Attempting to insert comment:', commentData);
-        
-        // Insert the comment
-        const { data, error } = await supabaseClient
-            .from('project_comments')
-            .insert([commentData])
-            .select()
-            .single();
-        
-        if (error) {
-            console.error('Supabase insert error:', error);
-            
-            // If error is about RLS, try with minimal data
-            if (error.message.includes('row-level security') || error.code === '42501') {
-                console.log('RLS error detected, trying alternative approach...');
+        async function submitProjectComment(projectId, commentText, guestEmail = null) {
+            try {
+                // Validate input
+                if (!commentText || commentText.trim().length === 0) {
+                    throw new Error('Comment cannot be empty');
+                }
                 
-                // Try without user_id for complete guests
-                const fallbackData = {
+                const trimmedComment = commentText.trim();
+                const wordCount = trimmedComment.split(/\s+/).filter(word => word.length > 0).length;
+                
+                if (wordCount > 150) {
+                    throw new Error('Comment must be 150 words or less');
+                }
+                
+                // Prepare comment data
+                const commentData = {
                     project_id: projectId,
                     content: trimmedComment,
+                    user_id: currentUser ? currentUser.id : null,
                     user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
                     user_role: currentUser ? currentUser.role : 'guest',
-                    status: 'pending',
-                    created_at: new Date().toISOString()
+                    status: (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) ? 'approved' : 'pending',
+                    created_at: new Date().toISOString(),
+                    upvotes: 0
                 };
                 
+                // Add email for guests
                 if (guestEmail) {
-                    fallbackData.user_email = guestEmail;
+                    commentData.user_email = guestEmail;
                 }
                 
-                const { data: fallbackDataResult, error: fallbackError } = await supabaseClient
-                    .from('project_comments')
-                    .insert([fallbackData])
-                    .select()
-                    .single();
-                
-                if (fallbackError) {
-                    console.error('Fallback insert also failed:', fallbackError);
-                    throw new Error(`Unable to post comment due to security restrictions. Please contact administrator. Error: ${fallbackError.message}`);
+                // If user is a guest without an account
+                if (!currentUser && !guestEmail) {
+                    commentData.user_id = 'guest_' + Math.random().toString(36).substr(2, 9);
+                    commentData.user_name = 'Guest';
                 }
                 
-                data = fallbackDataResult;
-            } else {
-                throw error;
+                console.log('Inserting comment:', commentData);
+                
+                // Try to insert comment with fallback strategies
+                let result;
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('project_comments')
+                        .insert([commentData])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    result = data;
+                    
+                } catch (insertError) {
+                    console.warn('First insert failed:', insertError);
+                    
+                    // Try without optional fields
+                    const fallbackData = {
+                        project_id: projectId,
+                        content: trimmedComment,
+                        user_name: currentUser ? (currentUser.full_name || currentUser.username) : 'Guest User',
+                        user_role: currentUser ? currentUser.role : 'guest',
+                        status: 'pending',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    if (guestEmail) {
+                        fallbackData.user_email = guestEmail;
+                    }
+                    
+                    const { data, error } = await supabaseClient
+                        .from('project_comments')
+                        .insert([fallbackData])
+                        .select()
+                        .single();
+                    
+                    if (error) {
+                        console.error('Fallback insert also failed:', error);
+                        
+                        // Try one more time with minimal data
+                        const minimalData = {
+                            project_id: projectId,
+                            content: trimmedComment,
+                            user_name: 'User',
+                            user_role: 'guest',
+                            created_at: new Date().toISOString()
+                        };
+                        
+                        const { data: minimalResult, error: minimalError } = await supabaseClient
+                            .from('project_comments')
+                            .insert([minimalData])
+                            .select()
+                            .single();
+                        
+                        if (minimalError) throw minimalError;
+                        result = minimalResult;
+                    } else {
+                        result = data;
+                    }
+                }
+                
+                // Log audit if we have a current user
+                if (currentUser) {
+                    await logAudit('comment_added', { 
+                        project_id: projectId,
+                        comment_length: wordCount,
+                        auto_approved: commentData.status === 'approved',
+                        has_email: !!guestEmail
+                    }, projectId);
+                }
+                
+                // Update comment counts
+                try {
+                    await fetchCommentCounts();
+                } catch (countError) {
+                    console.warn('Failed to update comment counts:', countError);
+                }
+                
+                // Show success message
+                const successMessage = commentData.status === 'pending' 
+                    ? 'Comment submitted for moderation. It will appear after approval.' 
+                    : 'Comment posted successfully!';
+                
+                showToast(successMessage, 'success');
+                
+                if (document.getElementById('commentSuccess')) {
+                    document.getElementById('commentSuccess').textContent = successMessage;
+                    document.getElementById('commentSuccess').style.display = 'block';
+                }
+                
+                return { success: true, data: result };
+                
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                
+                let userMessage = 'Failed to post comment. ';
+                if (error.message.includes('row-level security') || error.code === '42501') {
+                    userMessage += 'Security restrictions prevent posting. Please contact administrator.';
+                } else if (error.message.includes('permission denied')) {
+                    userMessage += 'You do not have permission to post comments.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    userMessage += 'Network error. Please check your connection.';
+                } else {
+                    userMessage += error.message;
+                }
+                
+                showToast(userMessage, 'error');
+                
+                if (document.getElementById('commentError')) {
+                    document.getElementById('commentError').textContent = userMessage;
+                    document.getElementById('commentError').style.display = 'block';
+                }
+                
+                return { 
+                    success: false, 
+                    error: userMessage
+                };
             }
         }
-        
-        // Log audit if we have a current user
-        if (currentUser) {
-            await logAudit('comment_added', { 
-                project_id: projectId,
-                comment_length: wordCount,
-                auto_approved: commentData.status === 'approved',
-                has_email: !!guestEmail
-            }, projectId).catch(e => console.error('Audit log failed:', e));
+
+        function attachCommentEventListeners() {
+            // Upvote buttons
+            document.querySelectorAll('.comment-upvote-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    const result = await upvoteComment(commentId);
+                    
+                    if (result.success) {
+                        // Update UI
+                        const countSpan = this.querySelector('span');
+                        countSpan.textContent = result.upvotes;
+                        this.classList.add('upvoted');
+                        showToast('Comment upvoted!', 'success');
+                    } else {
+                        showToast('Failed to upvote: ' + result.error, 'error');
+                    }
+                });
+            });
+            
+            // Admin moderation buttons
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'approve');
+                    await fetchCommentCounts();
+                    await initDashboard();
+                    showToast('Comment approved!', 'success');
+                });
+            });
+            
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const commentId = this.dataset.commentId;
+                    await moderateComment(commentId, 'reject');
+                    await fetchCommentCounts();
+                    await initDashboard();
+                    showToast('Comment rejected!', 'success');
+                });
+            });
         }
-        
-        // Update comment counts
-        try {
-            await fetchCommentCounts();
-        } catch (countError) {
-            console.error('Failed to update comment counts:', countError);
-        }
-        
-        return { success: true, data };
-        
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-        
-        // Provide user-friendly error messages
-        let userMessage = error.message;
-        
-        if (error.message.includes('row-level security') || error.message.includes('permission denied')) {
-            userMessage = 'Unable to post comment due to security restrictions. Please ensure you are logged in or contact the administrator.';
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-            userMessage = 'Network error. Please check your connection and try again.';
-        }
-        
-        return { 
-            success: false, 
-            error: userMessage,
-            originalError: error.message 
-        };
-    }
-}
+
         // Moderation System
         async function fetchPendingComments() {
             try {
@@ -3647,7 +3816,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             }
         }
 
-        // NEW: Sync to ThoraxLab Function
+        // Sync to ThoraxLab Function
         async function syncToThoraxLab(projectId, visibility, notes = '') {
             try {
                 if (!currentUser || currentUser.role !== 'admin') {
@@ -4154,7 +4323,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
         }
 
-        // NEW: Show sync modal
+        // Show sync modal
         function showSyncModal(projectId, projectName) {
             if (!currentUser || currentUser.role !== 'admin') {
                 alert('Only admin can publish projects to ThoraxLab');
@@ -4175,7 +4344,7 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             showModal('syncToThoraxLabModal');
         }
 
-        // NEW: Load moderation data
+        // Load moderation data
         async function loadModerationData() {
             await Promise.all([
                 fetchPendingComments(),
@@ -4183,353 +4352,6 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
             ]);
             showModerationModal();
         }
-
-        // ========== EVENT LISTENERS ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStoredUser();
-            updateAuthUI();
-            
-            // Login
-            document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-            
-            // Guest post project
-            document.getElementById('guestPostProjectBtn').addEventListener('click', () => {
-                if (!currentUser) {
-                    showModal('loginModal');
-                } else {
-                    showModal('addProjectModal');
-                }
-            });
-            
-            // Modal close
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', hideAllModals);
-            });
-            
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) hideAllModals();
-                });
-            });
-            
-            // Login form
-            document.getElementById('submitLogin').addEventListener('click', async function() {
-                const username = document.getElementById('loginUsername').value.trim();
-                const password = document.getElementById('loginPassword').value.trim();
-                
-                if (!username || !password) {
-                    document.getElementById('loginError').textContent = 'Please enter both username and password';
-                    document.getElementById('loginError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Signing In...';
-                this.disabled = true;
-                
-                const success = await loginUser(username, password);
-                
-                this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
-                this.disabled = false;
-                
-                if (success) {
-                    hideAllModals();
-                    updateAuthUI();
-                }
-            });
-            
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('submitLogin').click();
-                }
-            });
-            
-            // Admin buttons
-            document.getElementById('addProjectBtn').addEventListener('click', () => {
-                document.getElementById('projectName').value = '';
-                document.getElementById('projectDescription').value = '';
-                document.getElementById('projectStatus').value = 'development';
-                document.getElementById('projectProgress').value = '0';
-                document.getElementById('projectNeedsFeedback').checked = false;
-                document.getElementById('projectVisibility').value = 'public';
-                clearFormMessages();
-                showModal('addProjectModal');
-            });
-            
-            document.getElementById('addToolBtn').addEventListener('click', () => {
-                document.getElementById('toolName').value = '';
-                document.getElementById('toolDescription').value = '';
-                document.getElementById('toolUrl').value = '';
-                clearFormMessages();
-                showModal('addToolModal');
-            });
-            
-            document.getElementById('viewCodesBtn').addEventListener('click', () => {
-                loadEditCodes();
-                showModal('viewCodesModal');
-            });
-            
-            document.getElementById('moderateCommentsBtn').addEventListener('click', async () => {
-                await fetchPendingComments();
-                showCommentsModerationModal();
-                showModal('moderateCommentsModal');
-            });
-            
-            document.getElementById('moderateProjectsBtn').addEventListener('click', async () => {
-                await fetchPendingProjects();
-                showProjectsModerationModal();
-                showModal('moderateProjectsModal');
-            });
-            
-            // Guest contact
-            document.getElementById('contactBtn').addEventListener('click', () => {
-                window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry - TRAci Dashboard');
-            });
-            
-            // Filter controls
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(b => {
-                        b.classList.remove('active');
-                    });
-                    
-                    this.classList.add('active');
-                    
-                    const filterType = this.dataset.filter;
-                    filterProjects(filterType);
-                });
-            });
-            
-            // Comment system
-            document.getElementById('commentText').addEventListener('input', function() {
-                const text = this.value.trim();
-                const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
-                document.getElementById('commentWordCount').textContent = `${words}/150 words`;
-                
-                if (words > 150) {
-                    this.style.borderColor = 'var(--danger)';
-                    document.getElementById('commentWordCount').style.color = 'var(--danger)';
-                } else {
-                    this.style.borderColor = 'var(--border)';
-                    document.getElementById('commentWordCount').style.color = 'var(--gray-500)';
-                }
-            });
-            
-            document.getElementById('submitCommentBtn').addEventListener('click', async function() {
-                if (!currentProjectComments) return;
-                
-                const commentText = document.getElementById('commentText').value.trim();
-                const guestEmail = document.getElementById('guestEmail').value.trim();
-                const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
-                
-                if (wordCount === 0) {
-                    document.getElementById('commentError').textContent = 'Please enter a comment';
-                    document.getElementById('commentError').style.display = 'block';
-                    return;
-                }
-                
-                if (wordCount > 150) {
-                    document.getElementById('commentError').textContent = 'Comment must be 150 words or less';
-                    document.getElementById('commentError').style.display = 'block';
-                    return;
-                }
-                
-                if (currentUser.role === 'guest' && !guestEmail) {
-                    document.getElementById('commentError').textContent = 'Email is required for guest comments';
-                    document.getElementById('commentError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
-                this.disabled = true;
-                
-                const result = await submitProjectComment(currentProjectComments, commentText, guestEmail);
-                
-                this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
-                this.disabled = false;
-                
-                if (result.success) {
-                    document.getElementById('commentText').value = '';
-                    document.getElementById('guestEmail').value = '';
-                    document.getElementById('commentWordCount').textContent = '0/150 words';
-                    document.getElementById('commentSuccess').textContent = result.data.status === 'pending' 
-                        ? 'Comment submitted for moderation' 
-                        : 'Comment posted successfully';
-                    document.getElementById('commentSuccess').style.display = 'block';
-                    
-                    const project = dashboardData.projects.find(p => p.id === currentProjectComments);
-                    if (project) {
-                        setTimeout(() => {
-                            loadProjectComments(currentProjectComments, project.name);
-                        }, 1500);
-                    }
-                } else {
-                    document.getElementById('commentError').textContent = 'Failed to post comment: ' + result.error;
-                    document.getElementById('commentError').style.display = 'block';
-                }
-            });
-            
-            // Project CRUD
-            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
-                const projectData = {
-                    name: document.getElementById('projectName').value.trim(),
-                    description: document.getElementById('projectDescription').value.trim(),
-                    status: document.getElementById('projectStatus').value,
-                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
-                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
-                    visibility: document.getElementById('projectVisibility').value,
-                    doctor_id: currentUser.id
-                };
-                
-                if (!projectData.name) {
-                    document.getElementById('projectError').textContent = 'Project name is required';
-                    document.getElementById('projectError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
-                this.disabled = true;
-                
-                const result = await addProject(projectData);
-                
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
-                this.disabled = false;
-                
-                if (result.success) {
-                    setTimeout(() => {
-                        hideAllModals();
-                        initDashboard();
-                    }, 1500);
-                }
-            });
-            
-            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('editProjectId').value;
-                const projectData = {
-                    name: document.getElementById('editProjectName').value.trim(),
-                    description: document.getElementById('editProjectDescription').value.trim(),
-                    status: document.getElementById('editProjectStatus').value,
-                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
-                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked
-                };
-                
-                if (currentUser && currentUser.role === 'admin') {
-                    projectData.visibility = document.getElementById('editProjectVisibility').value;
-                    
-                    // If admin is changing from proposal to regular project
-                    const project = dashboardData.projects.find(p => p.id === projectId);
-                    if (project && project.is_proposal) {
-                        projectData.is_proposal = false;
-                        projectData.review_status = 'approved';
-                    }
-                }
-                
-                if (!projectData.name) {
-                    document.getElementById('editProjectError').textContent = 'Project name is required';
-                    document.getElementById('editProjectError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Updating...';
-                this.disabled = true;
-                
-                await updateProject(projectId, projectData);
-                
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Update Project';
-                this.disabled = false;
-            });
-            
-            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('editProjectId').value;
-                await deleteProject(projectId);
-                hideAllModals();
-                await initDashboard();
-            });
-            
-            // Tool CRUD
-            document.getElementById('saveToolBtn').addEventListener('click', async function() {
-                const toolData = {
-                    name: document.getElementById('toolName').value.trim(),
-                    description: document.getElementById('toolDescription').value.trim(),
-                    url: document.getElementById('toolUrl').value.trim(),
-                    status: 'operational',
-                    icon: 'mdi mdi-toolbox',
-                    category: 'General'
-                };
-                
-                if (!toolData.name || !toolData.url) {
-                    document.getElementById('toolError').textContent = 'Tool name and URL are required';
-                    document.getElementById('toolError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
-                this.disabled = true;
-                
-                await addTool(toolData);
-                
-                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Tool';
-                this.disabled = false;
-            });
-            
-            // PDF Export
-            document.getElementById('generatePDFBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('pdfProjectSelect').value;
-                if (!projectId) {
-                    document.getElementById('pdfError').textContent = 'Please select a project';
-                    document.getElementById('pdfError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating PDF...';
-                this.disabled = true;
-                
-                const result = await exportProjectToPDF(projectId);
-                
-                this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
-                this.disabled = false;
-                
-                if (!result.success) {
-                    document.getElementById('pdfError').textContent = 'Error: ' + result.error;
-                    document.getElementById('pdfError').style.display = 'block';
-                } else {
-                    hideAllModals();
-                }
-            });
-            
-            // Dashboard refresh
-            document.getElementById('refreshLink').addEventListener('click', async function(e) {
-                e.preventDefault();
-                if (!currentUser) return;
-                
-                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
-                await initDashboard();
-                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
-            });
-            
-            // NEW: Sync to ThoraxLab
-            document.getElementById('confirmSyncBtn').addEventListener('click', async function() {
-                const projectId = document.getElementById('syncProjectId').value;
-                const visibility = document.getElementById('syncVisibility').value;
-                const notes = document.getElementById('syncDescription').value.trim();
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Publishing...';
-                this.disabled = true;
-                
-                await syncToThoraxLab(projectId, visibility, notes);
-                
-                this.innerHTML = '<i class="mdi mdi-rocket-launch"></i> Publish to ThoraxLab';
-                this.disabled = false;
-            });
-            
-            // Auto-refresh every 5 minutes
-            setInterval(async () => {
-                if (currentUser) {
-                    await initDashboard();
-                }
-            }, 5 * 60 * 1000);
-        });
 
         // Moderation modal display
         function showCommentsModerationModal() {
@@ -4683,6 +4505,367 @@ function handleAddProjectSuccess(projectData, originalData, isProposal, editCode
                 alert(`Project ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
             }
         }
+
+        // ========== EVENT LISTENERS ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStoredUser();
+            updateAuthUI();
+            
+            // Login
+            document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Guest post project
+            document.getElementById('guestPostProjectBtn').addEventListener('click', () => {
+                if (!currentUser) {
+                    showModal('loginModal');
+                } else {
+                    showModal('addProjectModal');
+                }
+            });
+            
+            // Modal close
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', hideAllModals);
+            });
+            
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) hideAllModals();
+                });
+            });
+            
+            // Login form
+            document.getElementById('submitLogin').addEventListener('click', async function() {
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!username || !password) {
+                    document.getElementById('loginError').textContent = 'Please enter both username and password';
+                    document.getElementById('loginError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Signing In...';
+                this.disabled = true;
+                
+                const success = await loginUser(username, password);
+                
+                this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
+                this.disabled = false;
+                
+                if (success) {
+                    hideAllModals();
+                    updateAuthUI();
+                }
+            });
+            
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submitLogin').click();
+                }
+            });
+            
+            // Admin buttons
+            document.getElementById('addProjectBtn').addEventListener('click', () => {
+                document.getElementById('projectName').value = '';
+                document.getElementById('projectDescription').value = '';
+                document.getElementById('projectStatus').value = 'development';
+                document.getElementById('projectProgress').value = '0';
+                document.getElementById('projectNeedsFeedback').checked = false;
+                document.getElementById('projectVisibility').value = 'public';
+                clearFormMessages();
+                showModal('addProjectModal');
+            });
+            
+            document.getElementById('addToolBtn').addEventListener('click', () => {
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolDescription').value = '';
+                document.getElementById('toolUrl').value = '';
+                clearFormMessages();
+                showModal('addToolModal');
+            });
+            
+            document.getElementById('viewCodesBtn').addEventListener('click', () => {
+                loadEditCodes();
+                showModal('viewCodesModal');
+            });
+            
+            document.getElementById('moderateCommentsBtn').addEventListener('click', async () => {
+                await fetchPendingComments();
+                showCommentsModerationModal();
+                showModal('moderateCommentsModal');
+            });
+            
+            document.getElementById('moderateProjectsBtn').addEventListener('click', async () => {
+                await fetchPendingProjects();
+                showProjectsModerationModal();
+                showModal('moderateProjectsModal');
+            });
+            
+            // Guest contact
+            document.getElementById('contactBtn').addEventListener('click', () => {
+                window.open('mailto:pneumology.innovation@hospital.com?subject=Collaboration Inquiry - TRAci Dashboard');
+            });
+            
+            // Filter controls
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    
+                    const filterType = this.dataset.filter;
+                    filterProjects(filterType);
+                });
+            });
+            
+            // Comment system
+            document.getElementById('commentText').addEventListener('input', function() {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+                document.getElementById('commentWordCount').textContent = `${words}/150 words`;
+                
+                if (words > 150) {
+                    this.style.borderColor = 'var(--danger)';
+                    document.getElementById('commentWordCount').style.color = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'var(--border)';
+                    document.getElementById('commentWordCount').style.color = 'var(--gray-500)';
+                }
+            });
+            
+            document.getElementById('submitCommentBtn').addEventListener('click', async function() {
+                if (!currentProjectComments) return;
+                
+                const commentText = document.getElementById('commentText').value.trim();
+                const guestEmail = document.getElementById('guestEmail')?.value.trim();
+                const wordCount = commentText.split(/\s+/).filter(word => word.length > 0).length;
+                
+                // Clear previous messages
+                const commentError = document.getElementById('commentError');
+                const commentSuccess = document.getElementById('commentSuccess');
+                if (commentError) commentError.style.display = 'none';
+                if (commentSuccess) commentSuccess.style.display = 'none';
+                
+                if (wordCount === 0) {
+                    if (commentError) {
+                        commentError.textContent = 'Please enter a comment';
+                        commentError.style.display = 'block';
+                    }
+                    return;
+                }
+                
+                if (wordCount > 150) {
+                    if (commentError) {
+                        commentError.textContent = 'Comment must be 150 words or less';
+                        commentError.style.display = 'block';
+                    }
+                    return;
+                }
+                
+                if (currentUser?.role === 'guest' && !guestEmail) {
+                    if (commentError) {
+                        commentError.textContent = 'Email is required for guest comments';
+                        commentError.style.display = 'block';
+                    }
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Posting...';
+                this.disabled = true;
+                
+                const result = await submitProjectComment(currentProjectComments, commentText, guestEmail);
+                
+                this.innerHTML = '<i class="mdi mdi-send"></i> Post Comment';
+                this.disabled = false;
+                
+                if (result.success) {
+                    document.getElementById('commentText').value = '';
+                    if (document.getElementById('guestEmail')) {
+                        document.getElementById('guestEmail').value = '';
+                    }
+                    document.getElementById('commentWordCount').textContent = '0/150 words';
+                    
+                    // Refresh comments after a delay
+                    setTimeout(async () => {
+                        const project = dashboardData.projects.find(p => p.id === currentProjectComments);
+                        if (project) {
+                            await loadProjectComments(currentProjectComments, project.name);
+                        }
+                    }, 1500);
+                    
+                    // Refresh dashboard to update comment counts
+                    setTimeout(async () => {
+                        await fetchCommentCounts();
+                        renderProjects();
+                    }, 2000);
+                }
+            });
+            
+            // Project CRUD
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    needs_feedback: document.getElementById('projectNeedsFeedback').checked,
+                    visibility: document.getElementById('projectVisibility').value,
+                    doctor_id: currentUser.id
+                };
+                
+                if (!projectData.name) {
+                    document.getElementById('projectError').textContent = 'Project name is required';
+                    document.getElementById('projectError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                const result = await addProject(projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Project';
+                this.disabled = false;
+                
+                if (result.success) {
+                    setTimeout(() => {
+                        hideAllModals();
+                        initDashboard();
+                    }, 1500);
+                }
+            });
+            
+            document.getElementById('updateProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                const projectData = {
+                    name: document.getElementById('editProjectName').value.trim(),
+                    description: document.getElementById('editProjectDescription').value.trim(),
+                    status: document.getElementById('editProjectStatus').value,
+                    progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
+                    needs_feedback: document.getElementById('editProjectNeedsFeedback').checked
+                };
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    projectData.visibility = document.getElementById('editProjectVisibility').value;
+                    
+                    // If admin is changing from proposal to regular project
+                    const project = dashboardData.projects.find(p => p.id === projectId);
+                    if (project && project.is_proposal) {
+                        projectData.is_proposal = false;
+                        projectData.review_status = 'approved';
+                    }
+                }
+                
+                if (!projectData.name) {
+                    document.getElementById('editProjectError').textContent = 'Project name is required';
+                    document.getElementById('editProjectError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Updating...';
+                this.disabled = true;
+                
+                await updateProject(projectId, projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Update Project';
+                this.disabled = false;
+            });
+            
+            document.getElementById('deleteProjectBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('editProjectId').value;
+                await deleteProject(projectId);
+                hideAllModals();
+                await initDashboard();
+            });
+            
+            // Tool CRUD
+            document.getElementById('saveToolBtn').addEventListener('click', async function() {
+                const toolData = {
+                    name: document.getElementById('toolName').value.trim(),
+                    description: document.getElementById('toolDescription').value.trim(),
+                    url: document.getElementById('toolUrl').value.trim(),
+                    status: 'operational',
+                    icon: 'mdi mdi-toolbox',
+                    category: 'General'
+                };
+                
+                if (!toolData.name || !toolData.url) {
+                    document.getElementById('toolError').textContent = 'Tool name and URL are required';
+                    document.getElementById('toolError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+                this.disabled = true;
+                
+                await addTool(toolData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Save Tool';
+                this.disabled = false;
+            });
+            
+            // PDF Export
+            document.getElementById('generatePDFBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('pdfProjectSelect').value;
+                if (!projectId) {
+                    document.getElementById('pdfError').textContent = 'Please select a project';
+                    document.getElementById('pdfError').style.display = 'block';
+                    return;
+                }
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Generating PDF...';
+                this.disabled = true;
+                
+                const result = await exportProjectToPDF(projectId);
+                
+                this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
+                this.disabled = false;
+                
+                if (!result.success) {
+                    document.getElementById('pdfError').textContent = 'Error: ' + result.error;
+                    document.getElementById('pdfError').style.display = 'block';
+                } else {
+                    hideAllModals();
+                }
+            });
+            
+            // Dashboard refresh
+            document.getElementById('refreshLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Refreshing...';
+                await initDashboard();
+                document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
+            });
+            
+            // Sync to ThoraxLab
+            document.getElementById('confirmSyncBtn').addEventListener('click', async function() {
+                const projectId = document.getElementById('syncProjectId').value;
+                const visibility = document.getElementById('syncVisibility').value;
+                const notes = document.getElementById('syncDescription').value.trim();
+                
+                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Publishing...';
+                this.disabled = true;
+                
+                await syncToThoraxLab(projectId, visibility, notes);
+                
+                this.innerHTML = '<i class="mdi mdi-rocket-launch"></i> Publish to ThoraxLab';
+                this.disabled = false;
+            });
+            
+            // Auto-refresh every 5 minutes
+            setInterval(async () => {
+                if (currentUser) {
+                    await initDashboard();
+                }
+            }, 5 * 60 * 1000);
+        });
 
         // Make functions globally available
         window.resetSingleCode = resetSingleCode;
