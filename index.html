@@ -2879,16 +2879,32 @@
                 let projectStickers = '';
                 
                 // Proposal sticker
-                if (project.is_proposal) {
-                    projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
-                }
-                
-                // Imported sticker (check sync table)
-                // Published sticker (check sync table)
-                // Archived sticker
-                if (project.status === 'archived') {
-                    projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
-                }
+               // NEW: Project Stickers
+let projectStickers = '';
+
+// Proposal sticker
+if (project.is_proposal) {
+    projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
+}
+
+// Imported sticker (from ThoraxLab)
+if (project.source_thoraxlab_project_id) {
+    projectStickers += `<span class="project-sticker sticker-imported">
+        <i class="mdi mdi-import"></i> Imported from ThoraxLab
+    </span>`;
+}
+
+// Published sticker (check sync table)
+if (project.review_status === 'published_to_thoraxlab') {
+    projectStickers += `<span class="project-sticker sticker-published">
+        <i class="mdi mdi-share-variant"></i> Published to ThoraxLab
+    </span>`;
+}
+
+// Archived sticker
+if (project.status === 'archived') {
+    projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
+}
                 
                 // Determine card class
                 let cardClass = 'project-card';
@@ -4795,6 +4811,83 @@ function renderProjectCard(project) {
             ${actionButtons}
         </div>
     `;
+}
+
+// ========== SHOW IMPORT DETAILS MODAL ==========
+function showImportDetails(projectId) {
+    const project = dashboardData.projects.find(p => p.id === projectId);
+    if (!project || !project.source_thoraxlab_project_id) return;
+    
+    // Create and show modal for import details
+    const modalHTML = `
+        <div class="modal-overlay" id="importDetailsModal" style="display: flex;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>
+                        <i class="mdi mdi-import"></i>
+                        <span>Imported Project Details</span>
+                    </h3>
+                    <button class="modal-close" onclick="document.getElementById('importDetailsModal').style.display='none'">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Original ThoraxLab Project ID:</label>
+                        <div class="form-control" style="background: var(--gray-100); font-family: monospace;">
+                            ${project.source_thoraxlab_project_id}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Import Date:</label>
+                        <div class="form-control" style="background: var(--gray-100);">
+                            ${new Date(project.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Import Status:</label>
+                        <div class="form-control" style="background: var(--gray-100);">
+                            ${project.review_status === 'needs_review' ? 'Needs Review' : 
+                              project.review_status === 'archived' ? 'Archived' : 
+                              project.review_status === 'active' ? 'Active' : 'Unknown'}
+                        </div>
+                    </div>
+                    <div class="moderation-panel">
+                        <h4 style="margin-bottom: 8px; color: var(--info);">
+                            <i class="mdi mdi-information"></i>
+                            Import Information
+                        </h4>
+                        <ul style="font-size: 0.875rem; color: var(--gray-600); padding-left: 20px; margin: 8px 0;">
+                            <li>This project was imported from ThoraxLab collaboration platform</li>
+                            <li>Original project is maintained by industry/clinical partners</li>
+                            <li>Changes made here won't affect the original ThoraxLab project</li>
+                            <li>Use for internal clinical review and development</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to DOM
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer.firstChild);
+}
+        // ========== FETCH IMPORTED PROJECTS FUNCTION ==========
+async function fetchImportedProjects() {
+    try {
+        // Get projects that have source_thoraxlab_project_id
+        const { data, error } = await supabaseClient
+            .from('projects')
+            .select('*')
+            .not('source_thoraxlab_project_id', 'is', null)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching imported projects:', error);
+        return [];
+    }
 }
 
 // ========== SHOW IMPORT DETAILS MODAL ==========
