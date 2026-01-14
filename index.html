@@ -4566,6 +4566,296 @@
         window.showSyncModal = showSyncModal;
         window.loadProjectForEditDashboard = loadProjectForEditDashboard;
         window.moderateProjectFromModal = moderateProjectFromModal;
+        // ========== FETCH IMPORTED PROJECTS FUNCTION ==========
+async function fetchImportedProjects() {
+    try {
+        // Get projects that have source_thoraxlab_project_id
+        const { data, error } = await supabaseClient
+            .from('projects')
+            .select('*')
+            .not('source_thoraxlab_project_id', 'is', null)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching imported projects:', error);
+        return [];
+    }
+}
+
+// ========== UPDATE PROJECT CARD RENDERING ==========
+function renderProjectCard(project) {
+    const statusClass = `status-${project.status}`;
+    const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+    
+    const visibilityBadge = project.visibility === 'private' 
+        ? `<span class="visibility-badge private">
+             <i class="mdi mdi-lock"></i> Private
+           </span>`
+        : `<span class="visibility-badge public">
+             <i class="mdi mdi-earth"></i> Public
+           </span>`;
+    
+    // Comment Count Badge
+    const commentCount = getCommentCount(project.id);
+    const commentBadge = commentCount > 0 ? 
+        `<span class="comment-count-badge" data-project-id="${project.id}">
+            <i class="mdi mdi-comment"></i>
+            ${commentCount}
+        </span>` : '';
+    
+    // Review Sticker
+    let reviewSticker = '';
+    if (project.review_status === 'needs_review') {
+        reviewSticker = `<span class="review-sticker needs-review"><i class="mdi mdi-alert"></i> Needs Review</span>`;
+    } else if (project.review_status === 'reviewed') {
+        reviewSticker = `<span class="review-sticker reviewed"><i class="mdi mdi-check-circle"></i> Reviewed</span>`;
+    } else if (project.review_status === 'feedback_provided') {
+        reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
+    }
+    
+    // NEW: Project Stickers
+    let projectStickers = '';
+    
+    // Proposal sticker
+    if (project.is_proposal) {
+        projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
+    }
+    
+    // Imported sticker (check if from ThoraxLab)
+    if (project.source_thoraxlab_project_id) {
+        projectStickers += `<span class="project-sticker sticker-imported">
+            <i class="mdi mdi-import"></i> Imported from ThoraxLab
+        </span>`;
+    }
+    
+    // Published sticker (check sync table)
+    if (project.review_status === 'published_to_thoraxlab') {
+        projectStickers += `<span class="project-sticker sticker-published">
+            <i class="mdi mdi-share-variant"></i> Published to ThoraxLab
+        </span>`;
+    }
+    
+    // Archived sticker
+    if (project.status === 'archived') {
+        projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
+    }
+    
+    // Determine card class
+    let cardClass = 'project-card';
+    if (project.needs_feedback) cardClass += ' needs-feedback';
+    if (project.status === 'archived') cardClass += ' archived';
+    if (project.is_proposal) cardClass += ' proposal';
+    if (project.source_thoraxlab_project_id) cardClass += ' imported';
+    
+    // Action Buttons
+    let actionButtons = '';
+    if (currentUser) {
+        // Sync button (Admin only for TRAci → ThoraxLab)
+        let syncButton = '';
+        if (currentUser.role === 'admin' && !project.is_proposal && project.status !== 'archived') {
+            syncButton = `
+                <button class="action-btn sync-btn" data-project-id="${project.id}" 
+                        onclick="showSyncModal('${project.id}', '${project.name}')">
+                    <i class="mdi mdi-share-variant"></i>
+                    Publish
+                </button>
+            `;
+        }
+        
+        // Import button for imported projects
+        let importStatusButton = '';
+        if (project.source_thoraxlab_project_id) {
+            importStatusButton = `
+                <button class="action-btn sync-btn" data-project-id="${project.id}" 
+                        onclick="showImportDetails('${project.id}')">
+                    <i class="mdi mdi-information"></i>
+                    Import Details
+                </button>
+            `;
+        }
+        
+        if (currentUser.role === 'admin') {
+            actionButtons = `
+                <div class="project-actions">
+                    <button class="action-btn edit-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-pencil"></i>
+                        Edit
+                    </button>
+                    <button class="action-btn delete-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-delete"></i>
+                        Delete
+                    </button>
+                    ${syncButton}
+                    ${importStatusButton}
+                    <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-thumb-up"></i>
+                        <span>Upvote</span>
+                    </button>
+                    <button class="action-btn comment-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-comment"></i>
+                        Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                    </button>
+                    <button class="action-btn pdf-export-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-file-pdf"></i>
+                        Export PDF
+                    </button>
+                </div>
+            `;
+        } else if (currentUser.role === 'doctor') {
+            actionButtons = `
+                <div class="project-actions">
+                    <button class="action-btn edit-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-pencil"></i>
+                        Edit (with code)
+                    </button>
+                    <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-thumb-up"></i>
+                        <span>Upvote</span>
+                    </button>
+                    <button class="action-btn comment-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-comment"></i>
+                        Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                    </button>
+                    ${importStatusButton}
+                </div>
+            `;
+        } else if (currentUser.role === 'guest') {
+            // Guests can only edit their own proposals
+            const canEdit = project.is_proposal && project.doctor_id === currentUser.id;
+            const editButton = canEdit ? `
+                <button class="action-btn edit-btn" data-project-id="${project.id}">
+                    <i class="mdi mdi-pencil"></i>
+                    Edit Proposal
+                </button>
+            ` : '';
+            
+            actionButtons = `
+                <div class="project-actions">
+                    ${editButton}
+                    ${importStatusButton}
+                    <button class="action-btn upvote-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-thumb-up"></i>
+                        <span>Upvote</span>
+                    </button>
+                    <button class="action-btn comment-btn" data-project-id="${project.id}">
+                        <i class="mdi mdi-comment"></i>
+                        View Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
+                    </button>
+                </div>
+            `;
+        }
+    }
+    
+    return `
+        <div class="${cardClass}" data-project-id="${project.id}">
+            <div class="project-header">
+                <div class="project-title">
+                    <i class="mdi mdi-flask"></i>
+                    ${project.name}
+                    ${visibilityBadge}
+                    ${reviewSticker}
+                    ${projectStickers}
+                    ${commentBadge}
+                </div>
+                <span class="project-status ${statusClass}">${statusText}</span>
+            </div>
+            
+            <p class="project-description">${project.description || 'No description available'}</p>
+            
+            <div class="project-progress">
+                <div class="progress-label">
+                    <span>Progress</span>
+                    <span>${project.progress || 0}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                </div>
+            </div>
+            
+            <!-- Feedback Channels -->
+            <div class="feedback-section">
+                <div class="feedback-badge">Feedback Channels:</div>
+                <div class="feedback-channels">
+                    <a href="https://wa.me/?text=Project: ${encodeURIComponent(project.name)}" 
+                       class="channel-btn whatsapp" target="_blank" title="Share on WhatsApp">
+                        <i class="mdi mdi-whatsapp"></i>
+                    </a>
+                    <a href="mailto:?subject=Project: ${encodeURIComponent(project.name)}&body=${encodeURIComponent(project.description || 'Check out this project!')}" 
+                       class="channel-btn email" title="Share via Email">
+                        <i class="mdi mdi-email"></i>
+                    </a>
+                    <a href="#" class="channel-btn github" title="View on GitHub">
+                        <i class="mdi mdi-github"></i>
+                    </a>
+                </div>
+            </div>
+            
+            ${actionButtons}
+        </div>
+    `;
+}
+
+// ========== SHOW IMPORT DETAILS MODAL ==========
+function showImportDetails(projectId) {
+    const project = dashboardData.projects.find(p => p.id === projectId);
+    if (!project || !project.source_thoraxlab_project_id) return;
+    
+    // Create and show modal for import details
+    const modalHTML = `
+        <div class="modal-overlay" id="importDetailsModal" style="display: flex;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>
+                        <i class="mdi mdi-import"></i>
+                        <span>Imported Project Details</span>
+                    </h3>
+                    <button class="modal-close" onclick="document.getElementById('importDetailsModal').style.display='none'">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Original ThoraxLab Project ID:</label>
+                        <div class="form-control" style="background: var(--gray-100); font-family: monospace;">
+                            ${project.source_thoraxlab_project_id}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Import Date:</label>
+                        <div class="form-control" style="background: var(--gray-100);">
+                            ${new Date(project.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Import Status:</label>
+                        <div class="form-control" style="background: var(--gray-100);">
+                            ${project.review_status === 'needs_review' ? 'Needs Review' : 
+                              project.review_status === 'archived' ? 'Archived' : 
+                              project.review_status === 'active' ? 'Active' : 'Unknown'}
+                        </div>
+                    </div>
+                    <div class="moderation-panel">
+                        <h4 style="margin-bottom: 8px; color: var(--info);">
+                            <i class="mdi mdi-information"></i>
+                            Import Information
+                        </h4>
+                        <ul style="font-size: 0.875rem; color: var(--gray-600); padding-left: 20px; margin: 8px 0;">
+                            <li>This project was imported from ThoraxLab collaboration platform</li>
+                            <li>Original project is maintained by industry/clinical partners</li>
+                            <li>Changes made here won't affect the original ThoraxLab project</li>
+                            <li>Use for internal clinical review and development</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to DOM
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer.firstChild);
+}
     </script>
 </body>
 </html>
