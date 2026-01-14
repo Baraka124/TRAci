@@ -2065,7 +2065,24 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
         // ========== SUPABASE INITIALIZATION ==========
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ========== SUPABASE INITIALIZATION ==========
+let supabaseClient = null;
+
+// Initialize Supabase client
+function initSupabaseClient() {
+    if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    return supabaseClient;
+}
+
+// Get Supabase client (initialize if needed)
+function getSupabase() {
+    if (!supabaseClient) {
+        initSupabaseClient();
+    }
+    return supabaseClient;
+}
 
         // ========== STATE MANAGEMENT ==========
         let currentUser = null;
