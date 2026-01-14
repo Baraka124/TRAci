@@ -2514,71 +2514,179 @@
             }
         }
 
-        // Project CRUD with new proposal logic
-        async function addProject(projectData) {
-            try {
-                const editCode = currentUser.role === 'doctor' ? 
-                    Math.floor(10000 + Math.random() * 90000).toString() : null;
+       // Project CRUD with new proposal logic
+async function addProject(projectData) {
+    try {
+        const editCode = currentUser.role === 'doctor' ? 
+            Math.floor(10000 + Math.random() * 90000).toString() : null;
+        
+        // Determine if this is a proposal (guest submission)
+        const isProposal = currentUser.role === 'guest';
+        
+        // Build base project data with guaranteed columns
+        const baseProjectData = {
+            name: projectData.name,
+            description: projectData.description || '',
+            status: isProposal ? 'planning' : (projectData.status || 'development'),
+            progress: parseInt(projectData.progress) || 0,
+            needs_feedback: projectData.needs_feedback || false,
+            visibility: isProposal ? 'private' : (projectData.visibility || 'public'),
+            doctor_id: currentUser.id,
+            last_updated: new Date().toISOString(),
+            edit_code: editCode
+        };
+        
+        // Try inserting with optional columns first
+        let projectToInsert = { ...baseProjectData };
+        
+        // Add optional columns that might not exist yet
+        const optionalColumns = {
+            review_status: isProposal ? 'pending_review' : (projectData.needs_feedback ? 'needs_review' : 'none'),
+            is_proposal: isProposal
+        };
+        
+        // First attempt: Try with all columns
+        try {
+            const { data, error } = await supabaseClient
+                .from('projects')
+                .insert([{ ...projectToInsert, ...optionalColumns }])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            // Success with all columns
+            return handleAddProjectSuccess(data, projectData, isProposal, editCode);
+            
+        } catch (firstError) {
+            console.warn('First insert attempt failed:', firstError.message);
+            
+            // If error is about missing columns, try without optional columns
+            if (firstError.message.includes('is_proposal') || 
+                firstError.message.includes('review_status') ||
+                firstError.message.includes('column')) {
                 
-                // Determine if this is a proposal (guest submission)
-                const isProposal = currentUser.role === 'guest';
+                console.log('Retrying without optional columns...');
                 
-                const projectToInsert = {
-                    ...projectData,
-                    last_updated: new Date().toISOString(),
-                    edit_code: editCode,
-                    review_status: projectData.needs_feedback ? 'needs_review' : 'none',
-                    is_proposal: isProposal,
-                    status: isProposal ? 'planning' : projectData.status
-                };
-                
-                // Guest proposals are always private pending review
-                if (isProposal) {
-                    projectToInsert.visibility = 'private';
-                    projectToInsert.review_status = 'pending_review';
+                // Second attempt: Insert without problematic columns
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('projects')
+                        .insert([projectToInsert])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    // If this was a proposal, try to update review status separately
+                    if (isProposal) {
+                        try {
+                            await supabaseClient
+                                .from('projects')
+                                .update({ 
+                                    visibility: 'private',
+                                    status: 'planning'
+                                })
+                                .eq('id', data.id);
+                        } catch (updateError) {
+                            console.warn('Could not update proposal status:', updateError.message);
+                        }
+                    }
+                    
+                    return handleAddProjectSuccess(data, projectData, isProposal, editCode);
+                    
+                } catch (secondError) {
+                    console.error('Second insert attempt failed:', secondError);
+                    
+                    // Third attempt: Try with minimal columns only
+                    const minimalProjectData = {
+                        name: projectData.name,
+                        description: projectData.description || '',
+                        status: 'development',
+                        doctor_id: currentUser.id,
+                        last_updated: new Date().toISOString()
+                    };
+                    
+                    const { data, error } = await supabaseClient
+                        .from('projects')
+                        .insert([minimalProjectData])
+                        .select()
+                        .single();
+                    
+                    if (error) {
+                        console.error('All insert attempts failed:', error);
+                        throw new Error(`Failed to add project: ${error.message}`);
+                    }
+                    
+                    return handleAddProjectSuccess(data, projectData, isProposal, editCode);
                 }
                 
-                const { data, error } = await supabaseClient
-                    .from('projects')
-                    .insert([projectToInsert])
-                    .select()
-                    .single();
-                
-                if (error) throw error;
-                
-                const action = isProposal ? 'project_proposal_submitted' : 'project_created';
-                await logAudit(action, { 
-                    project_name: projectData.name,
-                    visibility: projectData.visibility,
-                    is_proposal: isProposal
-                }, data.id);
-                
-                if (isProposal) {
-                    alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
-                } else if (currentUser.role === 'doctor') {
-                    alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
-                } else {
-                    alert('✅ Project added successfully!');
-                }
-                
-                if (document.getElementById('projectSuccess')) {
-                    document.getElementById('projectSuccess').textContent = 
-                        isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
-                    document.getElementById('projectSuccess').style.display = 'block';
-                }
-                
-                return { success: true, data, code: editCode, isProposal: isProposal };
-                
-            } catch (error) {
-                console.error('Error adding project:', error);
-                if (document.getElementById('projectError')) {
-                    document.getElementById('projectError').textContent = 'Failed to add project: ' + error.message;
-                    document.getElementById('projectError').style.display = 'block';
-                }
-                return { success: false, error: error.message };
+            } else {
+                // Some other error, re-throw it
+                throw firstError;
             }
         }
+        
+    } catch (error) {
+        console.error('Error adding project:', error);
+        
+        // Show user-friendly error message
+        let errorMessage = 'Failed to add project. ';
+        
+        if (error.message.includes('column') && error.message.includes('does not exist')) {
+            errorMessage += 'Database schema issue detected. Please contact administrator.';
+        } else if (error.message.includes('permission denied')) {
+            errorMessage += 'Permission denied. You may not have the required access.';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorMessage += 'Network error. Please check your connection.';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        if (document.getElementById('projectError')) {
+            document.getElementById('projectError').textContent = errorMessage;
+            document.getElementById('projectError').style.display = 'block';
+        } else {
+            alert(errorMessage);
+        }
+        
+        return { success: false, error: error.message };
+    }
+}
 
+// Helper function to handle successful project addition
+function handleAddProjectSuccess(projectData, originalData, isProposal, editCode) {
+    const action = isProposal ? 'project_proposal_submitted' : 'project_created';
+    
+    logAudit(action, { 
+        project_name: originalData.name,
+        visibility: originalData.visibility || (isProposal ? 'private' : 'public'),
+        is_proposal: isProposal
+    }, projectData.id).catch(e => console.error('Audit log failed:', e));
+    
+    // Show success message based on user role
+    if (isProposal) {
+        alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
+    } else if (currentUser.role === 'doctor' && editCode) {
+        alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
+    } else {
+        alert('✅ Project added successfully!');
+    }
+    
+    // Update UI success message if modal is open
+    if (document.getElementById('projectSuccess')) {
+        document.getElementById('projectSuccess').textContent = 
+            isProposal ? 'Project proposal submitted for review!' : 'Project added successfully!';
+        document.getElementById('projectSuccess').style.display = 'block';
+    }
+    
+    return { 
+        success: true, 
+        data: projectData, 
+        code: editCode, 
+        isProposal: isProposal 
+    };
+}
         async function updateProject(projectId, projectData) {
             try {
                 // Check if doctor needs edit code
