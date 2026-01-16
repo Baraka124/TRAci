@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -324,8 +325,6 @@
         .user-role.admin { background: var(--danger-light); color: var(--danger); }
         .user-role.doctor { background: var(--primary-100); color: var(--primary-700); }
         .user-role.guest { background: var(--gray-100); color: var(--gray-600); }
-        .user-role.industry { background: var(--medical-purple-light); color: var(--medical-purple); }
-        .user-role.clinical { background: var(--medical-teal-light); color: var(--medical-teal); }
 
         .logout-btn {
             background: transparent;
@@ -1698,123 +1697,6 @@
         </div>
     </div>
 
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>
-                    <i class="mdi mdi-account-plus"></i>
-                    <span>Create Account</span>
-                </h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="registerUsername">Username *</label>
-                    <input type="text" id="registerUsername" class="form-control" 
-                           placeholder="Choose a username" autocomplete="username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerDisplayName">Display Name *</label>
-                    <input type="text" id="registerDisplayName" class="form-control" 
-                           placeholder="Your full name" autocomplete="name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerEmail">Email *</label>
-                    <input type="email" id="registerEmail" class="form-control" 
-                           placeholder="your.email@example.com" autocomplete="email">
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerPassword">Password *</label>
-                    <input type="password" id="registerPassword" class="form-control" 
-                           placeholder="Create a password" autocomplete="new-password">
-                    <small style="color: var(--gray-500);">Minimum 8 characters with letters and numbers</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerUserType">Account Type *</label>
-                    <select id="registerUserType" class="form-control">
-                        <option value="">Select account type</option>
-                        <option value="clinical">👨‍⚕️ Clinical Professional</option>
-                        <option value="industry">🏭 Industry Partner</option>
-                        <option value="guest">👤 Guest Collaborator</option>
-                    </select>
-                </div>
-                
-                <!-- Clinical fields -->
-                <div id="clinicalFields" class="hidden">
-                    <div class="form-group">
-                        <label for="registerClinicalSpecialty">Clinical Specialty *</label>
-                        <select id="registerClinicalSpecialty" class="form-control">
-                            <option value="">Select specialty</option>
-                            <option value="pulmonology">Pulmonology</option>
-                            <option value="critical_care">Critical Care</option>
-                            <option value="thoracic_surgery">Thoracic Surgery</option>
-                            <option value="radiology">Radiology</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="registerHospital">Hospital/Institution *</label>
-                        <input type="text" id="registerHospital" class="form-control" 
-                               placeholder="Hospital name">
-                    </div>
-                </div>
-                
-                <!-- Industry fields -->
-                <div id="industryFields" class="hidden">
-                    <div class="form-group">
-                        <label for="registerCompany">Company *</label>
-                        <input type="text" id="registerCompany" class="form-control" 
-                               placeholder="Company name">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="registerJobTitle">Job Title</label>
-                        <input type="text" id="registerJobTitle" class="form-control" 
-                               placeholder="Your position">
-                    </div>
-                </div>
-                
-                <!-- Expertise (common) -->
-                <div class="form-group">
-                    <label for="registerExpertise">Areas of Expertise</label>
-                    <textarea id="registerExpertise" class="form-control" 
-                              placeholder="AI/ML, Data Analysis, Clinical Trials, etc." rows="2"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerBio">Bio</label>
-                    <textarea id="registerBio" class="form-control" 
-                              placeholder="Brief professional background" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="registerTerms" required>
-                        <span>I agree to the <a href="#" style="color: var(--primary-600);">Terms of Service</a> and <a href="#" style="color: var(--primary-600);">Privacy Policy</a></span>
-                    </label>
-                </div>
-                
-                <button id="submitRegister" class="auth-btn" style="width: 100%; background: var(--medical-teal);">
-                    <i class="mdi mdi-account-plus"></i>
-                    <span>Create Account</span>
-                </button>
-                
-                <div id="registerError" class="error-message"></div>
-                <div id="registerSuccess" class="success-message"></div>
-                
-                <div style="margin-top: 16px; text-align: center; color: var(--gray-500);">
-                    <p>Already have an account? <a href="#" id="switchToLogin" style="color: var(--primary-600); font-weight: 600;">Login here</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Add Project Modal -->
     <div id="addProjectModal" class="modal-overlay">
         <div class="modal-content">
@@ -2300,8 +2182,8 @@
                 
                 const auditData = {
                     user_id: currentUser.id,
-                    user_name: currentUser.display_name || currentUser.username,
-                    user_role: currentUser.role || currentUser.user_type,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
                     action: action,
                     details: JSON.stringify(details),
                     project_id: projectId,
@@ -2320,156 +2202,46 @@
             }
         }
 
-        // ========== REAL USER SYSTEM ==========
-
-        // REAL User Registration
-        async function registerUser(userData) {
-            try {
-                const {
-                    username,
-                    display_name,
-                    user_type,
-                    email,
-                    password,
-                    clinical_specialty,
-                    hospital,
-                    company,
-                    job_title,
-                    expertise,
-                    bio
-                } = userData;
-
-                // Validate required fields
-                if (!username || !display_name || !user_type || !email || !password) {
-                    throw new Error('All required fields must be filled');
-                }
-
-                // Check if user already exists
-                const { data: existingUser, error: checkError } = await supabaseClient
-                    .from('thoraxlab_user_profiles_simple')
-                    .select('id, username, email')
-                    .or(`username.eq.${username},email.eq.${email}`)
-                    .maybeSingle();
-
-                if (existingUser) {
-                    const conflictField = existingUser.username === username ? 'username' : 'email';
-                    throw new Error(`${conflictField} already exists`);
-                }
-
-                // Hash password
-                const hashedPassword = await hashPassword(password);
-
-                // Prepare user object
-                const userProfile = {
-                    username,
-                    display_name,
-                    user_type,
-                    email: email.toLowerCase(),
-                    password_hash: hashedPassword,
-                    salt: 'auto-generated', // In real app, store actual salt
-                    is_active: true,
-                    is_verified: user_type === 'clinical' || user_type === 'industry',
-                    clinical_specialty: user_type === 'clinical' ? clinical_specialty : null,
-                    hospital: user_type === 'clinical' ? hospital : null,
-                    company: user_type === 'industry' ? company : null,
-                    job_title: user_type === 'industry' ? job_title : null,
-                    expertise: expertise ? expertise.split(',').map(e => e.trim()) : [],
-                    bio: bio || '',
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                };
-
-                // Insert into database
-                const { data: newUser, error } = await supabaseClient
-                    .from('thoraxlab_user_profiles_simple')
-                    .insert([userProfile])
-                    .select()
-                    .single();
-
-                if (error) throw error;
-
-                // Auto-login after registration
-                currentUser = {
-                    id: newUser.id,
-                    username: newUser.username,
-                    display_name: newUser.display_name,
-                    role: newUser.user_type,
-                    user_type: newUser.user_type,
-                    email: newUser.email
-                };
-
-                authToken = btoa(JSON.stringify(currentUser));
-                localStorage.setItem('traci_auth_token', authToken);
-
-                await logAudit('user_registered', { 
-                    username: username,
-                    user_type: user_type 
-                });
-
-                return { success: true, user: currentUser };
-
-            } catch (error) {
-                console.error('Registration error:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // REAL User Login
+        // Authentication
         async function loginUser(username, password) {
             const errorEl = document.getElementById('loginError');
             errorEl.style.display = 'none';
             
             try {
-                // Find user in new user table
-                const { data: user, error } = await supabaseClient
-                    .from('thoraxlab_user_profiles_simple')
-                    .select('*')
-                    .or(`username.eq.${username},email.eq.${username}`)
-                    .maybeSingle();
-                
-                if (error || !user) {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
-                // Verify password
                 const hashedPassword = await hashPassword(password);
-                if (hashedPassword !== user.password_hash) {
+                
+                const { data, error } = await supabaseClient
+                    .from('dashboard_users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+                
+                if (error || !data) {
                     errorEl.textContent = 'Invalid username or password';
                     errorEl.style.display = 'block';
                     return false;
                 }
                 
-                // Check if account is active
-                if (!user.is_active) {
-                    errorEl.textContent = 'Account is deactivated';
+                // Check both password_hash and password columns
+                const storedPassword = data.password_hash || data.password;
+                
+                if (storedPassword !== hashedPassword) {
+                    errorEl.textContent = 'Invalid username or password';
                     errorEl.style.display = 'block';
                     return false;
                 }
                 
-                // Set current user
                 currentUser = {
-                    id: user.id,
-                    username: user.username,
-                    display_name: user.display_name,
-                    role: user.user_type, // Map user_type to role
-                    user_type: user.user_type,
-                    email: user.email,
-                    clinical_specialty: user.clinical_specialty,
-                    hospital: user.hospital,
-                    company: user.company,
-                    expertise: user.expertise
+                    id: data.id,
+                    username: data.username,
+                    full_name: data.full_name,
+                    role: data.role || 'guest',
+                    department: data.department,
+                    email: data.email
                 };
                 
                 authToken = btoa(JSON.stringify(currentUser));
                 localStorage.setItem('traci_auth_token', authToken);
-                
-                // Update last login
-                await supabaseClient
-                    .from('thoraxlab_user_profiles_simple')
-                    .update({ last_login_at: new Date().toISOString() })
-                    .eq('id', user.id);
                 
                 await logAudit('login', { username: username });
                 
@@ -2525,15 +2297,15 @@
                 
                 // Set user avatar
                 const avatar = document.getElementById('userAvatar');
-                const name = currentUser.display_name || currentUser.username;
+                const name = currentUser.full_name || currentUser.username;
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 avatar.textContent = initials;
                 
                 // Set user info
                 document.getElementById('currentUsername').textContent = name;
                 const roleBadge = document.getElementById('currentUserRole');
-                roleBadge.textContent = currentUser.user_type;
-                roleBadge.className = `user-role ${currentUser.user_type}`;
+                roleBadge.textContent = currentUser.role;
+                roleBadge.className = `user-role ${currentUser.role}`;
                 
                 // Show status panel
                 statusPanel.classList.add('visible');
@@ -2544,14 +2316,14 @@
                 filterControls.classList.remove('hidden');
                 
                 // Guest-specific sections
-                if (currentUser.user_type === 'guest') {
+                if (currentUser.role === 'guest') {
                     guestWelcome.classList.remove('hidden');
                 } else {
                     guestWelcome.classList.add('hidden');
                 }
                 
-                // Admin controls (only for admin role)
-                if (currentUser.role === 'admin' || currentUser.user_type === 'admin') {
+                // Admin controls
+                if (currentUser.role === 'admin') {
                     adminControls.classList.remove('hidden');
                     document.getElementById('activeUsersCard').classList.remove('hidden');
                 } else {
@@ -2617,17 +2389,12 @@
                 .select('*');
             
             // Guests see public projects and their own proposals
-            if (currentUser && currentUser.user_type === 'guest') {
+            if (currentUser && currentUser.role === 'guest') {
                 query = query.or(`visibility.eq.public,doctor_id.eq.${currentUser.id}`);
             }
             
             // Doctors see public + private
             if (currentUser && currentUser.role === 'doctor') {
-                query = query.or('visibility.eq.public,visibility.eq.private');
-            }
-            
-            // Clinical users see everything
-            if (currentUser && currentUser.user_type === 'clinical') {
                 query = query.or('visibility.eq.public,visibility.eq.private');
             }
             
@@ -2659,9 +2426,10 @@
             dashboardData.tools = data || [];
         }
 
-        // Comment Count System
+        // Comment Count System - FIXED
         async function fetchCommentCounts() {
             try {
+                // Get approved comments for projects
                 const { data, error } = await supabaseClient
                     .from('project_comments')
                     .select('project_id')
@@ -2694,6 +2462,7 @@
                     throw new Error('You must be logged in to upvote');
                 }
                 
+                // Get current upvote count
                 const { data: comment, error: fetchError } = await supabaseClient
                     .from('project_comments')
                     .select('upvotes')
@@ -2702,6 +2471,7 @@
                 
                 if (fetchError) throw fetchError;
                 
+                // Increment upvote count
                 const newUpvotes = (comment.upvotes || 0) + 1;
                 
                 const { error } = await supabaseClient
@@ -2711,6 +2481,16 @@
                 
                 if (error) throw error;
                 
+                // Record in comment_interactions for tracking
+                await supabaseClient
+                    .from('comment_interactions')
+                    .insert([{
+                        comment_id: commentId,
+                        user_id: currentUser.id,
+                        interaction_type: 'upvote',
+                        created_at: new Date().toISOString()
+                    }]);
+                
                 return { success: true, upvotes: newUpvotes };
                 
             } catch (error) {
@@ -2719,14 +2499,30 @@
             }
         }
 
+        async function getCommentUpvotes(commentId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('project_comments')
+                    .select('upvotes')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (error) throw error;
+                return data.upvotes || 0;
+            } catch (error) {
+                console.error('Error getting upvotes:', error);
+                return 0;
+            }
+        }
+
         // Project CRUD with new proposal logic
         async function addProject(projectData) {
             try {
-                const editCode = currentUser.user_type === 'clinical' ? 
+                const editCode = currentUser.role === 'doctor' ? 
                     Math.floor(10000 + Math.random() * 90000).toString() : null;
                 
                 // Determine if this is a proposal (guest submission)
-                const isProposal = currentUser.user_type === 'guest';
+                const isProposal = currentUser.role === 'guest';
                 
                 const projectToInsert = {
                     ...projectData,
@@ -2734,8 +2530,7 @@
                     edit_code: editCode,
                     review_status: projectData.needs_feedback ? 'needs_review' : 'none',
                     is_proposal: isProposal,
-                    status: isProposal ? 'planning' : projectData.status,
-                    doctor_id: currentUser.id
+                    status: isProposal ? 'planning' : projectData.status
                 };
                 
                 // Guest proposals are always private pending review
@@ -2761,7 +2556,7 @@
                 
                 if (isProposal) {
                     alert('✅ Project proposal submitted!\n\nYour proposal is now pending admin review. You will be notified when it is approved.');
-                } else if (currentUser.user_type === 'clinical') {
+                } else if (currentUser.role === 'doctor') {
                     alert(`✅ Project added successfully!\n\n🔐 Doctor Edit Code: ${editCode}\n\nShare this code with other doctors who need to edit this project.`);
                 } else {
                     alert('✅ Project added successfully!');
@@ -2787,8 +2582,8 @@
 
         async function updateProject(projectId, projectData) {
             try {
-                // Check if clinical user needs edit code
-                if (currentUser && currentUser.user_type === 'clinical') {
+                // Check if doctor needs edit code
+                if (currentUser && currentUser.role === 'doctor') {
                     const enteredCode = document.getElementById('editCodeVerification')?.value;
                     
                     if (!enteredCode || !/^\d{5}$/.test(enteredCode)) {
@@ -2809,7 +2604,7 @@
                         return { success: false, error: 'Project not found' };
                     }
                     
-                    // Clinical users can't edit proposals (only admin can approve)
+                    // Doctors can't edit proposals (only admin can approve)
                     if (project.is_proposal) {
                         document.getElementById('editProjectError').textContent = 'Proposals can only be edited by admin';
                         document.getElementById('editProjectError').style.display = 'block';
@@ -2830,7 +2625,7 @@
                 };
                 
                 // Only admin can change visibility
-                if (currentUser && (currentUser.role === 'admin' || currentUser.user_type === 'admin')) {
+                if (currentUser && currentUser.role === 'admin') {
                     updateData.visibility = document.getElementById('editProjectVisibility').value;
                     
                     // If admin is approving a proposal
@@ -2852,7 +2647,7 @@
                 await logAudit('project_updated', { 
                     project_id: projectId,
                     changes: projectData,
-                    user_role: currentUser.user_type
+                    user_role: currentUser.role
                 }, projectId);
                 
                 if (document.getElementById('editProjectSuccess')) {
@@ -2971,7 +2766,7 @@
             
             // Get active users (logins today) - only for admin
             let activeUsersCount = 0;
-            if (currentUser && (currentUser.role === 'admin' || currentUser.user_type === 'admin')) {
+            if (currentUser && currentUser.role === 'admin') {
                 const today = new Date().toISOString().split('T')[0];
                 const { count } = await supabaseClient
                     .from('audit_logs')
@@ -2999,7 +2794,7 @@
                 toolsGrid.innerHTML = `
                     <div style="text-align: center; padding: 48px 16px; color: var(--gray-500);">
                         <i class="mdi mdi-toolbox-outline" style="font-size: 3rem; margin-bottom: 12px;"></i>
-                        <p>No tools found. ${currentUser && currentUser.user_type === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
+                        <p>No tools found. ${currentUser && currentUser.role === 'admin' ? 'Click "Add Tool" to create one.' : ''}</p>
                     </div>
                 `;
                 return;
@@ -3081,7 +2876,7 @@
                     reviewSticker = `<span class="review-sticker feedback-provided"><i class="mdi mdi-message-text"></i> Feedback Provided</span>`;
                 }
                 
-                // Project Stickers
+                // NEW: Project Stickers
                 let projectStickers = '';
                 
                 // Proposal sticker
@@ -3089,11 +2884,8 @@
                     projectStickers += `<span class="project-sticker sticker-proposal"><i class="mdi mdi-lightbulb-on"></i> Proposal</span>`;
                 }
                 
+                // Imported sticker (check sync table)
                 // Published sticker (check sync table)
-                if (project.review_status === 'published_to_thoraxlab') {
-                    projectStickers += `<span class="project-sticker sticker-published"><i class="mdi mdi-share-variant"></i> Published</span>`;
-                }
-                
                 // Archived sticker
                 if (project.status === 'archived') {
                     projectStickers += `<span class="project-sticker sticker-archived"><i class="mdi mdi-archive"></i> Archived</span>`;
@@ -3110,8 +2902,7 @@
                 if (currentUser) {
                     // Sync button (Admin only for TRAci → ThoraxLab)
                     let syncButton = '';
-                    if ((currentUser.role === 'admin' || currentUser.user_type === 'admin') && 
-                        !project.is_proposal && project.status !== 'archived') {
+                    if (currentUser.role === 'admin' && !project.is_proposal && project.status !== 'archived') {
                         syncButton = `
                             <button class="action-btn sync-btn" data-project-id="${project.id}" 
                                     onclick="showSyncModal('${project.id}', '${project.name}')">
@@ -3121,8 +2912,7 @@
                         `;
                     }
                     
-                    // Different buttons for different user types
-                    if (currentUser.role === 'admin' || currentUser.user_type === 'admin') {
+                    if (currentUser.role === 'admin') {
                         actionButtons = `
                             <div class="project-actions">
                                 <button class="action-btn edit-btn" data-project-id="${project.id}">
@@ -3148,7 +2938,7 @@
                                 </button>
                             </div>
                         `;
-                    } else if (currentUser.user_type === 'clinical') {
+                    } else if (currentUser.role === 'doctor') {
                         actionButtons = `
                             <div class="project-actions">
                                 <button class="action-btn edit-btn" data-project-id="${project.id}">
@@ -3165,7 +2955,7 @@
                                 </button>
                             </div>
                         `;
-                    } else if (currentUser.user_type === 'guest') {
+                    } else if (currentUser.role === 'guest') {
                         // Guests can only edit their own proposals
                         const canEdit = project.is_proposal && project.doctor_id === currentUser.id;
                         const editButton = canEdit ? `
@@ -3185,20 +2975,6 @@
                                 <button class="action-btn comment-btn" data-project-id="${project.id}">
                                     <i class="mdi mdi-comment"></i>
                                     View Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
-                                </button>
-                            </div>
-                        `;
-                    } else if (currentUser.user_type === 'industry') {
-                        // Industry partners can comment and upvote
-                        actionButtons = `
-                            <div class="project-actions">
-                                <button class="action-btn upvote-btn" data-project-id="${project.id}">
-                                    <i class="mdi mdi-thumb-up"></i>
-                                    <span>Upvote</span>
-                                </button>
-                                <button class="action-btn comment-btn" data-project-id="${project.id}">
-                                    <i class="mdi mdi-comment"></i>
-                                    Comments ${commentCount > 0 ? `<span class="upvote-count">${commentCount}</span>` : ''}
                                 </button>
                             </div>
                         `;
@@ -3269,10 +3045,15 @@
             } else if (filterType === 'proposals') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.is_proposal === true);
             } else if (filterType === 'imported') {
+                // Will need to check sync table
                 filterProjectsBySync('imported');
                 return;
             } else if (filterType === 'published') {
-                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'published_to_thoraxlab');
+                // Will need to check sync table
+                filterProjectsBySync('published');
+                return;
+            } else if (filterType === 'reviewed') {
+                dashboardData.filteredProjects = dashboardData.projects.filter(p => p.review_status === 'reviewed');
             } else if (filterType === 'private') {
                 dashboardData.filteredProjects = dashboardData.projects.filter(p => p.visibility === 'private');
             } else if (filterType === 'public') {
@@ -3397,7 +3178,7 @@
             });
         }
 
-        // Comments System
+        // Comments System - FIXED
         async function fetchCommentsForProject(projectId) {
             try {
                 let query = supabaseClient
@@ -3406,12 +3187,10 @@
                     .eq('project_id', projectId)
                     .order('created_at', { ascending: false });
                 
-                if (currentUser && currentUser.user_type === 'guest') {
+                if (currentUser && currentUser.role === 'guest') {
                     query = query.eq('status', 'approved');
-                } else if (currentUser && (currentUser.user_type === 'clinical' || currentUser.user_type === 'admin')) {
+                } else if (currentUser && (currentUser.role === 'doctor' || currentUser.role === 'admin')) {
                     query = query.in('status', ['approved', 'pending']);
-                } else if (currentUser && currentUser.user_type === 'industry') {
-                    query = query.eq('status', 'approved');
                 }
                 
                 const { data, error } = await query;
@@ -3439,7 +3218,7 @@
                     commentFormSection.classList.remove('hidden');
                     
                     // Show email field for guests only
-                    if (currentUser.user_type === 'guest') {
+                    if (currentUser.role === 'guest') {
                         guestEmailField.classList.remove('hidden');
                         commentHintText.textContent = 'Your comments will be reviewed before appearing';
                     } else {
@@ -3494,7 +3273,7 @@
                                         <span>${comment.upvotes || 0}</span>
                                     </button>
                                 </div>
-                                ${currentUser && currentUser.user_type === 'admin' && comment.status === 'pending' ? `
+                                ${currentUser && currentUser.role === 'admin' && comment.status === 'pending' ? `
                                     <div class="moderation-panel">
                                         <div class="moderation-actions">
                                             <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
@@ -3581,11 +3360,11 @@
                 }
                 
                 // Validate email for guests
-                if (currentUser.user_type === 'guest' && !guestEmail) {
+                if (currentUser.role === 'guest' && !guestEmail) {
                     throw new Error('Email is required for guest comments');
                 }
                 
-                if (currentUser.user_type === 'guest' && guestEmail) {
+                if (currentUser.role === 'guest' && guestEmail) {
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(guestEmail)) {
                         throw new Error('Please enter a valid email address');
@@ -3593,7 +3372,7 @@
                 }
                 
                 let status = 'pending';
-                if (currentUser.user_type === 'clinical' || currentUser.user_type === 'admin' || currentUser.user_type === 'industry') {
+                if (currentUser.role === 'doctor' || currentUser.role === 'admin') {
                     status = 'approved';
                 }
                 
@@ -3601,14 +3380,14 @@
                     project_id: projectId,
                     content: commentText,
                     user_id: currentUser.id,
-                    user_name: currentUser.display_name || currentUser.username,
-                    user_role: currentUser.user_type,
+                    user_name: currentUser.full_name || currentUser.username,
+                    user_role: currentUser.role,
                     status: status,
                     created_at: new Date().toISOString()
                 };
                 
                 // Add email for guests
-                if (currentUser.user_type === 'guest' && guestEmail) {
+                if (currentUser.role === 'guest' && guestEmail) {
                     commentData.user_email = guestEmail;
                 }
                 
@@ -3746,21 +3525,17 @@
             }
         }
 
-        // REAL: Sync to ThoraxLab Function
+        // NEW: Sync to ThoraxLab Function
         async function syncToThoraxLab(projectId, visibility, notes = '') {
             try {
-                if (!currentUser || currentUser.user_type !== 'admin') {
+                if (!currentUser || currentUser.role !== 'admin') {
                     throw new Error('Only admin can publish to ThoraxLab');
                 }
                 
                 // Get TRAci project
                 const { data: traciProject, error: fetchError } = await supabaseClient
                     .from('projects')
-                    .select(`
-                        *,
-                        project_comments(*),
-                        audit_logs(*)
-                    `)
+                    .select('*')
                     .eq('id', projectId)
                     .single();
                 
@@ -3778,49 +3553,22 @@
                     if (!proceed) return;
                 }
                 
-                // ========== REAL THORAXLAB INTEGRATION ==========
-                // 1. Parse and transform project data
+                // Transform to ThoraxLab format
                 const thoraxlabProject = {
                     title: traciProject.name,
-                    description: this.buildThoraxlabDescription(traciProject, notes),
+                    description: `[Published from TRAci Platform]\n\n${traciProject.description}\n\n${notes}`,
                     project_type: 'clinical',
-                    subcategory: 'pulmonology',
-                    status: this.mapStatus(traciProject.status),
-                    priority: this.determinePriority(traciProject),
-                    
-                    owner_id: currentUser.id,
-                    clinical_lead_id: traciProject.doctor_id,
-                    source_platform: 'traci',
-                    source_project_id: projectId,
-                    
-                    collaboration_model: 'open_with_verification',
-                    target_audience: ['clinical_professionals', 'industry_partners'],
-                    required_expertise: this.extractExpertise(traciProject),
-                    
-                    current_phase: this.mapPhase(traciProject.status),
-                    progress_percentage: traciProject.progress || 0,
-                    milestones: this.extractMilestones(traciProject),
-                    
                     visibility: visibility,
-                    access_level: 'verified',
-                    
-                    discussion_threads: this.createDiscussionThreads(traciProject),
-                    attachments: [],
-                    related_tools: [],
-                    
-                    peer_reviews: [],
-                    review_count: 0,
-                    
-                    view_count: 0,
-                    collaboration_count: 0,
-                    comment_count: traciProject.project_comments?.length || 0,
-                    
-                    created_at: traciProject.created_at,
-                    updated_at: new Date().toISOString(),
-                    published_at: new Date().toISOString()
+                    status: 'active',
+                    owner_id: 'traci-platform', // System account
+                    target_audience: ['clinical_professionals', 'industry_partners'],
+                    discussion_type: 'collaboration',
+                                        tags: ['pulmonology', 'clinical_research', 'traci_platform'],
+                    source_traci_project_id: projectId,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 };
                 
-                // 2. Save to ThoraxLab projects table (if exists)
                 let thoraxlabProjectId;
                 
                 if (existingSync) {
@@ -3854,60 +3602,67 @@
                         .select()
                         .single();
                     
-                    if (createError) {
-                        // If table doesn't exist, simulate success
-                        console.warn('ThoraxLab projects table not found, simulating sync');
-                        thoraxlabProjectId = 'simulated-' + Date.now();
-                        
-                        // Create sync record anyway
-                        await supabaseClient
-                            .from('project_sync')
-                            .insert([{
-                                traci_project_id: projectId,
-                                thoraxlab_project_id: thoraxlabProjectId,
-                                sync_direction: 'traci_to_thoraxlab',
-                                sync_purpose: 'industry_collaboration',
-                                initiated_by: currentUser.id,
-                                initiated_at: new Date().toISOString(),
-                                status: 'completed',
-                                sync_notes: notes,
-                                metadata: { simulated: true }
-                            }]);
-                    } else {
-                        thoraxlabProjectId = newProject.id;
-                        
-                        // Record sync
-                        await supabaseClient
-                            .from('project_sync')
-                            .insert([{
-                                traci_project_id: projectId,
-                                thoraxlab_project_id: thoraxlabProjectId,
-                                sync_direction: 'traci_to_thoraxlab',
-                                sync_purpose: 'industry_collaboration',
-                                initiated_by: currentUser.id,
-                                initiated_at: new Date().toISOString(),
-                                status: 'completed',
-                                sync_notes: notes
-                            }]);
-                    }
+                    if (createError) throw createError;
+                    thoraxlabProjectId = newProject.id;
+                    
+                    // Record sync
+                    await supabaseClient
+                        .from('project_sync')
+                        .insert([{
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            sync_direction: 'traci_to_thoraxlab',
+                            sync_purpose: 'industry_collaboration',
+                            initiated_by: currentUser.id,
+                            initiated_at: new Date().toISOString(),
+                            status: 'completed',
+                            sync_notes: notes
+                        }]);
+                    
+                    // Auto-create discussion thread
+                    await supabaseClient
+                        .from('thoraxlab_discussions')
+                        .insert([{
+                            title: `Discussion: ${traciProject.name}`,
+                            content: `This clinical project was published from our internal TRAci platform for industry collaboration.\n\n**Clinical Context:** ${traciProject.description || 'No description'}\n\n**Status:** ${traciProject.status}\n**Progress:** ${traciProject.progress || 0}%\n\n**Notes from TRAci:** ${notes}`,
+                            project_id: thoraxlabProjectId,
+                            author_id: currentUser.id,
+                            created_at: new Date().toISOString()
+                        }]);
                 }
                 
-                // 3. Update TRAci project with "published" status
+                // Update TRAci project with "published" status
                 await supabaseClient
                     .from('projects')
                     .update({
-                        review_status: 'published_to_thoraxlab',
-                        last_updated: new Date().toISOString()
+                        last_updated: new Date().toISOString(),
+                        review_status: 'published_to_thoraxlab'
                     })
                     .eq('id', projectId);
                 
-                // 4. Audit log
+                // Audit log
                 await logAudit('project_published_to_thoraxlab', {
                     traci_project_id: projectId,
                     thoraxlab_project_id: thoraxlabProjectId,
                     visibility: visibility,
                     notes: notes
                 }, projectId);
+                
+                // Cross-platform audit
+                await supabaseClient
+                    .from('cross_platform_audit')
+                    .insert([{
+                        user_name: currentUser.full_name || currentUser.username,
+                        action: 'project_published',
+                        platform: 'traci',
+                        details: `Published project "${traciProject.name}" to ThoraxLab`,
+                        metadata: { 
+                            traci_project_id: projectId,
+                            thoraxlab_project_id: thoraxlabProjectId,
+                            visibility: visibility
+                        },
+                        created_at: new Date().toISOString()
+                    }]);
                 
                 alert(`✅ Project published to ThoraxLab!\n\nVisibility: ${visibility}\n\nProject is now available for industry collaboration.`);
                 
@@ -3922,135 +3677,6 @@
                 document.getElementById('syncError').style.display = 'block';
                 return { success: false, error: error.message };
             }
-        }
-
-        // Helper methods for ThoraxLab sync
-        function buildThoraxlabDescription(traciProject, notes) {
-            return `
-# ${traciProject.name}
-
-## Clinical Context
-${traciProject.description || 'No description provided.'}
-
-## Project Status
-- **Current Phase:** ${traciProject.status}
-- **Progress:** ${traciProject.progress || 0}%
-- **Review Status:** ${traciProject.review_status || 'Not reviewed'}
-- **Visibility:** ${traciProject.visibility}
-
-## Collaboration Purpose
-${notes || 'Published from TRAci platform for industry collaboration and clinical feedback.'}
-
-## Clinical Requirements
-Clinical validation and peer review required.
-
-## Target Outcomes
-Improved clinical outcomes and validated medical technology.
-
-## Source Information
-- **Source Platform:** TRAci Pneumology Innovation
-- **Original Project ID:** ${traciProject.id}
-- **Publication Date:** ${new Date().toLocaleDateString()}
-
----
-*This project was published from the TRAci platform. Clinical input and industry collaboration are welcome.*
-            `.trim();
-        }
-
-        function mapStatus(status) {
-            const map = {
-                'planning': 'concept',
-                'development': 'active',
-                'testing': 'beta',
-                'production': 'live',
-                'archived': 'archived'
-            };
-            return map[status] || 'concept';
-        }
-
-        function mapPhase(status) {
-            const map = {
-                'planning': 'discovery',
-                'development': 'development',
-                'testing': 'validation',
-                'production': 'deployment',
-                'archived': 'archived'
-            };
-            return map[status] || 'discovery';
-        }
-
-        function determinePriority(project) {
-            if (project.review_status === 'needs_review' || project.needs_feedback) {
-                return 'high';
-            }
-            if (project.status === 'production') {
-                return 'critical';
-            }
-            return 'medium';
-        }
-
-        function extractExpertise(project) {
-            const keywords = ['pulmonology', 'respiratory', 'clinical', 'research'];
-            const found = keywords.filter(kw => 
-                project.description?.toLowerCase().includes(kw.toLowerCase())
-            );
-            return found.length > 0 ? found : ['clinical_research'];
-        }
-
-        function extractMilestones(project) {
-            return [
-                {
-                    title: 'Project Created',
-                    description: 'Project was created on TRAci platform',
-                    achieved_at: project.created_at,
-                    milestone_type: 'creation'
-                },
-                {
-                    title: `Status: ${project.status}`,
-                    description: 'Current project status',
-                    achieved_at: project.last_updated || project.created_at,
-                    milestone_type: 'status_update'
-                },
-                {
-                    title: 'Published to ThoraxLab',
-                    description: 'Project published for collaboration',
-                    achieved_at: new Date().toISOString(),
-                    milestone_type: 'publication'
-                }
-            ];
-        }
-
-        function createDiscussionThreads(project) {
-            const threads = [];
-            
-            // Main discussion thread
-            threads.push({
-                title: 'General Discussion',
-                content: 'Discuss this project here. Clinical insights and industry perspectives are welcome.',
-                thread_type: 'general',
-                is_pinned: true,
-                created_at: new Date().toISOString(),
-                comments: []
-            });
-            
-            // Import TRAci comments if any
-            if (project.project_comments && project.project_comments.length > 0) {
-                threads.push({
-                    title: 'Imported from TRAci',
-                    content: 'Comments imported from the original TRAci project discussion.',
-                    thread_type: 'imported',
-                    created_at: new Date().toISOString(),
-                    comments: project.project_comments
-                        .filter(c => c.status === 'approved')
-                        .map(c => ({
-                            content: c.content,
-                            author_name: c.user_name,
-                            posted_at: c.created_at
-                        }))
-                });
-            }
-            
-            return threads;
         }
 
         // PDF Export
@@ -4346,13 +3972,13 @@ Improved clinical outcomes and validated medical technology.
             const editCodeSection = document.getElementById('editCodeSection');
             const visibilityControl = document.getElementById('visibilityControl');
             
-            if (currentUser && currentUser.user_type === 'clinical' && !project.is_proposal) {
+            if (currentUser && currentUser.role === 'doctor' && !project.is_proposal) {
                 editCodeSection.classList.remove('hidden');
                 visibilityControl.classList.add('hidden');
                 if (document.getElementById('editCodeVerification')) {
                     document.getElementById('editCodeVerification').value = '';
                 }
-            } else if (currentUser && currentUser.user_type === 'admin') {
+            } else if (currentUser && currentUser.role === 'admin') {
                 editCodeSection.classList.add('hidden');
                 visibilityControl.classList.remove('hidden');
                 if (document.getElementById('editProjectVisibility')) {
@@ -4406,9 +4032,9 @@ Improved clinical outcomes and validated medical technology.
             document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
         }
 
-        // Show sync modal
+        // NEW: Show sync modal
         function showSyncModal(projectId, projectName) {
-            if (!currentUser || currentUser.user_type !== 'admin') {
+            if (!currentUser || currentUser.role !== 'admin') {
                 alert('Only admin can publish projects to ThoraxLab');
                 return;
             }
@@ -4427,7 +4053,7 @@ Improved clinical outcomes and validated medical technology.
             showModal('syncToThoraxLabModal');
         }
 
-        // Load moderation data
+        // NEW: Load moderation data
         async function loadModerationData() {
             await Promise.all([
                 fetchPendingComments(),
@@ -4446,19 +4072,10 @@ Improved clinical outcomes and validated medical technology.
             document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Register link in login modal
-            document.addEventListener('click', function(e) {
-                if (e.target && e.target.id === 'switchToLogin') {
-                    e.preventDefault();
-                    hideAllModals();
-                    showModal('loginModal');
-                }
-            });
-            
             // Guest post project
             document.getElementById('guestPostProjectBtn').addEventListener('click', () => {
                 if (!currentUser) {
-                    showModal('registerModal');
+                    showModal('loginModal');
                 } else {
                     showModal('addProjectModal');
                 }
@@ -4503,69 +4120,6 @@ Improved clinical outcomes and validated medical technology.
             document.getElementById('loginPassword').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     document.getElementById('submitLogin').click();
-                }
-            });
-            
-            // Registration form
-            document.getElementById('registerUserType').addEventListener('change', function() {
-                const userType = this.value;
-                document.getElementById('clinicalFields').classList.add('hidden');
-                document.getElementById('industryFields').classList.add('hidden');
-                
-                if (userType === 'clinical') {
-                    document.getElementById('clinicalFields').classList.remove('hidden');
-                } else if (userType === 'industry') {
-                    document.getElementById('industryFields').classList.remove('hidden');
-                }
-            });
-            
-            document.getElementById('submitRegister').addEventListener('click', async function() {
-                const userData = {
-                    username: document.getElementById('registerUsername').value.trim(),
-                    display_name: document.getElementById('registerDisplayName').value.trim(),
-                    user_type: document.getElementById('registerUserType').value,
-                    email: document.getElementById('registerEmail').value.trim(),
-                    password: document.getElementById('registerPassword').value,
-                    clinical_specialty: document.getElementById('registerClinicalSpecialty')?.value,
-                    hospital: document.getElementById('registerHospital')?.value,
-                    company: document.getElementById('registerCompany')?.value,
-                    job_title: document.getElementById('registerJobTitle')?.value,
-                    expertise: document.getElementById('registerExpertise')?.value,
-                    bio: document.getElementById('registerBio')?.value
-                };
-                
-                // Validation
-                if (!userData.username || !userData.display_name || !userData.user_type || 
-                    !userData.email || !userData.password) {
-                    document.getElementById('registerError').textContent = 'Please fill all required fields';
-                    document.getElementById('registerError').style.display = 'block';
-                    return;
-                }
-                
-                if (!document.getElementById('registerTerms').checked) {
-                    document.getElementById('registerError').textContent = 'You must agree to the terms and conditions';
-                    document.getElementById('registerError').style.display = 'block';
-                    return;
-                }
-                
-                this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Creating Account...';
-                this.disabled = true;
-                
-                const result = await registerUser(userData);
-                
-                this.innerHTML = '<i class="mdi mdi-account-plus"></i> Create Account';
-                this.disabled = false;
-                
-                if (result.success) {
-                    document.getElementById('registerSuccess').textContent = 'Account created successfully!';
-                    document.getElementById('registerSuccess').style.display = 'block';
-                    setTimeout(() => {
-                        hideAllModals();
-                        updateAuthUI();
-                    }, 1500);
-                } else {
-                    document.getElementById('registerError').textContent = result.error;
-                    document.getElementById('registerError').style.display = 'block';
                 }
             });
             
@@ -4659,7 +4213,7 @@ Improved clinical outcomes and validated medical technology.
                     return;
                 }
                 
-                if (currentUser.user_type === 'guest' && !guestEmail) {
+                if (currentUser.role === 'guest' && !guestEmail) {
                     document.getElementById('commentError').textContent = 'Email is required for guest comments';
                     document.getElementById('commentError').style.display = 'block';
                     return;
@@ -4702,7 +4256,8 @@ Improved clinical outcomes and validated medical technology.
                     status: document.getElementById('projectStatus').value,
                     progress: parseInt(document.getElementById('projectProgress').value) || 0,
                     needs_feedback: document.getElementById('projectNeedsFeedback').checked,
-                    visibility: document.getElementById('projectVisibility').value
+                    visibility: document.getElementById('projectVisibility').value,
+                    doctor_id: currentUser.id
                 };
                 
                 if (!projectData.name) {
@@ -4737,7 +4292,7 @@ Improved clinical outcomes and validated medical technology.
                     needs_feedback: document.getElementById('editProjectNeedsFeedback').checked
                 };
                 
-                if (currentUser && currentUser.user_type === 'admin') {
+                if (currentUser && currentUser.role === 'admin') {
                     projectData.visibility = document.getElementById('editProjectVisibility').value;
                     
                     // If admin is changing from proposal to regular project
@@ -4831,7 +4386,7 @@ Improved clinical outcomes and validated medical technology.
                 document.getElementById('lastUpdatedTime').innerHTML = '<i class="mdi mdi-check-circle" style="color: var(--success);"></i> Updated just now';
             });
             
-            // Sync to ThoraxLab
+            // NEW: Sync to ThoraxLab
             document.getElementById('confirmSyncBtn').addEventListener('click', async function() {
                 const projectId = document.getElementById('syncProjectId').value;
                 const visibility = document.getElementById('syncVisibility').value;
