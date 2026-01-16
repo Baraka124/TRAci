@@ -3747,15 +3747,12 @@ async function moderateComment(commentId, action) {
         return { success: false, error: error.message };
     }
 }
-
 async function fetchPendingComments() {
     try {
+        // Simple query without join
         const { data, error } = await supabaseClient
             .from('audit_logs')
-            .select(`
-                *,
-                projects (name)
-            `)
+            .select('*')
             .eq('action', 'comment_added')
             .order('created_at', { ascending: false });
         
@@ -3765,25 +3762,49 @@ async function fetchPendingComments() {
         if (data) {
             data.forEach(log => {
                 try {
-                    const details = JSON.parse(log.details);
-                    if (details.status === 'pending') {
-                        pending.push({
-                            id: log.id,
-                            project_id: log.project_id,
-                            projects: log.projects,
-                            content: details.content,
-                            user_name: log.user_name,
-                            user_role: log.user_role,
-                            status: details.status,
-                            created_at: log.created_at
-                        });
+                    if (log.details) {
+                        const details = JSON.parse(log.details);
+                        if (details.status === 'pending') {
+                            pending.push({
+                                id: log.id,
+                                project_id: log.project_id,
+                                content: details.content,
+                                user_name: log.user_name,
+                                user_role: log.user_role,
+                                status: details.status,
+                                created_at: log.created_at
+                            });
+                        }
                     }
                 } catch (e) {
-                    console.error('Error parsing comment details:', e);
+                    console.error('Error parsing log details:', e);
                 }
             });
         }
+        
+        // Fetch project names separately if needed
+        if (pending.length > 0) {
+            const projectIds = [...new Set(pending.map(c => c.project_id).filter(id => id))];
+            
+            if (projectIds.length > 0) {
+                const { data: projects } = await supabaseClient
+                    .from('projects')
+                    .select('id, name')
+                    .in('id', projectIds);
+                
+                // Create a map for quick lookup
+                const projectMap = {};
+                projects?.forEach(p => projectMap[p.id] = p.name);
+                
+                // Add project names to comments
+                pending.forEach(comment => {
+                    comment.project_name = projectMap[comment.project_id] || 'Unknown Project';
+                });
+            }
+        }
+        
         return pending;
+        
     } catch (error) {
         console.error('Error fetching pending comments:', error);
         return [];
@@ -4824,7 +4845,7 @@ async function loadModerationModal() {
                         <input type="checkbox" class="comment-checkbox" value="${comment.id}" 
                                style="width: 18px; height: 18px;">
                         <strong>${comment.user_name}</strong>
-                        <span style="font-size: 12px; color: var(--gray-500);">on "${comment.projects?.name || 'Unknown Project'}"</span>
+                        <span style="font-size: 12px; color: var(--gray-500);">on "${comment.project_name || 'Unknown Project'}"</span>
                         <span style="font-size: 11px; background: var(--gray-100); color: var(--gray-600); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">
                             ${comment.user_role}
                         </span>
