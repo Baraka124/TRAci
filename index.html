@@ -4702,21 +4702,45 @@ async function loadUsersTable() {
 }
 
 function loadUserForEdit(user) {
-    document.getElementById('userFormTitle').textContent = 'Edit User';
-    document.getElementById('saveUserBtnText').textContent = 'Update User';
-    document.getElementById('editUserId').value = user.id;
-    document.getElementById('userFullName').value = user.full_name || '';
-    document.getElementById('userUsername').value = user.username || user.email.split('@')[0];
-    document.getElementById('userEmail').value = user.email || '';
-    document.getElementById('userRole').value = user.role || 'doctor';
-    document.getElementById('userDepartment').value = user.department || 'pulmonology';
-    document.getElementById('userPassword').value = '';
-    document.getElementById('userIsActive').checked = user.status === 'active';
-    document.getElementById('newUserCredentials').classList.add('hidden');
+    console.log('Loading user for edit:', user);
+    
+    // Check if elements exist before setting values
+    const elements = {
+        userFormTitle: document.getElementById('userFormTitle'),
+        saveUserBtnText: document.getElementById('saveUserBtnText'),
+        editUserId: document.getElementById('editUserId'),
+        userFullName: document.getElementById('userFullName'),
+        userUsername: document.getElementById('userUsername'),
+        userEmail: document.getElementById('userEmail'),
+        userRole: document.getElementById('userRole'),
+        userDepartment: document.getElementById('userDepartment'),
+        userPassword: document.getElementById('userPassword'),
+        userIsActive: document.getElementById('userIsActive'),
+        newUserCredentials: document.getElementById('newUserCredentials')
+    };
+    
+    // Debug: Check which elements are missing
+    Object.entries(elements).forEach(([name, element]) => {
+        if (!element) {
+            console.error('Missing element:', name);
+        }
+    });
+    
+    // Only set values if elements exist
+    if (elements.userFormTitle) elements.userFormTitle.textContent = 'Edit User';
+    if (elements.saveUserBtnText) elements.saveUserBtnText.textContent = 'Update User';
+    if (elements.editUserId) elements.editUserId.value = user.id;
+    if (elements.userFullName) elements.userFullName.value = user.full_name || '';
+    if (elements.userUsername) elements.userUsername.value = user.username || user.email?.split('@')[0] || '';
+    if (elements.userEmail) elements.userEmail.value = user.email || '';
+    if (elements.userRole) elements.userRole.value = user.role || 'doctor';
+    if (elements.userDepartment) elements.userDepartment.value = user.department || 'pulmonology';
+    if (elements.userPassword) elements.userPassword.value = '';
+    if (elements.userIsActive) elements.userIsActive.checked = user.status === 'active';
+    if (elements.newUserCredentials) elements.newUserCredentials.classList.add('hidden');
     
     showModal('userFormModal');
 }
-
 async function loadEditCodes() {
     try {
         const tbody = document.getElementById('codesTableBody');
