@@ -3065,11 +3065,11 @@
                 const hashedPassword = await hashPassword(password);
                 
                 const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('username', username.toLowerCase().trim())
-                    .eq('status', 'active')
-                    .single();
+    .from('users')
+    .select('*')
+    .eq('email', username.toLowerCase().trim())  // ← Changed from username to email!
+    .eq('status', 'active')
+    .single();
                 
                 if (error || !data) {
                     errorEl.textContent = 'Invalid username or password';
