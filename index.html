@@ -3055,7 +3055,56 @@ async function logAudit(action, details = {}, projectId = null) {
         console.error('Error in audit logging:', error);
     }
 }
-
+async function loadSyncModal() {
+    console.log('Loading sync modal with fresh data...');
+    
+    const projectSelect = document.getElementById('syncProjectSelect');
+    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
+    
+    const direction = document.getElementById('syncDirection').value;
+    
+    try {
+        if (direction === 'import') {
+            // Import from ThoraxLab - show placeholder
+            projectSelect.innerHTML = '<option value="">ThoraxLab integration requires API setup</option>';
+        } else {
+            // Export to ThoraxLab - load YOUR projects directly from DB
+            const { data: projects, error } = await supabaseClient
+                .from('projects')
+                .select('id, name, description')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            console.log('Found', projects.length, 'projects in database');
+            
+            if (projects.length === 0) {
+                projectSelect.innerHTML = '<option value="">No projects found. Create one first.</option>';
+            } else {
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    
+                    // Mark imported projects
+                    if (project.description && project.description.includes('[Imported from ThoraxLab]')) {
+                        option.textContent += ' (Imported)';
+                    }
+                    
+                    projectSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Show/hide options
+        document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
+        document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        projectSelect.innerHTML = '<option value="">Error loading projects: ' + error.message + '</option>';
+    }
+}
 // ========== AUTHENTICATION SYSTEM ==========
 async function loginUser(username, password) {
     const errorEl = document.getElementById('loginError');
@@ -4970,11 +5019,21 @@ document.addEventListener('DOMContentLoaded', function() {
         showModal('manageUsersModal');
     });
     
-    document.getElementById('syncProjectsBtn').addEventListener('click', () => {
-        loadSyncModal();
-        showModal('syncProjectsModal');
-    });
+  document.getElementById('syncProjectsBtn').addEventListener('click', async () => {
+    console.log('Sync Projects button clicked');
     
+    try {
+        // Show modal first
+        showModal('syncProjectsModal');
+        
+        // Load projects for export direction (default)
+        await loadSyncProjects('export');
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load projects');
+    }
+});
     document.getElementById('viewCodesBtn').addEventListener('click', () => {
         loadEditCodes();
         showModal('viewCodesModal');
@@ -5347,24 +5406,70 @@ document.addEventListener('DOMContentLoaded', function() {
         loadSyncProjects(direction);
     });
     
-    function loadSyncProjects(direction) {
-        const projectSelect = document.getElementById('syncProjectSelect');
-        projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
-        
+    async function loadSyncProjects(direction) {
+    const projectSelect = document.getElementById('syncProjectSelect');
+    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
+    
+    try {
         if (direction === 'import') {
+            // Import from ThoraxLab - placeholder
             const option = document.createElement('option');
             option.value = 'thoraxlab-1';
             option.textContent = 'AI-Assisted Lung Nodule Detection (ThoraxLab)';
             projectSelect.appendChild(option);
+            
         } else {
-            dashboardData.projects.forEach(project => {
+            // Export to ThoraxLab - fetch DIRECTLY from database
+            console.log('Loading projects from database for export...');
+            
+            // Fetch fresh projects from database
+            const { data: projects, error } = await supabaseClient
+                .from('projects')
+                .select('id, name, description')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Database error:', error);
+                throw error;
+            }
+            
+            console.log('Found', projects?.length || 0, 'projects in database');
+            
+            if (!projects || projects.length === 0) {
                 const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.name;
+                option.value = '';
+                option.textContent = 'No projects found in database';
                 projectSelect.appendChild(option);
-            });
+            } else {
+                // Update dashboardData for consistency
+                dashboardData.projects = projects;
+                
+                // Add projects to dropdown
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    
+                    // Mark imported projects
+                    if (project.description && project.description.includes('[Imported from ThoraxLab]')) {
+                        option.textContent += ' (Imported)';
+                    }
+                    
+                    projectSelect.appendChild(option);
+                });
+                
+                console.log('Added', projects.length, 'projects to dropdown');
+            }
         }
+        
+    } catch (error) {
+        console.error('Error in loadSyncProjects:', error);
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Error: ' + error.message;
+        projectSelect.appendChild(option);
     }
+}
     
     document.getElementById('startSyncBtn').addEventListener('click', async function() {
         const direction = document.getElementById('syncDirection').value;
