@@ -3078,40 +3078,64 @@
                 }
                 
                 // Check password
-                if (data.password_hash !== hashedPassword) {
-                    errorEl.textContent = 'Invalid username or password';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
-                currentUser = {
-                    id: data.id,
-                    username: data.username,
-                    full_name: data.full_name,
-                    role: data.role,
-                    department: data.department,
-                    email: data.email,
-                    is_active: data.status === 'active'
-                };
-                
-                authToken = btoa(JSON.stringify(currentUser));
-                localStorage.setItem('traci_auth_token', authToken);
-                
-                await logAudit('login', { 
-                    username: username,
-                    role: currentUser.role
-                });
-                
-                return true;
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                errorEl.textContent = 'Login failed. Please try again.';
-                errorEl.style.display = 'block';
-                return false;
-            }
+                async function loginUser(username, password) {
+    const errorEl = document.getElementById('loginError');
+    errorEl.style.display = 'none';
+    
+    try {
+        // Hash the entered password
+        const hashedPassword = await hashPassword(password);
+        
+        // Query database using EMAIL (not username)
+        const { data, error } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('email', username.toLowerCase().trim())
+            .eq('status', 'active')
+            .single();
+        
+        if (error || !data) {
+            errorEl.textContent = 'Invalid email or password';
+            errorEl.style.display = 'block';
+            return false;
         }
-
+        
+        // Check password - FIXED COLUMN NAME
+        if (data.encrypted_password !== hashedPassword) {
+            errorEl.textContent = 'Invalid email or password';
+            errorEl.style.display = 'block';
+            return false;
+        }
+        
+        // Create user object with fallbacks
+        currentUser = {
+            id: data.id,
+            username: data.username || data.email.split('@')[0],
+            full_name: data.full_name || 'User',
+            role: data.role || 'guest',
+            department: data.department || '',
+            email: data.email,
+            is_active: data.status === 'active'
+        };
+        
+        authToken = btoa(JSON.stringify(currentUser));
+        localStorage.setItem('traci_auth_token', authToken);
+        
+        // Log the login
+        await logAudit('login', { 
+            email: username,
+            role: currentUser.role
+        });
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        errorEl.textContent = 'Login failed. Please try again.';
+        errorEl.style.display = 'block';
+        return false;
+    }
+}
         function logoutUser() {
             if (currentUser) {
                 logAudit('logout', {});
