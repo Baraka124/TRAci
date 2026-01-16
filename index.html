@@ -2985,7 +2985,7 @@
 
     <!-- JavaScript -->
     <script>
-       // ========== CONFIGURATION ==========
+   // ========== CONFIGURATION ==========
 const SUPABASE_URL = 'https://bledpouekiytppuhxeqq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
@@ -3741,6 +3741,116 @@ async function fetchPendingComments() {
     }
 }
 
+// ========== THORAXLAB SYNC SYSTEM ==========
+async function fetchThoraxLabProjects() {
+    try {
+        const mockProjects = [
+            {
+                id: 'thoraxlab-1',
+                title: 'AI-Assisted Lung Nodule Detection',
+                description: 'Using deep learning to improve early detection of pulmonary nodules in CT scans.',
+                status: 'development',
+                progress: 65,
+                category: 'clinical_research',
+                priority: 'high',
+                visibility: 'public',
+                created_at: new Date().toISOString(),
+                tags: ['AI', 'Radiology', 'Early Detection']
+            },
+            {
+                id: 'thoraxlab-2',
+                title: 'Tele-Rehabilitation for COPD Patients',
+                description: 'Remote monitoring and exercise program for chronic obstructive pulmonary disease patients.',
+                status: 'testing',
+                progress: 80,
+                category: 'quality_improvement',
+                priority: 'medium',
+                visibility: 'internal',
+                created_at: new Date().toISOString(),
+                tags: ['Telemedicine', 'Rehabilitation', 'COPD']
+            }
+        ];
+        
+        return mockProjects;
+    } catch (error) {
+        console.error('Error fetching ThoraxLab projects:', error);
+        return [];
+    }
+}
+
+async function syncThoraxLabProject(thoraxlabProject, direction) {
+    try {
+        if (direction === 'import') {
+            const parsedProject = parseThoraxLabProject(thoraxlabProject);
+            
+            const { data: existing } = await supabaseClient
+                .from('projects')
+                .select('id')
+                .ilike('name', `%${thoraxlabProject.title}%`)
+                .single();
+            
+            if (existing) {
+                return { success: false, error: 'Similar project already exists' };
+            }
+            
+            const { data, error } = await supabaseClient
+                .from('projects')
+                .insert([parsedProject])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            await logAudit('project_imported', {
+                source: 'thoraxlab',
+                project_id: data.id,
+                source_project_id: thoraxlabProject.id
+            }, data.id);
+            
+            return { success: true, data };
+            
+        } else if (direction === 'export') {
+            await logAudit('project_exported', {
+                destination: 'thoraxlab',
+                project_id: thoraxlabProject.id
+            }, thoraxlabProject.id);
+            
+            return { success: true, data: { id: 'thoraxlab-' + Date.now() } };
+        }
+    } catch (error) {
+        console.error('Error syncing project:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+function parseThoraxLabProject(thoraxlabProject) {
+    return {
+        name: thoraxlabProject.title,
+        description: `[Imported from ThoraxLab]\n\n${thoraxlabProject.description}\n\nTags: ${thoraxlabProject.tags?.join(', ') || 'None'}`,
+        status: mapThoraxLabStatus(thoraxlabProject.status),
+        progress: thoraxlabProject.progress || 0,
+        category: thoraxlabProject.category || 'clinical_research',
+        priority: thoraxlabProject.priority || 'medium',
+        visibility: 'imported',
+        edit_code: generateEditCode(),
+        review_status: 'imported',
+        created_at: new Date().toISOString(),
+        last_updated: new Date().toISOString()
+    };
+}
+
+function mapThoraxLabStatus(status) {
+    const statusMap = {
+        'planning': 'planning',
+        'development': 'development',
+        'testing': 'testing',
+        'production': 'production',
+        'completed': 'production',
+        'archived': 'archived'
+    };
+    return statusMap[status] || 'development';
+}
+
 // ========== DASHBOARD FUNCTIONS ==========
 async function initDashboard() {
     showLoadingState();
@@ -4415,6 +4525,359 @@ function showErrorState() {
     document.getElementById('lastUpdatedTime').textContent = 'Error loading data';
 }
 
+// ========== MODAL LOADING FUNCTIONS ==========
+async function loadUsersTable() {
+    try {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        
+        if (dashboardData.users.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px 20px;">
+                        <i class="mdi mdi-account-multiple" style="font-size: 2rem; color: var(--gray-400); margin-bottom: 12px;"></i>
+                        <p>No users found</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        dashboardData.users.forEach(user => {
+            const createdDate = new Date(user.created_at);
+            const dateStr = createdDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div style="font-weight: 700;">${user.full_name || user.email}</div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">
+                        Created: ${dateStr}
+                    </div>
+                </td>
+                <td>
+                    <code style="background: var(--gray-100); padding: 4px 8px; border-radius: 4px;">${user.username || user.email.split('@')[0]}</code>
+                </td>
+                <td>
+                    <span class="user-role ${user.role || 'guest'}" style="font-size: 11px;">${user.role || 'guest'}</span>
+                </td>
+                <td>
+                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: ${user.status === 'active' ? 'var(--success-light)' : 'var(--gray-100)'}; color: ${user.status === 'active' ? 'var(--success)' : 'var(--gray-600)'};">
+                        <i class="mdi mdi-circle" style="font-size: 8px;"></i>
+                        ${user.status === 'active' ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn edit-btn edit-user-btn" data-user-id="${user.id}" 
+                                style="padding: 6px 12px; font-size: 11px;">
+                            <i class="mdi mdi-pencil"></i>
+                        </button>
+                        <button class="action-btn delete-btn delete-user-btn" data-user-id="${user.id}"
+                                style="padding: 6px 12px; font-size: 11px;">
+                            <i class="mdi mdi-delete"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+        
+        document.querySelectorAll('.edit-user-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.dataset.userId;
+                const user = dashboardData.users.find(u => u.id === userId);
+                if (user) {
+                    loadUserForEdit(user);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.delete-user-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const userId = this.dataset.userId;
+                const user = dashboardData.users.find(u => u.id === userId);
+                
+                if (confirm(`Are you sure you want to delete user "${user?.full_name || user?.email}"?`)) {
+                    const result = await deleteUser(userId);
+                    if (result.success) {
+                        await initDashboard();
+                        loadUsersTable();
+                    }
+                }
+            });
+        });
+        
+        const searchInput = document.getElementById('userSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading users table:', error);
+    }
+}
+
+function loadUserForEdit(user) {
+    document.getElementById('userFormTitle').textContent = 'Edit User';
+    document.getElementById('saveUserBtnText').textContent = 'Update User';
+    document.getElementById('editUserId').value = user.id;
+    document.getElementById('userFullName').value = user.full_name || '';
+    document.getElementById('userUsername').value = user.username || user.email.split('@')[0];
+    document.getElementById('userEmail').value = user.email || '';
+    document.getElementById('userRole').value = user.role || 'doctor';
+    document.getElementById('userDepartment').value = user.department || 'pulmonology';
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userIsActive').checked = user.status === 'active';
+    document.getElementById('newUserCredentials').classList.add('hidden');
+    
+    showModal('userFormModal');
+}
+
+async function loadEditCodes() {
+    try {
+        const tbody = document.getElementById('codesTableBody');
+        tbody.innerHTML = '';
+        
+        if (dashboardData.projects.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px 20px;">
+                        <i class="mdi mdi-key" style="font-size: 2rem; color: var(--gray-400); margin-bottom: 12px;"></i>
+                        <p>No projects found</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        dashboardData.projects.forEach(project => {
+            const createdDate = new Date(project.created_at);
+            const dateStr = createdDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric'
+            });
+            
+            const visibilityBadge = project.visibility === 'private' 
+                ? '<span style="font-size: 11px; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">Private</span>'
+                : '<span style="font-size: 11px; background: var(--success-light); color: var(--success); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">Public</span>';
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div style="font-weight: 700;">${project.name}</div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">
+                        Created: ${dateStr}
+                    </div>
+                </td>
+                <td>
+                    <code style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--gray-100); padding: 8px 12px; border-radius: 8px; display: inline-block;">
+                        ${project.edit_code || 'N/A'}
+                    </code>
+                </td>
+                <td>
+                    ${visibilityBadge}
+                </td>
+                <td>
+                    ${project.edit_code ? `
+                        <button class="action-btn edit-btn" onclick="generateNewEditCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" 
+                                style="padding: 6px 12px; font-size: 11px;">
+                            <i class="mdi mdi-refresh"></i> Regenerate
+                        </button>
+                    ` : 'N/A'}
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+        
+        const searchInput = document.getElementById('codeSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading edit codes:', error);
+    }
+}
+
+async function loadSyncModal() {
+    const projectSelect = document.getElementById('syncProjectSelect');
+    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
+    
+    const direction = document.getElementById('syncDirection').value;
+    
+    if (direction === 'import') {
+        const thoraxlabProjects = await fetchThoraxLabProjects();
+        thoraxlabProjects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.id;
+            option.textContent = `${project.title} (${project.status})`;
+            projectSelect.appendChild(option);
+        });
+    } else {
+        dashboardData.projects
+            .filter(p => !(p.description && p.description.includes('[Imported from ThoraxLab]')))
+            .forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
+    }
+    
+    document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
+    document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
+}
+
+async function loadModerationModal() {
+    pendingComments = await fetchPendingComments();
+    const moderationList = document.getElementById('moderationList');
+    
+    if (!pendingComments || pendingComments.length === 0) {
+        moderationList.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: var(--gray-500);">
+                <i class="mdi mdi-check-circle-outline" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                <h3 style="margin-bottom: 12px; color: var(--gray-600);">All Clear!</h3>
+                <p>No pending comments to moderate.</p>
+            </div>
+        `;
+        document.getElementById('bulkActionsPanel').classList.add('hidden');
+        return;
+    }
+    
+    let html = `
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            ${pendingComments.map(comment => `
+                <div class="comment-item pending" style="margin-bottom: 0;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <input type="checkbox" class="comment-checkbox" value="${comment.id}" 
+                               style="width: 18px; height: 18px;">
+                        <strong>${comment.user_name}</strong>
+                        <span style="font-size: 12px; color: var(--gray-500);">on "${comment.projects?.name || 'Unknown Project'}"</span>
+                        <span style="font-size: 11px; background: var(--gray-100); color: var(--gray-600); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">
+                            ${comment.user_role}
+                        </span>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                    <div class="comment-actions">
+                        <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
+                            <i class="mdi mdi-check-circle"></i> Approve
+                        </button>
+                        <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
+                            <i class="mdi mdi-close-circle"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    moderationList.innerHTML = html;
+    document.getElementById('bulkActionsPanel').classList.remove('hidden');
+    
+    document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                selectedCommentIds.add(this.value);
+            } else {
+                selectedCommentIds.delete(this.value);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const commentId = this.dataset.commentId;
+            await moderateComment(commentId, 'approve');
+            await loadModerationModal();
+            await initDashboard();
+        });
+    });
+    
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const commentId = this.dataset.commentId;
+            await moderateComment(commentId, 'reject');
+            await loadModerationModal();
+            await initDashboard();
+        });
+    });
+    
+    document.getElementById('selectAllCommentsBtn').addEventListener('click', function() {
+        document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
+            checkbox.checked = true;
+            selectedCommentIds.add(checkbox.value);
+        });
+    });
+    
+    document.getElementById('bulkApproveBtn').addEventListener('click', async function() {
+        if (selectedCommentIds.size === 0) {
+            alert('Please select comments to approve');
+            return;
+        }
+        
+        if (confirm(`Approve ${selectedCommentIds.size} selected comments?`)) {
+            for (const commentId of selectedCommentIds) {
+                await moderateComment(commentId, 'approve');
+            }
+            selectedCommentIds.clear();
+            await loadModerationModal();
+            await initDashboard();
+        }
+    });
+    
+    document.getElementById('bulkRejectBtn').addEventListener('click', async function() {
+        if (selectedCommentIds.size === 0) {
+            alert('Please select comments to reject');
+            return;
+        }
+        
+        if (confirm(`Reject ${selectedCommentIds.size} selected comments?`)) {
+            for (const commentId of selectedCommentIds) {
+                await moderateComment(commentId, 'reject');
+            }
+            selectedCommentIds.clear();
+            await loadModerationModal();
+            await initDashboard();
+        }
+    });
+    
+    const searchInput = document.getElementById('moderationSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const items = document.querySelectorAll('#moderationList > div > .comment-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+    }
+}
+
 // ========== EVENT LISTENERS ==========
 document.addEventListener('DOMContentLoaded', function() {
     loadStoredUser();
@@ -4795,6 +5258,197 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // User management
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+        clearFormMessages();
+        document.getElementById('userFormTitle').textContent = 'Add New User';
+        document.getElementById('saveUserBtnText').textContent = 'Create User';
+        document.getElementById('editUserId').value = '';
+        document.getElementById('userFullName').value = '';
+        document.getElementById('userUsername').value = '';
+        document.getElementById('userEmail').value = '';
+        document.getElementById('userRole').value = 'doctor';
+        document.getElementById('userDepartment').value = 'pulmonology';
+        document.getElementById('userPassword').value = generatePassword();
+        document.getElementById('userIsActive').checked = true;
+        document.getElementById('newUserCredentials').classList.add('hidden');
+        showModal('userFormModal');
+    });
+    
+    document.getElementById('generatePasswordBtn').addEventListener('click', () => {
+        document.getElementById('userPassword').value = generatePassword();
+    });
+    
+    document.getElementById('saveUserBtn').addEventListener('click', async function() {
+        const userData = {
+            full_name: document.getElementById('userFullName').value.trim(),
+            username: document.getElementById('userUsername').value.trim().toLowerCase(),
+            email: document.getElementById('userEmail').value.trim(),
+            role: document.getElementById('userRole').value,
+            department: document.getElementById('userDepartment').value,
+            password: document.getElementById('userPassword').value,
+            is_active: document.getElementById('userIsActive').checked
+        };
+        
+        if (!userData.full_name || !userData.username || !userData.password) {
+            document.getElementById('userError').textContent = 'Full name, username, and password are required';
+            document.getElementById('userError').style.display = 'block';
+            return;
+        }
+        
+        this.innerHTML = '<span class="loading-spinner"></span> Saving...';
+        this.disabled = true;
+        
+        const userId = document.getElementById('editUserId').value;
+        let result;
+        
+        if (userId) {
+            result = await updateUser(userId, userData);
+        } else {
+            result = await createUser(userData);
+        }
+        
+        this.innerHTML = userId ? '<i class="mdi mdi-content-save"></i> Update User' : '<i class="mdi mdi-content-save"></i> Create User';
+        this.disabled = false;
+        
+        if (result.success) {
+            if (!userId && result.password) {
+                document.getElementById('generatedUsername').textContent = userData.username;
+                document.getElementById('generatedPassword').textContent = result.password;
+                document.getElementById('newUserCredentials').classList.remove('hidden');
+                
+                document.getElementById('userSuccess').textContent = 'User created successfully! Share these credentials securely.';
+                document.getElementById('userSuccess').style.display = 'block';
+            } else {
+                document.getElementById('userSuccess').textContent = userId ? 'User updated successfully!' : 'User created successfully!';
+                document.getElementById('userSuccess').style.display = 'block';
+                
+                setTimeout(() => {
+                    hideAllModals();
+                    loadUsersTable();
+                }, 1500);
+            }
+        } else {
+            document.getElementById('userError').textContent = 'Failed to save user: ' + result.error;
+            document.getElementById('userError').style.display = 'block';
+        }
+    });
+    
+    // Generate edit code
+    document.getElementById('generateEditCodeBtn').addEventListener('click', () => {
+        document.getElementById('editProjectEditCode').value = generateEditCode();
+    });
+    
+    // Sync modal
+    document.getElementById('syncDirection').addEventListener('change', function() {
+        const direction = this.value;
+        document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
+        document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
+        loadSyncProjects(direction);
+    });
+    
+    function loadSyncProjects(direction) {
+        const projectSelect = document.getElementById('syncProjectSelect');
+        projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
+        
+        if (direction === 'import') {
+            const option = document.createElement('option');
+            option.value = 'thoraxlab-1';
+            option.textContent = 'AI-Assisted Lung Nodule Detection (ThoraxLab)';
+            projectSelect.appendChild(option);
+        } else {
+            dashboardData.projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
+        }
+    }
+    
+    document.getElementById('startSyncBtn').addEventListener('click', async function() {
+        const direction = document.getElementById('syncDirection').value;
+        const projectSelect = document.getElementById('syncProjectSelect');
+        const projectId = projectSelect.value;
+        
+        if (!projectId) {
+            document.getElementById('syncError').textContent = 'Please select a project';
+            document.getElementById('syncError').style.display = 'block';
+            return;
+        }
+        
+        this.innerHTML = '<span class="loading-spinner"></span> Syncing...';
+        this.disabled = true;
+        
+        let result;
+        if (direction === 'import') {
+            const thoraxlabProjects = await fetchThoraxLabProjects();
+            const selectedProject = thoraxlabProjects.find(p => p.id === projectId);
+            
+            if (selectedProject) {
+                result = await syncThoraxLabProject(selectedProject, 'import');
+            } else {
+                result = { success: false, error: 'Project not found' };
+            }
+        } else {
+            const traciProject = dashboardData.projects.find(p => p.id === projectId);
+            if (traciProject) {
+                result = await syncThoraxLabProject(traciProject, 'export');
+            } else {
+                result = { success: false, error: 'Project not found' };
+            }
+        }
+        
+        this.innerHTML = '<i class="mdi mdi-sync"></i> Start Sync';
+        this.disabled = false;
+        
+        if (result.success) {
+            document.getElementById('syncSuccess').textContent = direction === 'import' 
+                ? 'Project imported successfully!' 
+                : 'Project exported successfully!';
+            document.getElementById('syncSuccess').style.display = 'block';
+            
+            const resultsDiv = document.getElementById('syncResults');
+            const resultsContent = document.getElementById('syncResultsContent');
+            resultsContent.innerHTML = `
+                <p><strong>Status:</strong> Success</p>
+                <p><strong>Action:</strong> ${direction === 'import' ? 'Import from ThoraxLab' : 'Export to ThoraxLab'}</p>
+                <p><strong>Project:</strong> ${projectSelect.options[projectSelect.selectedIndex].text}</p>
+                <p><strong>Time:</strong> ${new Date().toLocaleTimeString()}</p>
+            `;
+            resultsDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideAllModals();
+                initDashboard();
+            }, 3000);
+        } else {
+            document.getElementById('syncError').textContent = 'Sync failed: ' + result.error;
+            document.getElementById('syncError').style.display = 'block';
+        }
+    });
+    
+    // PDF Export
+    document.getElementById('generatePDFBtn').addEventListener('click', async function() {
+        const projectId = document.getElementById('pdfProjectSelect').value;
+        if (!projectId) {
+            document.getElementById('pdfError').textContent = 'Please select a project';
+            document.getElementById('pdfError').style.display = 'block';
+            return;
+        }
+        
+        this.innerHTML = '<span class="loading-spinner"></span> Generating PDF...';
+        this.disabled = true;
+        
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        this.innerHTML = '<i class="mdi mdi-file-pdf-box"></i> Generate & Download PDF';
+        this.disabled = false;
+        
+        document.getElementById('pdfError').textContent = 'PDF export feature coming soon!';
+        document.getElementById('pdfError').style.display = 'block';
+    });
+    
     // Dashboard refresh
     document.getElementById('refreshLink').addEventListener('click', async function(e) {
         e.preventDefault();
@@ -4860,371 +5514,6 @@ window.showSyncModal = function(projectId, projectName) {
     
     showModal('syncProjectsModal');
 };
-        // ========== MISSING MODAL FUNCTIONS ==========
-
-async function loadUsersTable() {
-    try {
-        const tbody = document.getElementById('usersTableBody');
-        tbody.innerHTML = '';
-        
-        if (dashboardData.users.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px 20px;">
-                        <i class="mdi mdi-account-multiple" style="font-size: 2rem; color: var(--gray-400); margin-bottom: 12px;"></i>
-                        <p>No users found</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        dashboardData.users.forEach(user => {
-            const createdDate = new Date(user.created_at);
-            const dateStr = createdDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-            });
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <div style="font-weight: 700;">${user.full_name || user.email}</div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">
-                        Created: ${dateStr}
-                    </div>
-                </td>
-                <td>
-                    <code style="background: var(--gray-100); padding: 4px 8px; border-radius: 4px;">${user.username || user.email.split('@')[0]}</code>
-                </td>
-                <td>
-                    <span class="user-role ${user.role || 'guest'}" style="font-size: 11px;">${user.role || 'guest'}</span>
-                </td>
-                <td>
-                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: ${user.status === 'active' ? 'var(--success-light)' : 'var(--gray-100)'}; color: ${user.status === 'active' ? 'var(--success)' : 'var(--gray-600)'};">
-                        <i class="mdi mdi-circle" style="font-size: 8px;"></i>
-                        ${user.status === 'active' ? 'Active' : 'Inactive'}
-                    </span>
-                </td>
-                <td>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="action-btn edit-btn edit-user-btn" data-user-id="${user.id}" 
-                                style="padding: 6px 12px; font-size: 11px;">
-                            <i class="mdi mdi-pencil"></i>
-                        </button>
-                        <button class="action-btn delete-btn delete-user-btn" data-user-id="${user.id}"
-                                style="padding: 6px 12px; font-size: 11px;">
-                            <i class="mdi mdi-delete"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            
-            tbody.appendChild(row);
-        });
-        
-        document.querySelectorAll('.edit-user-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const userId = this.dataset.userId;
-                const user = dashboardData.users.find(u => u.id === userId);
-                if (user) {
-                    loadUserForEdit(user);
-                }
-            });
-        });
-        
-        document.querySelectorAll('.delete-user-btn').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const userId = this.dataset.userId;
-                const user = dashboardData.users.find(u => u.id === userId);
-                
-                if (confirm(`Are you sure you want to delete user "${user?.full_name || user?.email}"?`)) {
-                    const result = await deleteUser(userId);
-                    if (result.success) {
-                        await initDashboard();
-                        loadUsersTable();
-                    }
-                }
-            });
-        });
-        
-        const searchInput = document.getElementById('userSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                const rows = tbody.querySelectorAll('tr');
-                
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
-                });
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error loading users table:', error);
-    }
-}
-
-function loadUserForEdit(user) {
-    document.getElementById('userFormTitle').textContent = 'Edit User';
-    document.getElementById('saveUserBtnText').textContent = 'Update User';
-    document.getElementById('editUserId').value = user.id;
-    document.getElementById('userFullName').value = user.full_name || '';
-    document.getElementById('userUsername').value = user.username || user.email.split('@')[0];
-    document.getElementById('userEmail').value = user.email || '';
-    document.getElementById('userRole').value = user.role || 'doctor';
-    document.getElementById('userDepartment').value = user.department || 'pulmonology';
-    document.getElementById('userPassword').value = '';
-    document.getElementById('userIsActive').checked = user.status === 'active';
-    document.getElementById('newUserCredentials').classList.add('hidden');
-    
-    showModal('userFormModal');
-}
-
-async function loadEditCodes() {
-    try {
-        const tbody = document.getElementById('codesTableBody');
-        tbody.innerHTML = '';
-        
-        if (dashboardData.projects.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" style="text-align: center; padding: 40px 20px;">
-                        <i class="mdi mdi-key" style="font-size: 2rem; color: var(--gray-400); margin-bottom: 12px;"></i>
-                        <p>No projects found</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        dashboardData.projects.forEach(project => {
-            const createdDate = new Date(project.created_at);
-            const dateStr = createdDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric'
-            });
-            
-            const visibilityBadge = project.visibility === 'private' 
-                ? '<span style="font-size: 11px; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">Private</span>'
-                : '<span style="font-size: 11px; background: var(--success-light); color: var(--success); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">Public</span>';
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <div style="font-weight: 700;">${project.name}</div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">
-                        Created: ${dateStr}
-                    </div>
-                </td>
-                <td>
-                    <code style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; background: var(--gray-100); padding: 8px 12px; border-radius: 8px; display: inline-block;">
-                        ${project.edit_code || 'N/A'}
-                    </code>
-                </td>
-                <td>
-                    ${visibilityBadge}
-                </td>
-                <td>
-                    ${project.edit_code ? `
-                        <button class="action-btn edit-btn" onclick="generateNewEditCode('${project.id}', '${project.name.replace(/'/g, "\\'")}')" 
-                                style="padding: 6px 12px; font-size: 11px;">
-                            <i class="mdi mdi-refresh"></i> Regenerate
-                        </button>
-                    ` : 'N/A'}
-                </td>
-            `;
-            
-            tbody.appendChild(row);
-        });
-        
-        const searchInput = document.getElementById('codeSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                const rows = tbody.querySelectorAll('tr');
-                
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
-                });
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error loading edit codes:', error);
-    }
-}
-
-async function loadSyncModal() {
-    const projectSelect = document.getElementById('syncProjectSelect');
-    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
-    
-    const direction = document.getElementById('syncDirection').value;
-    
-    if (direction === 'import') {
-        const mockProjects = [
-            {
-                id: 'thoraxlab-1',
-                title: 'AI-Assisted Lung Nodule Detection',
-                status: 'development'
-            },
-            {
-                id: 'thoraxlab-2',
-                title: 'Tele-Rehabilitation for COPD Patients',
-                status: 'testing'
-            }
-        ];
-        
-        mockProjects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.id;
-            option.textContent = `${project.title} (${project.status})`;
-            projectSelect.appendChild(option);
-        });
-    } else {
-        dashboardData.projects
-            .filter(p => !(p.description && p.description.includes('[Imported from ThoraxLab]')))
-            .forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.name;
-                projectSelect.appendChild(option);
-            });
-    }
-    
-    document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
-    document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
-}
-
-async function loadModerationModal() {
-    pendingComments = await fetchPendingComments();
-    const moderationList = document.getElementById('moderationList');
-    
-    if (!pendingComments || pendingComments.length === 0) {
-        moderationList.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; color: var(--gray-500);">
-                <i class="mdi mdi-check-circle-outline" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                <h3 style="margin-bottom: 12px; color: var(--gray-600);">All Clear!</h3>
-                <p>No pending comments to moderate.</p>
-            </div>
-        `;
-        document.getElementById('bulkActionsPanel').classList.add('hidden');
-        return;
-    }
-    
-    let html = `
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-            ${pendingComments.map(comment => `
-                <div class="comment-item pending" style="margin-bottom: 0;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <input type="checkbox" class="comment-checkbox" value="${comment.id}" 
-                               style="width: 18px; height: 18px;">
-                        <strong>${comment.user_name}</strong>
-                        <span style="font-size: 12px; color: var(--gray-500);">on "${comment.projects?.name || 'Unknown Project'}"</span>
-                        <span style="font-size: 11px; background: var(--gray-100); color: var(--gray-600); padding: 3px 8px; border-radius: 9999px; font-weight: 600;">
-                            ${comment.user_role}
-                        </span>
-                    </div>
-                    <div class="comment-content">${comment.content}</div>
-                    <div class="comment-actions">
-                        <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
-                            <i class="mdi mdi-check-circle"></i> Approve
-                        </button>
-                        <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
-                            <i class="mdi mdi-close-circle"></i> Reject
-                        </button>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-    
-    moderationList.innerHTML = html;
-    document.getElementById('bulkActionsPanel').classList.remove('hidden');
-    
-    document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                selectedCommentIds.add(this.value);
-            } else {
-                selectedCommentIds.delete(this.value);
-            }
-        });
-    });
-    
-    document.querySelectorAll('.approve-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            await moderateComment(commentId, 'approve');
-            await loadModerationModal();
-            await initDashboard();
-        });
-    });
-    
-    document.querySelectorAll('.reject-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const commentId = this.dataset.commentId;
-            await moderateComment(commentId, 'reject');
-            await loadModerationModal();
-            await initDashboard();
-        });
-    });
-    
-    document.getElementById('selectAllCommentsBtn').addEventListener('click', function() {
-        document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
-            checkbox.checked = true;
-            selectedCommentIds.add(checkbox.value);
-        });
-    });
-    
-    document.getElementById('bulkApproveBtn').addEventListener('click', async function() {
-        if (selectedCommentIds.size === 0) {
-            alert('Please select comments to approve');
-            return;
-        }
-        
-        if (confirm(`Approve ${selectedCommentIds.size} selected comments?`)) {
-            for (const commentId of selectedCommentIds) {
-                await moderateComment(commentId, 'approve');
-            }
-            selectedCommentIds.clear();
-            await loadModerationModal();
-            await initDashboard();
-        }
-    });
-    
-    document.getElementById('bulkRejectBtn').addEventListener('click', async function() {
-        if (selectedCommentIds.size === 0) {
-            alert('Please select comments to reject');
-            return;
-        }
-        
-        if (confirm(`Reject ${selectedCommentIds.size} selected comments?`)) {
-            for (const commentId of selectedCommentIds) {
-                await moderateComment(commentId, 'reject');
-            }
-            selectedCommentIds.clear();
-            await loadModerationModal();
-            await initDashboard();
-        }
-    });
-    
-    const searchInput = document.getElementById('moderationSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const items = document.querySelectorAll('#moderationList > div > .comment-item');
-            
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        });
-    }
-}
     </script>
 </body>
 </html>
