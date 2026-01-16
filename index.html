@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>TRAci | Clinical Innovation Platform</title>
+    <title>TRAci | Pneumology Innovation</title>
     
     <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,6 +19,10 @@
         /* ===== COMPLETE CSS ===== */
         :root {
             /* Colors */
+            --ms-blue: #00A4EF;
+            --ms-green: #7FBA00;
+            --ms-yellow: #FFB900;
+            --ms-orange: #F25022;
             --primary-50: #f0f9ff;
             --primary-100: #e0f2fe;
             --primary-200: #bae6fd;
@@ -187,11 +191,29 @@
             transform: rotate(45deg);
         }
 
-        .logo-icon {
-            font-size: 32px;
-            color: white;
+        .windows-logo {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 4px;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
+
+        .windows-square {
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .windows-square:hover {
+            transform: scale(1.1);
+        }
+
+        .windows-square.s1 { background: var(--ms-blue); }
+        .windows-square.s2 { background: var(--ms-green); }
+        .windows-square.s3 { background: var(--ms-yellow); }
+        .windows-square.s4 { background: var(--ms-orange); }
 
         .platform-info {
             display: flex;
@@ -495,6 +517,11 @@
             margin-bottom: 32px;
             flex-wrap: wrap;
             justify-content: center;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
         }
 
         @media (min-width: 768px) {
@@ -504,7 +531,7 @@
         }
 
         .admin-btn {
-            padding: 14px 24px;
+            padding: 12px 20px;
             background: var(--bg-card);
             border: 2px solid var(--border);
             border-radius: 10px;
@@ -1809,11 +1836,16 @@
         <header class="header">
             <div class="logo-section">
                 <div class="logo">
-                    <i class="mdi mdi-stethoscope logo-icon"></i>
+                    <div class="windows-logo">
+                        <div class="windows-square s1"></div>
+                        <div class="windows-square s2"></div>
+                        <div class="windows-square s3"></div>
+                        <div class="windows-square s4"></div>
+                    </div>
                 </div>
                 <div class="platform-info">
                     <h1 class="platform-name">TRAci</h1>
-                    <p class="department-name">Clinical Innovation Platform</p>
+                    <p class="department-name">Pneumology Innovation</p>
                 </div>
             </div>
             
@@ -1991,7 +2023,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="content-grid" id="contentGrid" class="hidden">
+        <div class="content-grid hidden" id="contentGrid">
             <!-- Tools Section -->
             <div class="section">
                 <div class="section-header">
@@ -2958,7 +2990,7 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_zdlIM8UbOrRIFpmYLJOmWQ_4QqNi_5C';
 
         // ========== SUPABASE INITIALIZATION ==========
-        const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========== STATE MANAGEMENT ==========
         let currentUser = null;
@@ -3013,7 +3045,7 @@
                     created_at: new Date().toISOString()
                 };
                 
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('audit_logs')
                     .insert([auditData]);
                 
@@ -3032,10 +3064,11 @@
             try {
                 const hashedPassword = await hashPassword(password);
                 
-                const { data, error } = await supabase
-                    .from('dashboard_users')
+                const { data, error } = await supabaseClient
+                    .from('users')
                     .select('*')
                     .eq('username', username.toLowerCase().trim())
+                    .eq('status', 'active')
                     .single();
                 
                 if (error || !data) {
@@ -3044,17 +3077,8 @@
                     return false;
                 }
                 
-                // Check if account is active
-                if (!data.is_active) {
-                    errorEl.textContent = 'Account is deactivated. Please contact administrator.';
-                    errorEl.style.display = 'block';
-                    return false;
-                }
-                
                 // Check password
-                const storedPassword = data.password_hash || data.password;
-                
-                if (storedPassword !== hashedPassword) {
+                if (data.password_hash !== hashedPassword) {
                     errorEl.textContent = 'Invalid username or password';
                     errorEl.style.display = 'block';
                     return false;
@@ -3067,7 +3091,7 @@
                     role: data.role,
                     department: data.department,
                     email: data.email,
-                    is_active: data.is_active
+                    is_active: data.status === 'active'
                 };
                 
                 authToken = btoa(JSON.stringify(currentUser));
@@ -3227,8 +3251,8 @@
         // Users Management (Admin only)
         async function fetchUsers() {
             try {
-                const { data, error } = await supabase
-                    .from('dashboard_users')
+                const { data, error } = await supabaseClient
+                    .from('users')
                     .select('*')
                     .order('created_at', { ascending: false });
                 
@@ -3256,12 +3280,12 @@
                     role: userData.role,
                     department: userData.department,
                     password_hash: hashedPassword,
-                    is_active: userData.is_active !== false,
+                    status: userData.is_active ? 'active' : 'inactive',
                     created_at: new Date().toISOString()
                 };
                 
-                const { data, error } = await supabase
-                    .from('dashboard_users')
+                const { data, error } = await supabaseClient
+                    .from('users')
                     .insert([userToInsert])
                     .select()
                     .single();
@@ -3293,7 +3317,7 @@
                     email: userData.email,
                     role: userData.role,
                     department: userData.department,
-                    is_active: userData.is_active,
+                    status: userData.is_active ? 'active' : 'inactive',
                     updated_at: new Date().toISOString()
                 };
                 
@@ -3302,8 +3326,8 @@
                     updateData.password_hash = await hashPassword(userData.password);
                 }
                 
-                const { data, error } = await supabase
-                    .from('dashboard_users')
+                const { data, error } = await supabaseClient
+                    .from('users')
                     .update(updateData)
                     .eq('id', userId)
                     .select()
@@ -3326,8 +3350,8 @@
 
         async function deleteUser(userId) {
             try {
-                const { error } = await supabase
-                    .from('dashboard_users')
+                const { error } = await supabaseClient
+                    .from('users')
                     .delete()
                     .eq('id', userId);
                 
@@ -3345,7 +3369,7 @@
         // Projects
         async function fetchProjects() {
             try {
-                let query = supabase
+                let query = supabaseClient
                     .from('projects')
                     .select('*');
                 
@@ -3374,14 +3398,22 @@
         async function addProject(projectData) {
             try {
                 const projectToInsert = {
-                    ...projectData,
+                    name: projectData.name,
+                    description: projectData.description,
+                    status: projectData.status,
+                    progress: projectData.progress,
+                    category: projectData.category,
+                    priority: projectData.priority,
+                    needs_feedback: projectData.needs_feedback,
+                    visibility: projectData.visibility,
+                    owner: projectData.owner,
                     edit_code: generateEditCode(),
                     review_status: projectData.needs_feedback ? 'pending' : 'none',
                     created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
+                    last_updated: new Date().toISOString()
                 };
                 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('projects')
                     .insert([projectToInsert])
                     .select()
@@ -3405,11 +3437,25 @@
         async function updateProject(projectId, projectData) {
             try {
                 const updateData = {
-                    ...projectData,
-                    updated_at: new Date().toISOString()
+                    name: projectData.name,
+                    description: projectData.description,
+                    status: projectData.status,
+                    progress: projectData.progress,
+                    category: projectData.category,
+                    priority: projectData.priority,
+                    needs_feedback: projectData.needs_feedback,
+                    owner: projectData.owner,
+                    last_updated: new Date().toISOString()
                 };
                 
-                const { data, error } = await supabase
+                // Add admin-only fields
+                if (currentUser && currentUser.role === 'admin') {
+                    updateData.visibility = projectData.visibility;
+                    updateData.review_status = projectData.review_status;
+                    updateData.edit_code = projectData.edit_code;
+                }
+                
+                const { data, error } = await supabaseClient
                     .from('projects')
                     .update(updateData)
                     .eq('id', projectId)
@@ -3433,7 +3479,7 @@
 
         async function deleteProject(projectId) {
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('projects')
                     .delete()
                     .eq('id', projectId);
@@ -3452,7 +3498,7 @@
         // Tools
         async function fetchTools() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('tools')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -3468,12 +3514,17 @@
         async function addTool(toolData) {
             try {
                 const toolToInsert = {
-                    ...toolData,
+                    name: toolData.name,
+                    description: toolData.description,
+                    url: toolData.url,
+                    status: toolData.status,
+                    category: toolData.category,
+                    icon: toolData.icon,
                     created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
+                    last_checked: new Date().toISOString()
                 };
                 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('tools')
                     .insert([toolToInsert])
                     .select()
@@ -3493,9 +3544,17 @@
 
         async function updateTool(toolId, toolData) {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('tools')
-                    .update(toolData)
+                    .update({
+                        name: toolData.name,
+                        description: toolData.description,
+                        url: toolData.url,
+                        status: toolData.status,
+                        category: toolData.category,
+                        icon: toolData.icon,
+                        last_checked: new Date().toISOString()
+                    })
                     .eq('id', toolId)
                     .select()
                     .single();
@@ -3514,7 +3573,7 @@
 
         async function deleteTool(toolId) {
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('tools')
                     .delete()
                     .eq('id', toolId);
@@ -3530,20 +3589,22 @@
             }
         }
 
-        // Comments System
+        // Comments System - Using audit_logs for now
         async function fetchCommentCounts() {
             try {
-                const { data, error } = await supabase
-                    .from('project_comments')
-                    .select('project_id, status')
-                    .eq('status', 'approved');
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
+                    .select('project_id')
+                    .eq('action', 'comment_added');
                 
                 if (error) throw error;
                 
                 const counts = {};
                 if (data) {
-                    data.forEach(comment => {
-                        counts[comment.project_id] = (counts[comment.project_id] || 0) + 1;
+                    data.forEach(log => {
+                        if (log.project_id) {
+                            counts[log.project_id] = (counts[log.project_id] || 0) + 1;
+                        }
                     });
                 }
                 return counts;
@@ -3555,21 +3616,12 @@
 
         async function fetchCommentsForProject(projectId) {
             try {
-                let query = supabase
-                    .from('project_comments')
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
                     .select('*')
                     .eq('project_id', projectId)
+                    .eq('action', 'comment_added')
                     .order('created_at', { ascending: false });
-                
-                if (currentUser && currentUser.role === 'guest') {
-                    query = query.eq('status', 'approved');
-                } else if (currentUser && currentUser.role === 'admin') {
-                    // Admin sees all comments
-                } else {
-                    query = query.in('status', ['approved', 'pending']);
-                }
-                
-                const { data, error } = await query;
                 
                 if (error) throw error;
                 return data || [];
@@ -3595,9 +3647,22 @@
                     commentData.user_email = guestEmail;
                 }
                 
-                const { data, error } = await supabase
-                    .from('project_comments')
-                    .insert([commentData])
+                // Store in audit_logs for now
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
+                    .insert([{
+                        user_id: currentUser.id,
+                        user_name: currentUser.full_name || currentUser.username,
+                        user_role: currentUser.role,
+                        action: 'comment_added',
+                        details: JSON.stringify({
+                            content: content,
+                            status: currentUser.role === 'admin' ? 'approved' : 'pending',
+                            guest_email: guestEmail
+                        }),
+                        project_id: projectId,
+                        created_at: new Date().toISOString()
+                    }])
                     .select()
                     .single();
                 
@@ -3618,12 +3683,24 @@
 
         async function moderateComment(commentId, action) {
             try {
-                const { data, error } = await supabase
-                    .from('project_comments')
+                // Update in audit_logs details
+                const { data: comment } = await supabaseClient
+                    .from('audit_logs')
+                    .select('details')
+                    .eq('id', commentId)
+                    .single();
+                
+                if (!comment) throw new Error('Comment not found');
+                
+                const details = JSON.parse(comment.details);
+                details.status = action === 'approve' ? 'approved' : 'rejected';
+                details.moderated_at = new Date().toISOString();
+                details.moderated_by = currentUser.username;
+                
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
                     .update({
-                        status: action === 'approve' ? 'approved' : 'rejected',
-                        moderated_at: new Date().toISOString(),
-                        moderated_by: currentUser.username
+                        details: JSON.stringify(details)
                     })
                     .eq('id', commentId)
                     .select()
@@ -3645,17 +3722,41 @@
 
         async function fetchPendingComments() {
             try {
-                const { data, error } = await supabase
-                    .from('project_comments')
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
                     .select(`
                         *,
                         projects (name)
                     `)
-                    .eq('status', 'pending')
+                    .eq('action', 'comment_added')
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
-                return data || [];
+                
+                // Filter pending comments from details
+                const pending = [];
+                if (data) {
+                    data.forEach(log => {
+                        try {
+                            const details = JSON.parse(log.details);
+                            if (details.status === 'pending') {
+                                pending.push({
+                                    id: log.id,
+                                    project_id: log.project_id,
+                                    projects: log.projects,
+                                    content: details.content,
+                                    user_name: log.user_name,
+                                    user_role: log.user_role,
+                                    status: details.status,
+                                    created_at: log.created_at
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing comment details:', e);
+                        }
+                    });
+                }
+                return pending;
             } catch (error) {
                 console.error('Error fetching pending comments:', error);
                 return [];
@@ -3708,18 +3809,18 @@
                     const parsedProject = parseThoraxLabProject(thoraxlabProject);
                     
                     // Check if already imported
-                    const { data: existing } = await supabase
+                    const { data: existing } = await supabaseClient
                         .from('projects')
                         .select('id')
-                        .eq('source_id', thoraxlabProject.id)
+                        .ilike('name', `%${thoraxlabProject.title}%`)
                         .single();
                     
                     if (existing) {
-                        return { success: false, error: 'Project already imported' };
+                        return { success: false, error: 'Similar project already exists' };
                     }
                     
                     // Add to TRAci
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('projects')
                         .insert([parsedProject])
                         .select()
@@ -3727,17 +3828,7 @@
                     
                     if (error) throw error;
                     
-                    // Record sync
-                    await supabase
-                        .from('project_sync')
-                        .insert([{
-                            traci_project_id: data.id,
-                            thoraxlab_project_id: thoraxlabProject.id,
-                            sync_direction: 'thoraxlab_to_traci',
-                            sync_date: new Date().toISOString(),
-                            status: 'completed'
-                        }]);
-                    
+                    // Record sync in audit logs
                     await logAudit('project_imported', {
                         source: 'thoraxlab',
                         project_id: data.id,
@@ -3765,7 +3856,6 @@
         }
 
         function parseThoraxLabProject(thoraxlabProject) {
-            // Enhanced parsing for ThoraxLab projects
             return {
                 name: thoraxlabProject.title,
                 description: `[Imported from ThoraxLab]\n\n${thoraxlabProject.description}\n\nTags: ${thoraxlabProject.tags?.join(', ') || 'None'}`,
@@ -3773,15 +3863,11 @@
                 progress: thoraxlabProject.progress || 0,
                 category: thoraxlabProject.category || 'clinical_research',
                 priority: thoraxlabProject.priority || 'medium',
-                visibility: 'imported', // Special visibility for imported projects
-                source_id: thoraxlabProject.id,
-                source_platform: 'thoraxlab',
+                visibility: 'imported',
                 edit_code: generateEditCode(),
                 review_status: 'imported',
-                is_imported: true,
-                imported_at: new Date().toISOString(),
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                last_updated: new Date().toISOString()
             };
         }
 
@@ -3828,7 +3914,7 @@
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
-            const usersCount = dashboardData.users.filter(u => u.is_active).length;
+            const usersCount = dashboardData.users.filter(u => u.status === 'active').length;
             
             // Calculate total comments
             let totalComments = 0;
@@ -3836,8 +3922,10 @@
                 totalComments += count;
             });
             
-            // Count synced projects
-            const syncedProjects = dashboardData.projects.filter(p => p.is_imported || p.source_platform === 'thoraxlab').length;
+            // Count imported projects
+            const syncedProjects = dashboardData.projects.filter(p => 
+                p.description && p.description.includes('[Imported from ThoraxLab]')
+            ).length;
             
             document.getElementById('toolsCount').textContent = toolsCount;
             document.getElementById('projectsCount').textContent = projectsCount;
@@ -3973,10 +4061,6 @@
                     ? `<span class="visibility-badge public">
                          <i class="mdi mdi-earth"></i> Public
                        </span>`
-                    : project.visibility === 'imported'
-                    ? `<span class="visibility-badge" style="background: linear-gradient(135deg, var(--info-light), var(--info)); color: white; border-color: var(--info);">
-                         <i class="mdi mdi-import"></i> Imported
-                       </span>`
                     : `<span class="visibility-badge private">
                          <i class="mdi mdi-shield-lock"></i> Admin Only
                        </span>`;
@@ -3992,7 +4076,7 @@
                 // Project stickers
                 let projectStickers = '';
                 
-                if (project.is_imported) {
+                if (project.description && project.description.includes('[Imported from ThoraxLab]')) {
                     projectStickers += `<span class="project-sticker sticker-imported"><i class="mdi mdi-import"></i> ThoraxLab</span>`;
                 }
                 
@@ -4009,7 +4093,7 @@
                 if (project.needs_feedback) cardClass += ' needs-feedback';
                 if (project.status === 'archived') cardClass += ' archived';
                 if (project.review_status === 'pending') cardClass += ' proposal';
-                if (project.is_imported) cardClass += ' imported';
+                if (project.description && project.description.includes('[Imported from ThoraxLab]')) cardClass += ' imported';
                 
                 // Action buttons based on user role
                 let actionButtons = '';
@@ -4046,7 +4130,7 @@
                                     <i class="mdi mdi-delete"></i>
                                     Delete
                                 </button>
-                                ${!project.is_imported ? `
+                                ${!(project.description && project.description.includes('[Imported from ThoraxLab]')) ? `
                                 <button class="action-btn sync-btn" data-project-id="${project.id}" 
                                         onclick="showSyncModal('${project.id}', '${project.name.replace(/'/g, "\\'")}')">
                                     <i class="mdi mdi-share-variant"></i>
@@ -4227,12 +4311,12 @@
                     break;
                 case 'imported':
                     dashboardData.filteredProjects = dashboardData.projects.filter(p => 
-                        p.is_imported || p.source_platform === 'thoraxlab'
+                        p.description && p.description.includes('[Imported from ThoraxLab]')
                     );
                     break;
                 case 'published':
                     dashboardData.filteredProjects = dashboardData.projects.filter(p => 
-                        p.source_platform === 'traci' && !p.is_imported
+                        !(p.description && p.description.includes('[Imported from ThoraxLab]'))
                     );
                     break;
                 case 'private':
@@ -4295,52 +4379,57 @@
                 } else {
                     let commentsHTML = '';
                     comments.forEach(comment => {
-                        const date = new Date(comment.created_at);
-                        const dateStr = date.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        
-                        let commentClass = 'comment-item';
-                        if (comment.user_role === 'guest') commentClass += ' external';
-                        if (comment.status === 'pending') commentClass += ' pending';
-                        
-                        const upvotes = comment.upvotes || 0;
-                        
-                        commentsHTML += `
-                            <div class="${commentClass}">
-                                <div class="comment-header">
-                                    <div class="comment-author">
-                                        <i class="mdi mdi-account-circle"></i>
-                                        ${comment.user_name}
-                                        ${comment.user_role === 'guest' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; margin-left: 8px; font-weight: 600;">Guest</span>' : ''}
-                                        ${comment.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; margin-left: 8px; font-weight: 600;">Pending</span>' : ''}
-                                    </div>
-                                    <div class="comment-date">${dateStr}</div>
-                                </div>
-                                <div class="comment-content">${comment.content}</div>
-                                <div class="comment-actions">
-                                    <button class="comment-upvote-btn" data-comment-id="${comment.id}">
-                                        <i class="mdi mdi-thumb-up"></i>
-                                        <span>${upvotes}</span>
-                                    </button>
-                                </div>
-                                ${currentUser && currentUser.role === 'admin' && comment.status === 'pending' ? `
-                                    <div class="moderation-panel">
-                                        <div class="moderation-actions">
-                                            <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
-                                                <i class="mdi mdi-check-circle"></i> Approve
-                                            </button>
-                                            <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
-                                                <i class="mdi mdi-close-circle"></i> Reject
-                                            </button>
+                        try {
+                            const details = JSON.parse(comment.details);
+                            const date = new Date(comment.created_at);
+                            const dateStr = date.toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            
+                            let commentClass = 'comment-item';
+                            if (comment.user_role === 'guest') commentClass += ' external';
+                            if (details.status === 'pending') commentClass += ' pending';
+                            
+                            const upvotes = details.upvotes || 0;
+                            
+                            commentsHTML += `
+                                <div class="${commentClass}">
+                                    <div class="comment-header">
+                                        <div class="comment-author">
+                                            <i class="mdi mdi-account-circle"></i>
+                                            ${comment.user_name}
+                                            ${comment.user_role === 'guest' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; margin-left: 8px; font-weight: 600;">Guest</span>' : ''}
+                                            ${details.status === 'pending' ? '<span style="font-size: 0.7rem; background: var(--warning-light); color: var(--warning); padding: 3px 8px; border-radius: 9999px; margin-left: 8px; font-weight: 600;">Pending</span>' : ''}
                                         </div>
+                                        <div class="comment-date">${dateStr}</div>
                                     </div>
-                                ` : ''}
-                            </div>
-                        `;
+                                    <div class="comment-content">${details.content}</div>
+                                    <div class="comment-actions">
+                                        <button class="comment-upvote-btn" data-comment-id="${comment.id}">
+                                            <i class="mdi mdi-thumb-up"></i>
+                                            <span>${upvotes}</span>
+                                        </button>
+                                    </div>
+                                    ${currentUser && currentUser.role === 'admin' && details.status === 'pending' ? `
+                                        <div class="moderation-panel">
+                                            <div class="moderation-actions">
+                                                <button class="moderation-btn approve-btn" data-comment-id="${comment.id}">
+                                                    <i class="mdi mdi-check-circle"></i> Approve
+                                                </button>
+                                                <button class="moderation-btn reject-btn" data-comment-id="${comment.id}">
+                                                    <i class="mdi mdi-close-circle"></i> Reject
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        } catch (e) {
+                            console.error('Error parsing comment:', e);
+                        }
                     });
                     
                     commentsList.innerHTML = commentsHTML;
@@ -4427,7 +4516,7 @@
 
         async function loadToolForEdit(toolId) {
             try {
-                const { data: tool, error } = await supabase
+                const { data: tool, error } = await supabaseClient
                     .from('tools')
                     .select('*')
                     .eq('id', toolId)
@@ -4456,7 +4545,7 @@
             dashboardData.projects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.id;
-                option.textContent = project.name + (project.is_imported ? ' (Imported)' : '');
+                option.textContent = project.name + (project.description && project.description.includes('[Imported from ThoraxLab]') ? ' (Imported)' : '');
                 select.appendChild(option);
             });
         }
@@ -4501,7 +4590,7 @@
             
             // Guest buttons
             document.getElementById('guestContactBtn').addEventListener('click', () => {
-                window.open('mailto:clinical.innovation@hospital.com?subject=TRAci Platform Inquiry');
+                window.open('mailto:pneumology.innovation@hospital.com?subject=TRAci Platform Inquiry');
             });
             
             document.getElementById('guestLearnBtn').addEventListener('click', () => {
@@ -4561,7 +4650,7 @@
                 document.getElementById('projectPriority').value = 'medium';
                 document.getElementById('projectNeedsFeedback').checked = false;
                 document.getElementById('projectVisibility').value = 'public';
-                document.getElementById('projectOwner').value = currentUser.full_name || '';
+                document.getElementById('projectOwner').value = currentUser?.full_name || '';
                 showModal('addProjectModal');
             });
             
@@ -4651,8 +4740,9 @@
                 this.disabled = false;
                 
                 if (result.success) {
+                    const details = JSON.parse(result.data.details);
                     document.getElementById('commentSuccess').textContent = 
-                        result.data.status === 'pending' 
+                        details.status === 'pending' 
                             ? 'Comment submitted for moderation' 
                             : 'Comment posted successfully';
                     document.getElementById('commentSuccess').style.display = 'block';
@@ -5108,9 +5198,9 @@
                             <span class="user-role ${user.role}" style="font-size: 11px;">${user.role}</span>
                         </td>
                         <td>
-                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: ${user.is_active ? 'var(--success-light)' : 'var(--gray-100)'}; color: ${user.is_active ? 'var(--success)' : 'var(--gray-600)'};">
+                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: ${user.status === 'active' ? 'var(--success-light)' : 'var(--gray-100)'}; color: ${user.status === 'active' ? 'var(--success)' : 'var(--gray-600)'};">
                                 <i class="mdi mdi-circle" style="font-size: 8px;"></i>
-                                ${user.is_active ? 'Active' : 'Inactive'}
+                                ${user.status === 'active' ? 'Active' : 'Inactive'}
                             </span>
                         </td>
                         <td>
@@ -5185,7 +5275,7 @@
             document.getElementById('userRole').value = user.role || 'doctor';
             document.getElementById('userDepartment').value = user.department || 'pulmonology';
             document.getElementById('userPassword').value = '';
-            document.getElementById('userIsActive').checked = user.is_active !== false;
+            document.getElementById('userIsActive').checked = user.status === 'active';
             document.getElementById('newUserCredentials').classList.add('hidden');
             
             showModal('userFormModal');
@@ -5275,11 +5365,11 @@
             const newCode = generateEditCode();
             
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('projects')
                     .update({ 
                         edit_code: newCode,
-                        updated_at: new Date().toISOString()
+                        last_updated: new Date().toISOString()
                     })
                     .eq('id', projectId);
                 
@@ -5313,7 +5403,7 @@
             } else {
                 // Load TRAci projects that aren't imported
                 dashboardData.projects
-                    .filter(p => !p.is_imported && p.source_platform !== 'thoraxlab')
+                    .filter(p => !(p.description && p.description.includes('[Imported from ThoraxLab]')))
                     .forEach(project => {
                         const option = document.createElement('option');
                         option.value = project.id;
