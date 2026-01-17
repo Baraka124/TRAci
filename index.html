@@ -4566,6 +4566,44 @@ async function loadProjectsForPDFSelect() {
         select.appendChild(option);
     });
 }
+        // ========== DEBUG FUNCTION ==========
+async function debugDatabase() {
+    console.log('=== DATABASE DEBUG ===');
+    
+    try {
+        // Test projects table
+        const { data: projects, error: projectsError } = await supabaseClient
+            .from('projects')
+            .select('id, name')
+            .limit(5);
+        
+        console.log('Projects test:', { projects, projectsError });
+        
+        // Test users table
+        const { data: users, error: usersError } = await supabaseClient
+            .from('users')
+            .select('id, username, role')
+            .limit(5);
+            
+        console.log('Users test:', { users, usersError });
+        
+        // Test tools table
+        const { data: tools, error: toolsError } = await supabaseClient
+            .from('tools')
+            .select('id, name')
+            .limit(5);
+            
+        console.log('Tools test:', { tools, toolsError });
+        
+        alert('Check browser console (F12) for debug results');
+        
+    } catch (error) {
+        console.error('Debug error:', error);
+    }
+}
+
+// Call this function when page loads to test
+setTimeout(debugDatabase, 1000);
 
 function updateTimestamp() {
     if (!currentUser) return;
