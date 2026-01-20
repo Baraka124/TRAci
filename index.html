@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1510,7 +1509,7 @@
 
         select.form-control {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
             background-size: 20px;
@@ -1936,6 +1935,11 @@
                 <i class="mdi mdi-comment-processing"></i>
                 <span>Moderate</span>
             </button>
+            <!-- NEW: Export Data Button -->
+            <button class="admin-btn" id="exportDataBtn">
+                <i class="mdi mdi-database-export"></i>
+                <span>Export Data</span>
+            </button>
         </div>
 
         <!-- Stats Overview -->
@@ -2021,6 +2025,13 @@
                 <i class="mdi mdi-comment-multiple"></i>
                 <span>Most Comments</span>
             </button>
+            <!-- NEW: Global Search Bar -->
+            <div style="position: relative; flex-grow: 1; max-width: 300px;">
+                <input type="text" id="globalSearch" class="form-control" 
+                       placeholder="Search projects and tools..." 
+                       style="padding-left: 40px;">
+                <i class="mdi mdi-magnify" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -3008,6 +3019,71 @@ let commentCounts = {};
 let pendingComments = [];
 let selectedCommentIds = new Set();
 
+// ========== CACHE SYSTEM ==========
+const cache = {
+    projects: { data: null, timestamp: 0, duration: 60000 }, // 1 minute
+    tools: { data: null, timestamp: 0, duration: 60000 },
+    users: { data: null, timestamp: 0, duration: 300000 } // 5 minutes
+};
+
+// ========== REAL-TIME UPDATES ==========
+function setupRealtimeUpdates() {
+    if (!currentUser) return [];
+    
+    // Subscribe to project changes
+    const projectsChannel = supabaseClient
+        .channel('projects-changes')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'projects' },
+            () => {
+                console.log('New project added');
+                // Clear cache
+                cache.projects.data = null;
+                cache.projects.timestamp = 0;
+                initDashboard();
+            }
+        )
+        .on('postgres_changes', 
+            { event: 'UPDATE', schema: 'public', table: 'projects' },
+            () => {
+                console.log('Project updated');
+                cache.projects.data = null;
+                cache.projects.timestamp = 0;
+                initDashboard();
+            }
+        )
+        .on('postgres_changes', 
+            { event: 'DELETE', schema: 'public', table: 'projects' },
+            () => {
+                console.log('Project deleted');
+                cache.projects.data = null;
+                cache.projects.timestamp = 0;
+                initDashboard();
+            }
+        )
+        .subscribe();
+    
+    // Subscribe to comment changes
+    const commentsChannel = supabaseClient
+        .channel('comments-changes')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'audit_logs', 
+              filter: 'action=eq.comment_added' },
+            () => {
+                console.log('New comment added');
+                if (currentProjectComments) {
+                    loadProjectComments(currentProjectComments, '');
+                }
+                initDashboard(); // Update comment counts
+            }
+        )
+        .subscribe();
+    
+    return [projectsChannel, commentsChannel];
+}
+
+let realtimeChannels = [];
+
 // ========== PASSWORD GENERATOR ==========
 function generatePassword(length = 12) {
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
@@ -3029,6 +3105,38 @@ async function hashPassword(password) {
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ========== CONTENT FILTERING ==========
+function filterContent(content, bannedWords) {
+    let filtered = content;
+    bannedWords.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        filtered = filtered.replace(regex, '***');
+    });
+    return filtered;
+}
+
+// Rate limiting
+const userCommentTimestamps = new Map();
+
+function canPostComment(userId) {
+    const now = Date.now();
+    const timestamps = userCommentTimestamps.get(userId) || [];
+    
+    // Keep only comments from last 10 minutes
+    const recentTimestamps = timestamps.filter(timestamp => 
+        now - timestamp < 10 * 60 * 1000
+    );
+    
+    // Max 5 comments per 10 minutes
+    if (recentTimestamps.length >= 5) {
+        return false;
+    }
+    
+    recentTimestamps.push(now);
+    userCommentTimestamps.set(userId, recentTimestamps);
+    return true;
 }
 
 // ========== AUDIT LOGGING ==========
@@ -3056,6 +3164,179 @@ async function logAudit(action, details = {}, projectId = null) {
         console.error('Error in audit logging:', error);
     }
 }
+
+// ========== GLOBAL SEARCH ==========
+function setupGlobalSearch() {
+    const searchInput = document.getElementById('globalSearch');
+    if (!searchInput) return;
+    
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(() => {
+            const query = this.value.trim().toLowerCase();
+            
+            if (query.length < 2) {
+                // Show all if search is empty or too short
+                dashboardData.filteredProjects = [...dashboardData.projects];
+                renderProjects();
+                highlightSearchResults('');
+                return;
+            }
+            
+            // Search in projects
+            const filteredProjects = dashboardData.projects.filter(project => {
+                const nameMatch = project.name.toLowerCase().includes(query);
+                const descMatch = project.description?.toLowerCase().includes(query) || false;
+                const categoryMatch = project.category.toLowerCase().includes(query);
+                const ownerMatch = project.owner?.toLowerCase().includes(query) || false;
+                
+                return nameMatch || descMatch || categoryMatch || ownerMatch;
+            });
+            
+            dashboardData.filteredProjects = filteredProjects;
+            renderProjects();
+            
+            // Also highlight search results
+            highlightSearchResults(query);
+        }, 300); // Debounce for 300ms
+    });
+}
+
+function highlightSearchResults(query) {
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+        const textElements = card.querySelectorAll('.project-title, .project-description, .tool-description');
+        let hasMatch = false;
+        
+        textElements.forEach(element => {
+            const originalHTML = element.dataset.original || element.innerHTML;
+            element.dataset.original = originalHTML;
+            
+            if (query && query.length >= 2) {
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                const highlighted = originalHTML.replace(regex, '<mark style="background: var(--warning-light); color: var(--warning); padding: 2px 4px; border-radius: 4px;">$1</mark>');
+                element.innerHTML = highlighted;
+                
+                if (originalHTML !== highlighted) {
+                    hasMatch = true;
+                }
+            } else {
+                element.innerHTML = originalHTML;
+            }
+        });
+        
+        // Add visual indicator for matches
+        if (hasMatch) {
+            card.style.boxShadow = '0 0 0 3px var(--warning-light)';
+        } else {
+            card.style.boxShadow = '';
+        }
+    });
+}
+
+// ========== DATA EXPORT ==========
+async function exportAllData() {
+    try {
+        // Show loading
+        const exportBtn = document.getElementById('exportDataBtn');
+        const originalText = exportBtn.innerHTML;
+        exportBtn.innerHTML = '<span class="loading-spinner"></span> Exporting...';
+        
+        // Fetch all data
+        const [projects, tools, users] = await Promise.all([
+            fetchProjects(),
+            fetchTools(),
+            fetchUsers()
+        ]);
+        
+        // Prepare export data
+        const exportData = {
+            metadata: {
+                exported_at: new Date().toISOString(),
+                exported_by: currentUser.username,
+                version: '2.0',
+                record_counts: {
+                    projects: projects.length,
+                    tools: tools.length,
+                    users: users.length
+                }
+            },
+            projects: projects.map(p => ({
+                name: p.name,
+                description: p.description,
+                status: p.status,
+                progress: p.progress,
+                category: p.category,
+                visibility: p.visibility,
+                owner: p.owner,
+                created_at: p.created_at
+            })),
+            tools: tools.map(t => ({
+                name: t.name,
+                description: t.description,
+                url: t.url,
+                status: t.status,
+                category: t.category
+            })),
+            users: users.map(u => ({
+                username: u.username,
+                full_name: u.full_name,
+                email: u.email,
+                role: u.role,
+                department: u.department,
+                status: u.status
+            }))
+        };
+        
+        // Create and download JSON file
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `traci-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Log the export
+        await logAudit('data_exported', {
+            project_count: projects.length,
+            tool_count: tools.length,
+            user_count: users.length
+        });
+        
+        // Restore button
+        exportBtn.innerHTML = originalText;
+        
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.className = 'success-message';
+        successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 10000;';
+        successMsg.innerHTML = `
+            <i class="mdi mdi-check-circle"></i>
+            <span>Data exported successfully! (${projects.length} projects, ${tools.length} tools, ${users.length} users)</span>
+        `;
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => successMsg.remove(), 5000);
+        
+    } catch (error) {
+        console.error('Export error:', error);
+        alert('Export failed: ' + error.message);
+        
+        // Restore button on error
+        const exportBtn = document.getElementById('exportDataBtn');
+        exportBtn.innerHTML = '<i class="mdi mdi-database-export"></i><span>Export Data</span>';
+    }
+}
+
 async function loadSyncModal() {
     console.log('Loading sync modal with fresh data...');
     
@@ -3106,6 +3387,7 @@ async function loadSyncModal() {
         projectSelect.innerHTML = '<option value="">Error loading projects: ' + error.message + '</option>';
     }
 }
+
 // ========== AUTHENTICATION SYSTEM ==========
 async function loginUser(username, password) {
     const errorEl = document.getElementById('loginError');
@@ -3218,6 +3500,13 @@ function updateAuthUI() {
         contentGrid.classList.remove('hidden');
         filterControls.classList.remove('hidden');
         
+        // START REAL-TIME UPDATES
+        if (realtimeChannels.length > 0) {
+            realtimeChannels.forEach(channel => supabaseClient.removeChannel(channel));
+        }
+        realtimeChannels = setupRealtimeUpdates();
+        // END REAL-TIME UPDATES
+        
         if (currentUser.role === 'guest') {
             guestWelcome.classList.remove('hidden');
             adminControls.classList.add('hidden');
@@ -3240,6 +3529,12 @@ function updateAuthUI() {
         initDashboard();
         
     } else {
+        // Stop real-time updates when logging out
+        if (realtimeChannels.length > 0) {
+            realtimeChannels.forEach(channel => supabaseClient.removeChannel(channel));
+            realtimeChannels = [];
+        }
+        
         guestView.classList.remove('hidden');
         userView.classList.add('hidden');
         adminControls.classList.add('hidden');
@@ -3289,6 +3584,15 @@ function clearFormMessages() {
 
 // ========== DATABASE FUNCTIONS ==========
 async function fetchUsers() {
+    const cacheKey = 'users';
+    const now = Date.now();
+    
+    if (cache[cacheKey].data && 
+        (now - cache[cacheKey].timestamp) < cache[cacheKey].duration) {
+        console.log('Using cached users');
+        return cache[cacheKey].data;
+    }
+    
     try {
         const { data, error } = await supabaseClient
             .from('users')
@@ -3296,6 +3600,13 @@ async function fetchUsers() {
             .order('created_at', { ascending: false });
         
         if (error) throw error;
+        
+        cache[cacheKey] = {
+            data: data || [],
+            timestamp: now,
+            duration: cache[cacheKey].duration
+        };
+        
         return data || [];
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -3329,6 +3640,10 @@ async function createUser(userData) {
             .single();
         
         if (error) throw error;
+        
+        // Clear cache
+        cache.users.data = null;
+        cache.users.timestamp = 0;
         
         await logAudit('user_created', { 
             username: userData.username,
@@ -3372,6 +3687,10 @@ async function updateUser(userId, userData) {
         
         if (error) throw error;
         
+        // Clear cache
+        cache.users.data = null;
+        cache.users.timestamp = 0;
+        
         await logAudit('user_updated', { 
             user_id: userId,
             changes: Object.keys(updateData)
@@ -3394,6 +3713,10 @@ async function deleteUser(userId) {
         
         if (error) throw error;
         
+        // Clear cache
+        cache.users.data = null;
+        cache.users.timestamp = 0;
+        
         await logAudit('user_deleted', { user_id: userId });
         
         return { success: true };
@@ -3404,6 +3727,16 @@ async function deleteUser(userId) {
 }
 
 async function fetchProjects() {
+    const cacheKey = 'projects';
+    const now = Date.now();
+    
+    // Check cache
+    if (cache[cacheKey].data && 
+        (now - cache[cacheKey].timestamp) < cache[cacheKey].duration) {
+        console.log('Using cached projects');
+        return cache[cacheKey].data;
+    }
+    
     try {
         let query = supabaseClient
             .from('projects')
@@ -3421,6 +3754,13 @@ async function fetchProjects() {
             .order('created_at', { ascending: false });
         
         if (error) throw error;
+        
+        // Update cache
+        cache[cacheKey] = {
+            data: data || [],
+            timestamp: now,
+            duration: cache[cacheKey].duration
+        };
         
         return data || [];
     } catch (error) {
@@ -3454,6 +3794,10 @@ async function addProject(projectData) {
             .single();
         
         if (error) throw error;
+        
+        // Clear cache
+        cache.projects.data = null;
+        cache.projects.timestamp = 0;
         
         await logAudit('project_created', { 
             project_name: projectData.name,
@@ -3497,6 +3841,10 @@ async function updateProject(projectId, projectData) {
         
         if (error) throw error;
         
+        // Clear cache
+        cache.projects.data = null;
+        cache.projects.timestamp = 0;
+        
         await logAudit('project_updated', { 
             project_id: projectId,
             changes: Object.keys(projectData)
@@ -3519,6 +3867,10 @@ async function deleteProject(projectId) {
         
         if (error) throw error;
         
+        // Clear cache
+        cache.projects.data = null;
+        cache.projects.timestamp = 0;
+        
         await logAudit('project_deleted', { project_id: projectId });
         
         return { success: true };
@@ -3529,6 +3881,15 @@ async function deleteProject(projectId) {
 }
 
 async function fetchTools() {
+    const cacheKey = 'tools';
+    const now = Date.now();
+    
+    if (cache[cacheKey].data && 
+        (now - cache[cacheKey].timestamp) < cache[cacheKey].duration) {
+        console.log('Using cached tools');
+        return cache[cacheKey].data;
+    }
+    
     try {
         const { data, error } = await supabaseClient
             .from('tools')
@@ -3536,6 +3897,13 @@ async function fetchTools() {
             .order('created_at', { ascending: false });
         
         if (error) throw error;
+        
+        cache[cacheKey] = {
+            data: data || [],
+            timestamp: now,
+            duration: cache[cacheKey].duration
+        };
+        
         return data || [];
     } catch (error) {
         console.error('Error fetching tools:', error);
@@ -3563,6 +3931,10 @@ async function addTool(toolData) {
             .single();
         
         if (error) throw error;
+        
+        // Clear cache
+        cache.tools.data = null;
+        cache.tools.timestamp = 0;
         
         await logAudit('tool_created', { tool_name: toolData.name });
         
@@ -3593,6 +3965,10 @@ async function updateTool(toolId, toolData) {
         
         if (error) throw error;
         
+        // Clear cache
+        cache.tools.data = null;
+        cache.tools.timestamp = 0;
+        
         await logAudit('tool_updated', { tool_id: toolId });
         
         return { success: true, data };
@@ -3611,6 +3987,10 @@ async function deleteTool(toolId) {
             .eq('id', toolId);
         
         if (error) throw error;
+        
+        // Clear cache
+        cache.tools.data = null;
+        cache.tools.timestamp = 0;
         
         await logAudit('tool_deleted', { tool_id: toolId });
         
@@ -3664,9 +4044,26 @@ async function fetchCommentsForProject(projectId) {
 
 async function submitComment(projectId, content, guestEmail = null) {
     try {
+        // ========== CONTENT FILTERING ==========
+        const bannedWords = ['spam', 'http://', 'https://', 'buy now', 'click here', 'viagra'];
+        const filteredContent = filterContent(content, bannedWords);
+        
+        if (filteredContent !== content) {
+            console.log('Comment filtered for inappropriate content');
+        }
+        
+        // ========== RATE LIMITING ==========
+        if (!canPostComment(currentUser.id)) {
+            return { 
+                success: false, 
+                error: 'Rate limit exceeded. Please wait before posting another comment.' 
+            };
+        }
+        // ========== END ENHANCEMENTS ==========
+        
         const commentData = {
             project_id: projectId,
-            content: content,
+            content: filteredContent,  // Use filtered content
             user_id: currentUser.id,
             user_name: currentUser.full_name || currentUser.username,
             user_role: currentUser.role,
@@ -3686,7 +4083,7 @@ async function submitComment(projectId, content, guestEmail = null) {
                 user_role: currentUser.role,
                 action: 'comment_added',
                 details: JSON.stringify({
-                    content: content,
+                    content: filteredContent,
                     status: currentUser.role === 'admin' ? 'approved' : 'pending',
                     guest_email: guestEmail
                 }),
@@ -3700,7 +4097,7 @@ async function submitComment(projectId, content, guestEmail = null) {
         
         await logAudit('comment_added', { 
             project_id: projectId,
-            comment_length: content.length
+            comment_length: filteredContent.length
         }, projectId);
         
         return { success: true, data };
@@ -3748,6 +4145,7 @@ async function moderateComment(commentId, action) {
         return { success: false, error: error.message };
     }
 }
+
 async function fetchPendingComments() {
     try {
         // Simple query without join
@@ -3871,6 +4269,10 @@ async function syncThoraxLabProject(thoraxlabProject, direction) {
                 .single();
             
             if (error) throw error;
+            
+            // Clear cache
+            cache.projects.data = null;
+            cache.projects.timestamp = 0;
             
             await logAudit('project_imported', {
                 source: 'thoraxlab',
@@ -4567,44 +4969,6 @@ async function loadProjectsForPDFSelect() {
         select.appendChild(option);
     });
 }
-        // ========== DEBUG FUNCTION ==========
-async function debugDatabase() {
-    console.log('=== DATABASE DEBUG ===');
-    
-    try {
-        // Test projects table
-        const { data: projects, error: projectsError } = await supabaseClient
-            .from('projects')
-            .select('id, name')
-            .limit(5);
-        
-        console.log('Projects test:', { projects, projectsError });
-        
-        // Test users table
-        const { data: users, error: usersError } = await supabaseClient
-            .from('users')
-            .select('id, username, role')
-            .limit(5);
-            
-        console.log('Users test:', { users, usersError });
-        
-        // Test tools table
-        const { data: tools, error: toolsError } = await supabaseClient
-            .from('tools')
-            .select('id, name')
-            .limit(5);
-            
-        console.log('Tools test:', { tools, toolsError });
-        
-        alert('Check browser console (F12) for debug results');
-        
-    } catch (error) {
-        console.error('Debug error:', error);
-    }
-}
-
-// Call this function when page loads to test
-setTimeout(debugDatabase, 1000);
 
 function updateTimestamp() {
     if (!currentUser) return;
@@ -4780,6 +5144,7 @@ function loadUserForEdit(user) {
     
     showModal('userFormModal');
 }
+
 async function loadEditCodes() {
     try {
         const tbody = document.getElementById('codesTableBody');
@@ -4853,35 +5218,6 @@ async function loadEditCodes() {
     } catch (error) {
         console.error('Error loading edit codes:', error);
     }
-}
-
-async function loadSyncModal() {
-    const projectSelect = document.getElementById('syncProjectSelect');
-    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
-    
-    const direction = document.getElementById('syncDirection').value;
-    
-    if (direction === 'import') {
-        const thoraxlabProjects = await fetchThoraxLabProjects();
-        thoraxlabProjects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.id;
-            option.textContent = `${project.title} (${project.status})`;
-            projectSelect.appendChild(option);
-        });
-    } else {
-        dashboardData.projects
-            .filter(p => !(p.description && p.description.includes('[Imported from ThoraxLab]')))
-            .forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.name;
-                projectSelect.appendChild(option);
-            });
-    }
-    
-    document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
-    document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
 }
 
 async function loadModerationModal() {
@@ -5011,6 +5347,42 @@ async function loadModerationModal() {
     }
 }
 
+// ========== DEBUG FUNCTION ==========
+async function debugDatabase() {
+    console.log('=== DATABASE DEBUG ===');
+    
+    try {
+        // Test projects table
+        const { data: projects, error: projectsError } = await supabaseClient
+            .from('projects')
+            .select('id, name')
+            .limit(5);
+        
+        console.log('Projects test:', { projects, projectsError });
+        
+        // Test users table
+        const { data: users, error: usersError } = await supabaseClient
+            .from('users')
+            .select('id, username, role')
+            .limit(5);
+            
+        console.log('Users test:', { users, usersError });
+        
+        // Test tools table
+        const { data: tools, error: toolsError } = await supabaseClient
+            .from('tools')
+            .select('id, name')
+            .limit(5);
+            
+        console.log('Tools test:', { tools, toolsError });
+        
+        alert('Check browser console (F12) for debug results');
+        
+    } catch (error) {
+        console.error('Debug error:', error);
+    }
+}
+
 // ========== EVENT LISTENERS ==========
 document.addEventListener('DOMContentLoaded', function() {
     loadStoredUser();
@@ -5103,21 +5475,22 @@ document.addEventListener('DOMContentLoaded', function() {
         showModal('manageUsersModal');
     });
     
-  document.getElementById('syncProjectsBtn').addEventListener('click', async () => {
-    console.log('Sync Projects button clicked');
+    document.getElementById('syncProjectsBtn').addEventListener('click', async () => {
+        console.log('Sync Projects button clicked');
+        
+        try {
+            // Show modal first
+            showModal('syncProjectsModal');
+            
+            // Load projects for export direction (default)
+            await loadSyncModal();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to load projects');
+        }
+    });
     
-    try {
-        // Show modal first
-        showModal('syncProjectsModal');
-        
-        // Load projects for export direction (default)
-        await loadSyncProjects('export');
-        
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to load projects');
-    }
-});
     document.getElementById('viewCodesBtn').addEventListener('click', () => {
         loadEditCodes();
         showModal('viewCodesModal');
@@ -5128,6 +5501,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showModal('moderateCommentsModal');
     });
     
+    // NEW: Export Data Button
+    document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
+    
     // Filter controls
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -5135,6 +5511,9 @@ document.addEventListener('DOMContentLoaded', function() {
             filterProjects(filterType);
         });
     });
+    
+    // NEW: Global Search
+    setupGlobalSearch();
     
     // Comment system
     document.getElementById('commentText').addEventListener('input', function() {
@@ -5487,73 +5866,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const direction = this.value;
         document.getElementById('importOptions').style.display = direction === 'import' ? 'block' : 'none';
         document.getElementById('exportOptions').style.display = direction === 'export' ? 'block' : 'none';
-        loadSyncProjects(direction);
+        loadSyncModal();
     });
-    
-    async function loadSyncProjects(direction) {
-    const projectSelect = document.getElementById('syncProjectSelect');
-    projectSelect.innerHTML = '<option value="">-- Select Project --</option>';
-    
-    try {
-        if (direction === 'import') {
-            // Import from ThoraxLab - placeholder
-            const option = document.createElement('option');
-            option.value = 'thoraxlab-1';
-            option.textContent = 'AI-Assisted Lung Nodule Detection (ThoraxLab)';
-            projectSelect.appendChild(option);
-            
-        } else {
-            // Export to ThoraxLab - fetch DIRECTLY from database
-            console.log('Loading projects from database for export...');
-            
-            // Fetch fresh projects from database
-            const { data: projects, error } = await supabaseClient
-                .from('projects')
-                .select('id, name, description')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Database error:', error);
-                throw error;
-            }
-            
-            console.log('Found', projects?.length || 0, 'projects in database');
-            
-            if (!projects || projects.length === 0) {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'No projects found in database';
-                projectSelect.appendChild(option);
-            } else {
-                // Update dashboardData for consistency
-                dashboardData.projects = projects;
-                
-                // Add projects to dropdown
-                projects.forEach(project => {
-                    const option = document.createElement('option');
-                    option.value = project.id;
-                    option.textContent = project.name;
-                    
-                    // Mark imported projects
-                    if (project.description && project.description.includes('[Imported from ThoraxLab]')) {
-                        option.textContent += ' (Imported)';
-                    }
-                    
-                    projectSelect.appendChild(option);
-                });
-                
-                console.log('Added', projects.length, 'projects to dropdown');
-            }
-        }
-        
-    } catch (error) {
-        console.error('Error in loadSyncProjects:', error);
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = 'Error: ' + error.message;
-        projectSelect.appendChild(option);
-    }
-}
     
     document.getElementById('startSyncBtn').addEventListener('click', async function() {
         const direction = document.getElementById('syncDirection').value;
@@ -5676,6 +5990,10 @@ window.generateNewEditCode = async function(projectId, projectName) {
             .eq('id', projectId);
         
         if (error) throw error;
+        
+        // Clear cache
+        cache.projects.data = null;
+        cache.projects.timestamp = 0;
         
         alert(`New edit code for "${projectName}": ${newCode}\n\nShare this code securely with the clinical team.`);
         loadEditCodes();
