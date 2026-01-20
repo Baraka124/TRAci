@@ -16,20 +16,19 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ===== DESIGN SYSTEM ===== */
+        /* ===== COMPLETE DESIGN SYSTEM ===== */
         :root {
-            /* Professional Color Palette - Hospital */
-            --primary: #0d9488;      /* Medical teal */
+            /* Professional Hospital Color Palette */
+            --primary: #0d9488;
             --primary-dark: #0f766e;
             --primary-light: #5eead4;
-            --secondary: #3b82f6;    /* Trust blue */
+            --secondary: #3b82f6;
             --secondary-dark: #2563eb;
-            --secondary-light: #93c5fd;
-            --accent: #8b5cf6;       /* Professional purple */
-            --success: #059669;      /* Medical green */
-            --warning: #d97706;      /* Amber */
-            --danger: #dc2626;       /* Alert red */
-            --info: #0891b2;         /* Cyan */
+            --accent: #8b5cf6;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
             
             /* Neutrals */
             --white: #ffffff;
@@ -43,7 +42,6 @@
             --gray-700: #374151;
             --gray-800: #1f2937;
             --gray-900: #111827;
-            --black: #000000;
             
             /* Backgrounds */
             --bg-primary: #f8fafc;
@@ -52,59 +50,40 @@
             --bg-overlay: rgba(0, 0, 0, 0.5);
             
             /* Borders */
-            --border-light: var(--gray-200);
             --border: var(--gray-300);
-            --border-dark: var(--gray-400);
             
             /* Typography */
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-heading: 'Space Grotesk', var(--font-sans);
-            --font-mono: 'SF Mono', Monaco, 'Cascadia Mono', monospace;
             
-            /* Spacing Scale (4px base) */
-            --space-0: 0px;
+            /* Spacing (4px base) */
             --space-1: 4px;
             --space-2: 8px;
             --space-3: 12px;
             --space-4: 16px;
-            --space-5: 20px;
             --space-6: 24px;
-            --space-7: 32px;
-            --space-8: 48px;
-            --space-9: 64px;
-            --space-10: 80px;
+            --space-8: 32px;
+            --space-12: 48px;
+            --space-16: 64px;
             
-            /* Shadows - Professional */
-            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            /* Shadows */
             --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             
             /* Border Radius */
             --radius-sm: 4px;
             --radius-md: 8px;
             --radius-lg: 12px;
             --radius-xl: 16px;
-            --radius-2xl: 24px;
             --radius-full: 9999px;
             
             /* Transitions */
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Z-index */
-            --z-dropdown: 10;
-            --z-sticky: 20;
-            --z-modal: 30;
-            --z-popover: 40;
-            --z-tooltip: 50;
-            --z-toast: 60;
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ===== RESET & BASE ===== */
+        /* ===== BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -116,7 +95,6 @@
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            scroll-behavior: smooth;
         }
 
         body {
@@ -125,325 +103,54 @@
             color: var(--gray-800);
             line-height: 1.5;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(13, 148, 136, 0.02) 0%,
-                rgba(59, 130, 246, 0.01) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* ===== TYPOGRAPHY ===== */
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            line-height: 1.2;
-            color: var(--gray-900);
-        }
-
-        h1 { font-size: 2.5rem; }
-        h2 { font-size: 2rem; }
-        h3 { font-size: 1.5rem; }
-        h4 { font-size: 1.25rem; }
-        h5 { font-size: 1.125rem; }
-        h6 { font-size: 1rem; }
-
-        .text-xs { font-size: 0.75rem; }
-        .text-sm { font-size: 0.875rem; }
-        .text-base { font-size: 1rem; }
-        .text-lg { font-size: 1.125rem; }
-        .text-xl { font-size: 1.25rem; }
-        .text-2xl { font-size: 1.5rem; }
-        .text-3xl { font-size: 1.875rem; }
-
-        .font-light { font-weight: 300; }
-        .font-normal { font-weight: 400; }
-        .font-medium { font-weight: 500; }
-        .font-semibold { font-weight: 600; }
-        .font-bold { font-weight: 700; }
-        .font-extrabold { font-weight: 800; }
-
-        /* ===== LAYOUT ===== */
+        /* ===== UTILITIES ===== */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: var(--space-2); }
+        .gap-4 { gap: var(--space-4); }
+        .gap-6 { gap: var(--space-6); }
+        .w-full { width: 100%; }
+        .mb-4 { margin-bottom: var(--space-4); }
+        .mb-6 { margin-bottom: var(--space-6); }
+        .mb-8 { margin-bottom: var(--space-8); }
+        .mt-4 { margin-top: var(--space-4); }
+        .mt-6 { margin-top: var(--space-6); }
+        .p-4 { padding: var(--space-4); }
+        .p-6 { padding: var(--space-6); }
+        .rounded-lg { border-radius: var(--radius-lg); }
+        .rounded-xl { border-radius: var(--radius-xl); }
+        .border { border: 1px solid var(--border); }
+        .shadow { box-shadow: var(--shadow-md); }
+        
+        /* Container */
         .container {
-            width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 var(--space-4);
         }
 
-        @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
-        @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
-
-        /* ===== UTILITIES ===== */
-        .hidden { display: none !important; }
-        .sr-only { 
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-
-        /* Flex */
-        .flex { display: flex; }
-        .inline-flex { display: inline-flex; }
-        .flex-col { flex-direction: column; }
-        .flex-row { flex-direction: row; }
-        .flex-wrap { flex-wrap: wrap; }
-        .flex-nowrap { flex-wrap: nowrap; }
-        
-        .items-start { align-items: flex-start; }
-        .items-center { align-items: center; }
-        .items-end { align-items: flex-end; }
-        .items-stretch { align-items: stretch; }
-        
-        .justify-start { justify-content: flex-start; }
-        .justify-center { justify-content: center; }
-        .justify-end { justify-content: flex-end; }
-        .justify-between { justify-content: space-between; }
-        .justify-around { justify-content: space-around; }
-        
-        .flex-1 { flex: 1 1 0%; }
-        .flex-auto { flex: 1 1 auto; }
-        .flex-none { flex: none; }
-        .flex-grow { flex-grow: 1; }
-        .flex-shrink { flex-shrink: 1; }
-        .flex-shrink-0 { flex-shrink: 0; }
-
-        /* Grid */
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-        /* Gap */
-        .gap-0 { gap: var(--space-0); }
-        .gap-1 { gap: var(--space-1); }
-        .gap-2 { gap: var(--space-2); }
-        .gap-3 { gap: var(--space-3); }
-        .gap-4 { gap: var(--space-4); }
-        .gap-5 { gap: var(--space-5); }
-        .gap-6 { gap: var(--space-6); }
-        .gap-8 { gap: var(--space-8); }
-
-        /* Spacing */
-        .m-0 { margin: 0; }
-        .m-2 { margin: var(--space-2); }
-        .m-4 { margin: var(--space-4); }
-        .m-6 { margin: var(--space-6); }
-        
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        
-        .mt-1 { margin-top: var(--space-1); }
-        .mt-2 { margin-top: var(--space-2); }
-        .mt-3 { margin-top: var(--space-3); }
-        .mt-4 { margin-top: var(--space-4); }
-        .mt-6 { margin-top: var(--space-6); }
-        .mt-8 { margin-top: var(--space-8); }
-        
-        .mb-1 { margin-bottom: var(--space-1); }
-        .mb-2 { margin-bottom: var(--space-2); }
-        .mb-3 { margin-bottom: var(--space-3); }
-        .mb-4 { margin-bottom: var(--space-4); }
-        .mb-6 { margin-bottom: var(--space-6); }
-        .mb-8 { margin-bottom: var(--space-8); }
-        
-        .ml-auto { margin-left: auto; }
-        .mr-auto { margin-right: auto; }
-
-        /* Padding */
-        .p-0 { padding: 0; }
-        .p-1 { padding: var(--space-1); }
-        .p-2 { padding: var(--space-2); }
-        .p-3 { padding: var(--space-3); }
-        .p-4 { padding: var(--space-4); }
-        .p-6 { padding: var(--space-6); }
-        .p-8 { padding: var(--space-8); }
-        
-        .px-0 { padding-left: 0; padding-right: 0; }
-        .px-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
-        .px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
-        .px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
-        .px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
-        
-        .py-0 { padding-top: 0; padding-bottom: 0; }
-        .py-1 { padding-top: var(--space-1); padding-bottom: var(--space-1); }
-        .py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
-        .py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
-        .py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
-        .py-6 { padding-top: var(--space-6); padding-bottom: var(--space-6); }
-
-        /* Width & Height */
-        .w-full { width: 100%; }
-        .w-screen { width: 100vw; }
-        .w-min { width: min-content; }
-        .w-max { width: max-content; }
-        
-        .h-full { height: 100%; }
-        .h-screen { height: 100vh; }
-        .h-min { height: min-content; }
-        .h-max { height: max-content; }
-        
-        .min-w-0 { min-width: 0; }
-        .min-h-0 { min-height: 0; }
-        .min-h-screen { min-height: 100vh; }
-
-        /* Text */
-        .text-left { text-align: left; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        
-        .text-primary { color: var(--primary); }
-        .text-secondary { color: var(--secondary); }
-        .text-success { color: var(--success); }
-        .text-warning { color: var(--warning); }
-        .text-danger { color: var(--danger); }
-        .text-info { color: var(--info); }
-        .text-gray-500 { color: var(--gray-500); }
-        .text-gray-600 { color: var(--gray-600); }
-        .text-gray-700 { color: var(--gray-700); }
-        .text-gray-900 { color: var(--gray-900); }
-        .text-white { color: var(--white); }
-        
-        .truncate { 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Background */
-        .bg-primary { background-color: var(--primary); }
-        .bg-secondary { background-color: var(--secondary); }
-        .bg-success { background-color: var(--success); }
-        .bg-warning { background-color: var(--warning); }
-        .bg-danger { background-color: var(--danger); }
-        .bg-info { background-color: var(--info); }
-        .bg-white { background-color: var(--white); }
-        .bg-gray-50 { background-color: var(--gray-50); }
-        .bg-gray-100 { background-color: var(--gray-100); }
-        .bg-gray-200 { background-color: var(--gray-200); }
-        .bg-transparent { background-color: transparent; }
-
-        /* Border */
-        .border { border: 1px solid var(--border); }
-        .border-t { border-top: 1px solid var(--border); }
-        .border-b { border-bottom: 1px solid var(--border); }
-        .border-l { border-left: 1px solid var(--border); }
-        .border-r { border-right: 1px solid var(--border); }
-        
-        .border-primary { border-color: var(--primary); }
-        .border-secondary { border-color: var(--secondary); }
-        .border-success { border-color: var(--success); }
-        .border-warning { border-color: var(--warning); }
-        .border-danger { border-color: var(--danger); }
-        .border-info { border-color: var(--info); }
-        .border-gray-200 { border-color: var(--gray-200); }
-        .border-gray-300 { border-color: var(--gray-300); }
-        
-        .border-0 { border-width: 0; }
-        .border-2 { border-width: 2px; }
-
-        /* Border Radius */
-        .rounded-sm { border-radius: var(--radius-sm); }
-        .rounded { border-radius: var(--radius-md); }
-        .rounded-md { border-radius: var(--radius-md); }
-        .rounded-lg { border-radius: var(--radius-lg); }
-        .rounded-xl { border-radius: var(--radius-xl); }
-        .rounded-2xl { border-radius: var(--radius-2xl); }
-        .rounded-full { border-radius: var(--radius-full); }
-        
-        .rounded-t-lg { border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); }
-        .rounded-b-lg { border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
-
-        /* Shadow */
-        .shadow-none { box-shadow: none; }
-        .shadow-xs { box-shadow: var(--shadow-xs); }
-        .shadow-sm { box-shadow: var(--shadow-sm); }
-        .shadow { box-shadow: var(--shadow-md); }
-        .shadow-md { box-shadow: var(--shadow-md); }
-        .shadow-lg { box-shadow: var(--shadow-lg); }
-        .shadow-xl { box-shadow: var(--shadow-xl); }
-
-        /* Opacity */
-        .opacity-0 { opacity: 0; }
-        .opacity-50 { opacity: 0.5; }
-        .opacity-75 { opacity: 0.75; }
-        .opacity-100 { opacity: 1; }
-
-        /* Cursor */
-        .cursor-pointer { cursor: pointer; }
-        .cursor-not-allowed { cursor: not-allowed; }
-        .cursor-wait { cursor: wait; }
-
-        /* Pointer Events */
-        .pointer-events-none { pointer-events: none; }
-        .pointer-events-auto { pointer-events: auto; }
-
-        /* User Select */
-        .select-none { user-select: none; }
-        .select-text { user-select: text; }
-
-        /* Overflow */
-        .overflow-hidden { overflow: hidden; }
-        .overflow-visible { overflow: visible; }
-        .overflow-auto { overflow: auto; }
-        .overflow-x-auto { overflow-x: auto; }
-        .overflow-y-auto { overflow-y: auto; }
-        .overflow-x-hidden { overflow-x: hidden; }
-        .overflow-y-hidden { overflow-y: hidden; }
-
-        /* Position */
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .fixed { position: fixed; }
-        .sticky { position: sticky; }
-        
-        .top-0 { top: 0; }
-        .right-0 { right: 0; }
-        .bottom-0 { bottom: 0; }
-        .left-0 { left: 0; }
-        
-        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-
-        /* Z-index */
-        .z-0 { z-index: 0; }
-        .z-10 { z-index: 10; }
-        .z-20 { z-index: 20; }
-        .z-30 { z-index: 30; }
-        .z-40 { z-index: 40; }
-        .z-50 { z-index: 50; }
-
-        /* Display */
-        .block { display: block; }
-        .inline-block { display: inline-block; }
-        .inline { display: inline; }
-        .table { display: table; }
-        .table-row { display: table-row; }
-        .table-cell { display: table-cell; }
-
         /* ===== COMPONENTS ===== */
         
-        /* Buttons - Professional System */
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -451,167 +158,68 @@
             font-family: var(--font-sans);
             font-weight: 600;
             font-size: 0.875rem;
-            line-height: 1.25rem;
             border: 2px solid transparent;
             border-radius: var(--radius-md);
             padding: var(--space-2) var(--space-4);
-            transition: all var(--transition-base);
+            transition: all var(--transition);
             cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
             gap: var(--space-2);
             min-height: 36px;
-            touch-action: manipulation;
+            white-space: nowrap;
         }
 
-        .btn:focus {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-sm {
-            padding: var(--space-1) var(--space-3);
-            font-size: 0.75rem;
-            min-height: 32px;
-        }
-
-        .btn-lg {
-            padding: var(--space-3) var(--space-6);
-            font-size: 1rem;
-            min-height: 44px;
-        }
-
-        .btn-xl {
-            padding: var(--space-4) var(--space-8);
-            font-size: 1.125rem;
-            min-height: 52px;
-        }
-
-        /* Button Variants */
-        .btn-primary {
-            background-color: var(--primary);
-            color: var(--white);
-            border-color: var(--primary);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
+        .btn:hover {
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
 
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
         .btn-secondary {
-            background-color: var(--secondary);
+            background: var(--secondary);
             color: var(--white);
             border-color: var(--secondary);
         }
 
-        .btn-secondary:hover:not(:disabled) {
-            background-color: var(--secondary-dark);
-            border-color: var(--secondary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .btn-success {
-            background-color: var(--success);
+            background: var(--success);
             color: var(--white);
             border-color: var(--success);
         }
 
-        .btn-success:hover:not(:disabled) {
-            background-color: #047857;
-            border-color: #047857;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .btn-warning {
-            background-color: var(--warning);
+            background: var(--warning);
             color: var(--white);
             border-color: var(--warning);
         }
 
-        .btn-warning:hover:not(:disabled) {
-            background-color: #b45309;
-            border-color: #b45309;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .btn-danger {
-            background-color: var(--danger);
+            background: var(--danger);
             color: var(--white);
             border-color: var(--danger);
         }
 
-        .btn-danger:hover:not(:disabled) {
-            background-color: #b91c1c;
-            border-color: #b91c1c;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .btn-outline {
-            background-color: transparent;
+            background: transparent;
             color: var(--gray-700);
             border-color: var(--gray-300);
         }
 
-        .btn-outline:hover:not(:disabled) {
-            background-color: var(--gray-50);
+        .btn-outline:hover {
+            background: var(--gray-50);
             border-color: var(--gray-400);
-            transform: translateY(-1px);
         }
 
-        .btn-outline-primary {
-            background-color: transparent;
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .btn-outline-primary:hover:not(:disabled) {
-            background-color: var(--primary);
-            color: var(--white);
-            transform: translateY(-1px);
-        }
-
-        .btn-ghost {
-            background-color: transparent;
-            color: var(--gray-700);
-            border-color: transparent;
-        }
-
-        .btn-ghost:hover:not(:disabled) {
-            background-color: var(--gray-100);
-            color: var(--gray-900);
-        }
-
-        .btn-icon {
-            padding: var(--space-2);
-            min-width: 36px;
-            min-height: 36px;
-        }
-
-        .btn-icon.btn-sm {
-            padding: var(--space-1);
-            min-width: 32px;
-            min-height: 32px;
-        }
-
-        .btn-icon.btn-lg {
-            padding: var(--space-3);
-            min-width: 44px;
-            min-height: 44px;
-        }
-
-        /* Feedback Channel Buttons - Professional Small */
+        /* Small Channel Buttons */
         .channel-btn {
             width: 36px;
             height: 36px;
@@ -620,10 +228,9 @@
             align-items: center;
             justify-content: center;
             color: var(--white);
-            text-decoration: none;
             font-size: 1rem;
-            transition: all var(--transition-base);
-            border: 2px solid transparent;
+            transition: all var(--transition);
+            text-decoration: none;
             flex-shrink: 0;
         }
 
@@ -632,58 +239,12 @@
             box-shadow: var(--shadow-md);
         }
 
-        .channel-btn.whatsapp { 
-            background-color: #25D366;
-        }
-        .channel-btn.email { 
-            background-color: var(--primary);
-        }
-        .channel-btn.github { 
-            background-color: var(--gray-800);
-        }
-        .channel-btn.discord { 
-            background-color: #5865F2;
-        }
-        .channel-btn.slack { 
-            background-color: #4A154B;
-        }
-        .channel-btn.teams { 
-            background-color: #6264A7;
-        }
+        .channel-btn.whatsapp { background: #25D366; }
+        .channel-btn.email { background: var(--primary); }
+        .channel-btn.github { background: var(--gray-800); }
+        .channel-btn.discord { background: #5865F2; }
 
-        /* Cards */
-        .card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
-            overflow: hidden;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--gray-300);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            padding: var(--space-4);
-            border-bottom: 1px solid var(--border);
-            background-color: var(--gray-50);
-        }
-
-        .card-body {
-            padding: var(--space-4);
-        }
-
-        .card-footer {
-            padding: var(--space-4);
-            border-top: 1px solid var(--border);
-            background-color: var(--gray-50);
-        }
-
-        /* Status Badges */
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -691,144 +252,53 @@
             padding: var(--space-1) var(--space-2);
             font-size: 0.75rem;
             font-weight: 600;
-            line-height: 1;
             border-radius: var(--radius-full);
             border: 2px solid transparent;
             white-space: nowrap;
         }
 
-        .badge-sm {
-            padding: 2px var(--space-1);
-            font-size: 0.6875rem;
-        }
-
-        .badge-lg {
-            padding: var(--space-2) var(--space-3);
-            font-size: 0.875rem;
-        }
-
         .badge-primary {
-            background-color: var(--primary);
+            background: var(--primary);
             color: var(--white);
             border-color: var(--primary);
         }
 
-        .badge-secondary {
-            background-color: var(--secondary);
-            color: var(--white);
-            border-color: var(--secondary);
-        }
-
         .badge-success {
-            background-color: var(--success);
+            background: var(--success);
             color: var(--white);
             border-color: var(--success);
         }
 
         .badge-warning {
-            background-color: var(--warning);
+            background: var(--warning);
             color: var(--white);
             border-color: var(--warning);
         }
 
         .badge-danger {
-            background-color: var(--danger);
+            background: var(--danger);
             color: var(--white);
             border-color: var(--danger);
         }
 
-        .badge-info {
-            background-color: var(--info);
-            color: var(--white);
-            border-color: var(--info);
-        }
-
         .badge-outline {
-            background-color: transparent;
+            background: transparent;
             color: var(--gray-700);
             border-color: var(--gray-300);
         }
 
-        .badge-outline-primary {
-            background-color: transparent;
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .badge-outline-success {
-            background-color: transparent;
-            color: var(--success);
-            border-color: var(--success);
-        }
-
-        .badge-outline-warning {
-            background-color: transparent;
-            color: var(--warning);
-            border-color: var(--warning);
-        }
-
-        .badge-outline-danger {
-            background-color: transparent;
-            color: var(--danger);
-            border-color: var(--danger);
-        }
-
-        /* Clinical Priority Badges */
-        .badge-priority-critical {
-            background-color: #dc2626;
-            color: white;
-            border-color: #dc2626;
-            animation: pulse 2s infinite;
-        }
-
-        .badge-priority-high {
-            background-color: #f97316;
-            color: white;
-            border-color: #f97316;
-        }
-
-        .badge-priority-medium {
-            background-color: #eab308;
-            color: var(--gray-900);
-            border-color: #eab308;
-        }
-
-        .badge-priority-low {
-            background-color: #84cc16;
-            color: var(--gray-900);
-            border-color: #84cc16;
-        }
-
-        /* Progress Bars */
+        /* Progress Bar */
         .progress {
-            width: 100%;
             height: 8px;
-            background-color: var(--gray-200);
+            background: var(--gray-200);
             border-radius: var(--radius-full);
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            border-radius: var(--radius-full);
-            background-color: var(--primary);
-            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
-                transparent);
-            animation: shimmer 2s infinite;
+            background: var(--primary);
+            transition: width 1s ease;
         }
 
         /* Forms */
@@ -849,83 +319,18 @@
             padding: var(--space-2) var(--space-3);
             font-family: var(--font-sans);
             font-size: 0.875rem;
-            line-height: 1.25rem;
-            color: var(--gray-900);
-            background-color: var(--white);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            transition: all var(--transition-base);
+            transition: all var(--transition);
         }
 
         .form-control:focus {
             outline: 2px solid var(--primary);
             outline-offset: 2px;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
         }
 
-        .form-control:disabled {
-            background-color: var(--gray-100);
-            color: var(--gray-500);
-            cursor: not-allowed;
-        }
-
-        .form-control.error {
-            border-color: var(--danger);
-        }
-
-        .form-control.error:focus {
-            outline-color: var(--danger);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-
-        .form-hint {
-            display: block;
-            margin-top: var(--space-1);
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-
-        .form-error {
-            display: block;
-            margin-top: var(--space-1);
-            font-size: 0.75rem;
-            color: var(--danger);
-            font-weight: 500;
-        }
-
-        /* Tables */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-
-        .table th {
-            background-color: var(--gray-50);
-            padding: var(--space-3) var(--space-4);
-            text-align: left;
-            font-weight: 600;
-            color: var(--gray-700);
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
-        }
-
-        .table td {
-            padding: var(--space-3) var(--space-4);
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        .table tr:hover {
-            background-color: var(--gray-50);
-        }
-
-        .table-striped tr:nth-child(even) {
-            background-color: var(--gray-50);
-        }
-
-        /* Alerts & Messages */
+        /* Alerts */
         .alert {
             padding: var(--space-3) var(--space-4);
             border-radius: var(--radius-md);
@@ -934,92 +339,44 @@
         }
 
         .alert-success {
-            background-color: #d1fae5;
+            background: #d1fae5;
             color: #065f46;
             border-left-color: var(--success);
         }
 
-        .alert-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-            border-left-color: var(--warning);
-        }
-
         .alert-danger {
-            background-color: #fee2e2;
+            background: #fee2e2;
             color: #991b1b;
             border-left-color: var(--danger);
         }
 
         .alert-info {
-            background-color: #dbeafe;
+            background: #dbeafe;
             color: #1e40af;
             border-left-color: var(--info);
         }
 
-        /* Modals */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--bg-overlay);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: var(--z-modal);
-            padding: var(--space-4);
-            overflow-y: auto;
-            animation: fadeIn var(--transition-base);
+        /* Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 37%, var(--gray-200) 63%);
+            background-size: 400% 100%;
+            animation: skeleton-loading 1.4s ease infinite;
+            border-radius: var(--radius-md);
         }
 
-        .modal-content {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-2xl);
-            animation: slideUp var(--transition-base);
-            border: 1px solid var(--border);
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
         }
 
-        .modal-lg {
-            max-width: 900px;
-        }
-
-        .modal-xl {
-            max-width: 1200px;
-        }
-
-        .modal-header {
-            padding: var(--space-6);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-card);
-            z-index: 1;
-        }
-
-        .modal-body {
-            padding: var(--space-6);
-        }
-
-        .modal-footer {
-            padding: var(--space-6);
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: var(--space-3);
-            justify-content: flex-end;
-            position: sticky;
-            bottom: 0;
-            background-color: var(--bg-card);
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--gray-300);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
         /* Tabs */
@@ -1037,8 +394,7 @@
             border: none;
             border-bottom: 2px solid transparent;
             cursor: pointer;
-            transition: all var(--transition-base);
-            white-space: nowrap;
+            transition: all var(--transition);
         }
 
         .tab:hover {
@@ -1056,141 +412,84 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn var(--transition-base);
+            animation: fadeIn var(--transition);
         }
 
-        /* Loading States */
-        .skeleton {
-            background: linear-gradient(
-                90deg,
-                var(--gray-200) 25%,
-                var(--gray-300) 37%,
-                var(--gray-200) 63%
-            );
-            background-size: 400% 100%;
-            animation: skeleton-loading 1.4s ease infinite;
-            border-radius: var(--radius-md);
-        }
-
-        .skeleton-text {
-            height: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .skeleton-text:last-child {
-            margin-bottom: 0;
-            width: 80%;
-        }
-
-        .skeleton-circle {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-        }
-
-        .skeleton-card {
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid var(--gray-300);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .loading-spinner-sm {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-width: 1.5px;
-        }
-
-        .loading-spinner-lg {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-width: 3px;
-        }
-
-        /* Toast Notifications */
-        .toast-container {
+        /* Modals */
+        .modal-overlay {
             position: fixed;
-            top: var(--space-4);
-            right: var(--space-4);
-            z-index: var(--z-toast);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-2);
-            max-width: 400px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: var(--space-4);
+            overflow-y: auto;
         }
 
-        .toast {
-            padding: var(--space-3) var(--space-4);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            animation: slideInRight var(--transition-base);
-            border-left: 4px solid;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
         }
 
-        .toast-success {
-            background-color: var(--white);
-            border-left-color: var(--success);
+        .modal-body {
+            padding: var(--space-6);
         }
 
-        .toast-error {
-            background-color: var(--white);
-            border-left-color: var(--danger);
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
         }
 
-        .toast-warning {
-            background-color: var(--white);
-            border-left-color: var(--warning);
-        }
-
-        .toast-info {
-            background-color: var(--white);
-            border-left-color: var(--info);
-        }
-
-        /* Empty States */
-        .empty-state {
-            padding: var(--space-8) var(--space-4);
-            text-align: center;
-            color: var(--gray-500);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--gray-300);
-            margin-bottom: var(--space-4);
-        }
-
-        .empty-state-title {
-            font-size: 1.25rem;
+        .table th {
+            background: var(--gray-50);
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
             font-weight: 600;
             color: var(--gray-700);
-            margin-bottom: var(--space-2);
+            border-bottom: 2px solid var(--border);
         }
 
-        .empty-state-description {
-            max-width: 400px;
-            margin: 0 auto var(--space-4);
+        .table td {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
-        /* Quick Actions Bar */
+        /* Quick Actions */
         .quick-actions {
             position: fixed;
             bottom: var(--space-4);
             right: var(--space-4);
             display: flex;
             gap: var(--space-2);
-            z-index: var(--z-sticky);
+            z-index: 20;
         }
 
         .quick-action-btn {
@@ -1200,51 +499,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--primary);
+            background: var(--primary);
             color: var(--white);
             box-shadow: var(--shadow-lg);
             border: none;
             cursor: pointer;
-            transition: all var(--transition-base);
+            transition: all var(--transition);
         }
 
         .quick-action-btn:hover {
             transform: translateY(-2px) scale(1.05);
             box-shadow: var(--shadow-xl);
-        }
-
-        /* Clinical Status Indicators */
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-1);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .status-dot.online {
-            background-color: var(--success);
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
-        }
-
-        .status-dot.offline {
-            background-color: var(--gray-400);
-        }
-
-        .status-dot.busy {
-            background-color: var(--danger);
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.away {
-            background-color: var(--warning);
         }
 
         /* ===== ANIMATIONS ===== */
@@ -1264,32 +529,8 @@
             }
         }
 
-        @keyframes slideInRight {
-            from { 
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to { 
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 1;
-            }
-            50% { 
-                opacity: 0.5;
-            }
-        }
-
-        @keyframes shimmer {
-            100% { left: 100%; }
         }
 
         @keyframes skeleton-loading {
@@ -1309,14 +550,8 @@
             }
             
             .modal-header,
-            .modal-body,
-            .modal-footer {
+            .modal-body {
                 padding: var(--space-4);
-            }
-            
-            .table-responsive {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
             }
             
             .quick-actions {
@@ -1336,65 +571,19 @@
                 font-size: 0.8125rem;
             }
             
-            .card-body {
-                padding: var(--space-3);
-            }
-            
             .tabs {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 2px;
             }
         }
-
-        /* ===== CUSTOM SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--gray-100);
-            border-radius: var(--radius-full);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--gray-400);
-            border-radius: var(--radius-full);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-500);
-        }
-
-        /* ===== PRINT STYLES ===== */
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            
-            .card {
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-                break-inside: avoid;
-            }
-            
-            .btn, .quick-actions, .modal-overlay {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
     <!-- Toast Container -->
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md"></div>
 
-    <!-- Quick Actions Bar -->
+    <!-- Quick Actions -->
     <div class="quick-actions no-print">
         <button class="quick-action-btn" id="quickAddProject" title="Add Project">
             <i class="mdi mdi-plus"></i>
@@ -1412,7 +601,7 @@
         <!-- Header -->
         <header class="py-6">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <!-- Logo Section -->
+                <!-- Logo -->
                 <div class="flex items-center gap-4">
                     <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
                         <div class="grid grid-cols-2 gap-2">
@@ -1434,10 +623,10 @@
 
                 <!-- Right Section -->
                 <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
-                    <!-- Status Panel -->
+                    <!-- Status -->
                     <div id="statusPanel" class="hidden md:flex items-center gap-3 px-4 py-2 bg-white border rounded-full shadow-xs">
-                        <div class="status-indicator">
-                            <span class="status-dot online"></span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                             <span class="text-xs font-semibold text-gray-600">LIVE</span>
                         </div>
                         <span class="text-xs text-gray-500">
@@ -1445,7 +634,7 @@
                         </span>
                     </div>
 
-                    <!-- Auth Section -->
+                    <!-- Auth -->
                     <div id="authSection">
                         <div id="guestView">
                             <button id="loginBtn" class="btn btn-primary">
@@ -1463,7 +652,7 @@
                                     <span class="text-sm font-semibold text-gray-900" id="currentUsername">User Name</span>
                                     <span class="text-xs font-medium" id="currentUserRole">Role</span>
                                 </div>
-                                <button id="logoutBtn" class="btn btn-ghost btn-sm" title="Logout">
+                                <button id="logoutBtn" class="btn btn-outline btn-sm" title="Logout">
                                     <i class="mdi mdi-logout text-gray-500"></i>
                                 </button>
                             </div>
@@ -1533,10 +722,9 @@
             </div>
         </div>
 
-        <!-- Stats Overview -->
+        <!-- Stats -->
         <div id="statsContainer" class="hidden mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <!-- Tools Card -->
                 <div class="card hover:shadow-md transition-all duration-300">
                     <div class="card-body">
                         <div class="flex items-center gap-4">
@@ -1551,7 +739,6 @@
                     </div>
                 </div>
 
-                <!-- Projects Card -->
                 <div class="card hover:shadow-md transition-all duration-300">
                     <div class="card-body">
                         <div class="flex items-center gap-4">
@@ -1566,7 +753,6 @@
                     </div>
                 </div>
 
-                <!-- Comments Card -->
                 <div class="card hover:shadow-md transition-all duration-300">
                     <div class="card-body">
                         <div class="flex items-center gap-4">
@@ -1581,7 +767,6 @@
                     </div>
                 </div>
 
-                <!-- Users Card -->
                 <div id="usersCard" class="card hover:shadow-md transition-all duration-300 hidden">
                     <div class="card-body">
                         <div class="flex items-center gap-4">
@@ -1596,7 +781,6 @@
                     </div>
                 </div>
 
-                <!-- Sync Card -->
                 <div id="syncCard" class="card hover:shadow-md transition-all duration-300 hidden">
                     <div class="card-body">
                         <div class="flex items-center gap-4">
@@ -1632,7 +816,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Tools Section -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header border-b p-6">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-bold text-gray-900">
                                 <i class="mdi mdi-toolbox mr-2 text-primary"></i>
@@ -1640,21 +824,16 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-6">
                         <div id="toolsGrid" class="space-y-4">
-                            <!-- Tools will be loaded here -->
-                            <div class="skeleton-card space-y-3">
-                                <div class="skeleton-text"></div>
-                                <div class="skeleton-text"></div>
-                                <div class="skeleton-text w-3/4"></div>
-                            </div>
+                            <!-- Tools loaded here -->
                         </div>
                     </div>
                 </div>
 
                 <!-- Projects Section -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header border-b p-6">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-bold text-gray-900">
                                 <i class="mdi mdi-flask mr-2 text-primary"></i>
@@ -1665,14 +844,9 @@
                             </span>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-6">
                         <div id="projectsList" class="space-y-4">
-                            <!-- Projects will be loaded here -->
-                            <div class="skeleton-card space-y-3">
-                                <div class="skeleton-text"></div>
-                                <div class="skeleton-text"></div>
-                                <div class="skeleton-text w-3/4"></div>
-                            </div>
+                            <!-- Projects loaded here -->
                         </div>
                     </div>
                 </div>
@@ -1681,12 +855,12 @@
 
         <!-- Login Required -->
         <div id="loginRequiredSection" class="hidden">
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="text-center py-16">
+                <div class="text-6xl text-primary mb-6">
                     <i class="mdi mdi-shield-lock-outline"></i>
                 </div>
-                <h3 class="empty-state-title">Secure Clinical Innovation Dashboard</h3>
-                <p class="empty-state-description">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Secure Clinical Innovation Dashboard</h2>
+                <p class="text-gray-600 max-w-md mx-auto mb-8">
                     Access to the TRAci Clinical Innovation Platform is restricted to authorized healthcare personnel only. 
                     All accounts must be created and authorized by the system administrator.
                 </p>
@@ -1714,7 +888,7 @@
         </footer>
     </div>
 
-    <!-- ===== MODALS ===== -->
+    <!-- ===== ALL MODALS ===== -->
     
     <!-- Login Modal -->
     <div id="loginModal" class="modal-overlay">
@@ -1724,19 +898,17 @@
                     <i class="mdi mdi-shield-lock-outline mr-2 text-primary"></i>
                     Secure Login
                 </h3>
-                <button class="modal-close btn btn-ghost btn-sm">
+                <button class="modal-close btn btn-outline btn-sm">
                     <i class="mdi mdi-close"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Tabs -->
                 <div class="tabs">
                     <button class="tab active" data-tab="login">Login</button>
                     <button class="tab" data-tab="signup">Sign Up</button>
                     <button class="tab" data-tab="forgot">Forgot Password</button>
                 </div>
 
-                <!-- Login Form -->
                 <div id="loginForm" class="tab-content active">
                     <div class="form-group">
                         <label for="loginEmail" class="form-label">
@@ -1758,13 +930,8 @@
                         <i class="mdi mdi-login"></i>
                         <span>Sign In</span>
                     </button>
-                    <div class="alert alert-info mt-4">
-                        <i class="mdi mdi-information"></i>
-                        Note: All accounts must be created by the system administrator.
-                    </div>
                 </div>
 
-                <!-- Signup Form -->
                 <div id="signupForm" class="tab-content">
                     <div class="form-group">
                         <label for="signupFullName" class="form-label">Full Name *</label>
@@ -1788,13 +955,12 @@
                                 <option value="pulmonology">Pulmonology</option>
                                 <option value="cardiology">Cardiology</option>
                                 <option value="neurology">Neurology</option>
-                                <option value="research">Research</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="signupRole" class="form-label">Role</label>
                             <select id="signupRole" class="form-control">
-                                <option value="doctor">Doctor/Clinician</option>
+                                <option value="doctor">Doctor</option>
                                 <option value="researcher">Researcher</option>
                                 <option value="guest">Guest</option>
                             </select>
@@ -1814,13 +980,8 @@
                         <i class="mdi mdi-account-plus"></i>
                         <span>Create Account</span>
                     </button>
-                    <div class="alert alert-info mt-4">
-                        <i class="mdi mdi-information"></i>
-                        New accounts require admin approval. You'll be notified via email.
-                    </div>
                 </div>
 
-                <!-- Forgot Password Form -->
                 <div id="forgotForm" class="tab-content">
                     <div class="form-group">
                         <label for="forgotEmail" class="form-label">Email Address *</label>
@@ -1831,21 +992,474 @@
                         <i class="mdi mdi-email-send"></i>
                         <span>Send Reset Link</span>
                     </button>
-                    <div class="alert alert-info mt-4">
-                        <i class="mdi mdi-information"></i>
-                        You'll receive an email with a password reset link. Check your spam folder too.
-                    </div>
                 </div>
 
-                <div id="loginError" class="alert alert-danger hidden"></div>
-                <div id="signupSuccess" class="alert alert-success hidden"></div>
+                <div id="loginError" class="alert alert-danger hidden mt-4"></div>
+                <div id="signupSuccess" class="alert alert-success hidden mt-4"></div>
             </div>
         </div>
     </div>
 
-    <!-- All other modals (Add Project, Edit Project, Add Tool, etc.) -->
-    <!-- These would follow the same pattern but are omitted for brevity in this example -->
-    <!-- The complete version would include all modals from your original code, redesigned -->
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-plus-circle mr-2 text-primary"></i>
+                    Add New Project
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectName" class="form-label">Project Name *</label>
+                    <input type="text" id="projectName" class="form-control" 
+                           placeholder="Enter project name" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription" class="form-label">Description</label>
+                    <textarea id="projectDescription" class="form-control" 
+                              placeholder="Detailed project description..." rows="4"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="projectStatus" class="form-label">Status</label>
+                        <select id="projectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development" selected>Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="production">Production</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectProgress" class="form-label">Progress (%)</label>
+                        <input type="number" id="projectProgress" class="form-control" 
+                               min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="projectCategory" class="form-label">Category</label>
+                        <select id="projectCategory" class="form-control">
+                            <option value="clinical_research">Clinical Research</option>
+                            <option value="quality_improvement">Quality Improvement</option>
+                            <option value="technology">Technology</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectPriority" class="form-label">Priority</label>
+                        <select id="projectPriority" class="form-control">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="projectVisibility" class="form-label">Visibility</label>
+                    <select id="projectVisibility" class="form-control">
+                        <option value="public">Public (All users)</option>
+                        <option value="private">Private (Team only)</option>
+                        <option value="admin_only">Admin Only</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projectOwner" class="form-label">Project Owner</label>
+                    <input type="text" id="projectOwner" class="form-control" 
+                           placeholder="Name of lead clinician">
+                </div>
+                <button id="saveProjectBtn" class="btn btn-primary w-full">
+                    <i class="mdi mdi-content-save"></i>
+                    <span>Create Project</span>
+                </button>
+                <div id="projectError" class="alert alert-danger hidden mt-4"></div>
+                <div id="projectSuccess" class="alert alert-success hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-pencil mr-2 text-primary"></i>
+                    Edit Project
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editProjectId">
+                
+                <div class="form-group">
+                    <label for="editProjectName" class="form-label">Project Name *</label>
+                    <input type="text" id="editProjectName" class="form-control" 
+                           placeholder="Enter project name">
+                </div>
+                <div class="form-group">
+                    <label for="editProjectDescription" class="form-label">Description</label>
+                    <textarea id="editProjectDescription" class="form-control" 
+                              placeholder="Project description" rows="4"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="editProjectStatus" class="form-label">Status</label>
+                        <select id="editProjectStatus" class="form-control">
+                            <option value="planning">Planning</option>
+                            <option value="development">Development</option>
+                            <option value="testing">Testing</option>
+                            <option value="production">Production</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectProgress" class="form-label">Progress (%)</label>
+                        <input type="number" id="editProjectProgress" class="form-control" 
+                               min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProjectOwner" class="form-label">Project Owner</label>
+                    <input type="text" id="editProjectOwner" class="form-control" 
+                           placeholder="Name of lead clinician">
+                </div>
+                
+                <div class="flex gap-4 mt-6">
+                    <button id="updateProjectBtn" class="btn btn-primary flex-1">
+                        <i class="mdi mdi-content-save"></i>
+                        <span>Update Project</span>
+                    </button>
+                    <button id="deleteProjectBtn" class="btn btn-danger flex-1">
+                        <i class="mdi mdi-delete"></i>
+                        <span>Delete Project</span>
+                    </button>
+                </div>
+                <div id="editProjectError" class="alert alert-danger hidden mt-4"></div>
+                <div id="editProjectSuccess" class="alert alert-success hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tool Modal -->
+    <div id="addToolModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-toolbox mr-2 text-primary"></i>
+                    Add New Tool
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="toolName" class="form-label">Tool Name *</label>
+                    <input type="text" id="toolName" class="form-control" 
+                           placeholder="Enter tool name" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="toolDescription" class="form-label">Description</label>
+                    <textarea id="toolDescription" class="form-control" 
+                              placeholder="Detailed tool description..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="toolUrl" class="form-label">URL *</label>
+                    <input type="url" id="toolUrl" class="form-control" 
+                           placeholder="https://tool.example.com">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="toolStatus" class="form-label">Status</label>
+                        <select id="toolStatus" class="form-control">
+                            <option value="operational">Operational</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="deprecated">Deprecated</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolCategory" class="form-label">Category</label>
+                        <select id="toolCategory" class="form-control">
+                            <option value="clinical">Clinical Tools</option>
+                            <option value="research">Research Tools</option>
+                            <option value="administrative">Administrative</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button id="saveToolBtn" class="btn btn-primary w-full">
+                    <i class="mdi mdi-content-save"></i>
+                    <span>Save Tool</span>
+                </button>
+                <div id="toolError" class="alert alert-danger hidden mt-4"></div>
+                <div id="toolSuccess" class="alert alert-success hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Users Modal -->
+    <div id="manageUsersModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-account-multiple mr-2 text-primary"></i>
+                    User Management
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-6">
+                    <button id="addUserBtn" class="btn btn-success">
+                        <i class="mdi mdi-account-plus"></i>
+                        <span>Add New User</span>
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" id="userSearch" class="form-control" 
+                           placeholder="Search users by name, username, or role...">
+                </div>
+                
+                <div class="overflow-auto max-h-96 border rounded-lg">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userFormModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold" id="userFormTitle">
+                    <i class="mdi mdi-account-plus mr-2 text-primary"></i>
+                    Add New User
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId">
+                
+                <div class="form-group">
+                    <label for="userFullName" class="form-label">Full Name *</label>
+                    <input type="text" id="userFullName" class="form-control" 
+                           placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="userUsername" class="form-label">Username *</label>
+                    <input type="text" id="userUsername" class="form-control" 
+                           placeholder="Enter username (lowercase, no spaces)">
+                </div>
+                <div class="form-group">
+                    <label for="userEmail" class="form-label">Email Address</label>
+                    <input type="email" id="userEmail" class="form-control" 
+                           placeholder="email@hospital.com">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="userRole" class="form-label">Role *</label>
+                        <select id="userRole" class="form-control">
+                            <option value="admin">Administrator</option>
+                            <option value="doctor">Doctor/Clinician</option>
+                            <option value="researcher">Researcher</option>
+                            <option value="guest">Guest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userDepartment" class="form-label">Department</label>
+                        <select id="userDepartment" class="form-control">
+                            <option value="pulmonology">Pulmonology</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="neurology">Neurology</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userPassword" class="form-label">Password *</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="userPassword" class="form-control" 
+                               placeholder="Auto-generated password" readonly>
+                        <button type="button" id="generatePasswordBtn" class="btn btn-outline">
+                            <i class="mdi mdi-refresh"></i>
+                            <span>Generate</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="saveUserBtn" class="btn btn-primary w-full">
+                    <i class="mdi mdi-content-save"></i>
+                    <span id="saveUserBtnText">Create User</span>
+                </button>
+                <div id="userError" class="alert alert-danger hidden mt-4"></div>
+                <div id="userSuccess" class="alert alert-success hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Projects Modal -->
+    <div id="syncProjectsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-sync mr-2 text-primary"></i>
+                    Sync with ThoraxLab
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="syncDirection" class="form-label">Sync Direction</label>
+                        <select id="syncDirection" class="form-control">
+                            <option value="import">Import from ThoraxLab</option>
+                            <option value="export">Export to ThoraxLab</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="syncProjectSelect" class="form-label">Project</label>
+                        <select id="syncProjectSelect" class="form-control">
+                            <option value="">-- Select Project --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button id="startSyncBtn" class="btn btn-primary w-full mt-6">
+                    <i class="mdi mdi-sync"></i>
+                    <span id="startSyncText">Start Sync</span>
+                </button>
+                <div id="syncError" class="alert alert-danger hidden mt-4"></div>
+                <div id="syncSuccess" class="alert alert-success hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div id="commentsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold" id="commentsModalTitle">
+                    <i class="mdi mdi-comment-multiple mr-2 text-primary"></i>
+                    Project Comments
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="commentFormSection" class="hidden">
+                    <div class="form-group">
+                        <label for="commentText" class="form-label">Add a comment</label>
+                        <textarea id="commentText" class="form-control" 
+                                  placeholder="Share your thoughts, feedback, or questions..." rows="3"
+                                  maxlength="1000"></textarea>
+                    </div>
+                    
+                    <div id="guestEmailField" class="form-group hidden">
+                        <label for="guestEmail" class="form-label">
+                            <i class="mdi mdi-email"></i>
+                            <span>Your Email *</span>
+                        </label>
+                        <input type="email" id="guestEmail" class="form-control" 
+                               placeholder="email@example.com">
+                    </div>
+                    
+                    <button id="submitCommentBtn" class="btn btn-primary w-full">
+                        <i class="mdi mdi-send"></i>
+                        <span>Post Comment</span>
+                    </button>
+                    <div id="commentError" class="alert alert-danger hidden mt-4"></div>
+                    <div id="commentSuccess" class="alert alert-success hidden mt-4"></div>
+                </div>
+                
+                <div id="commentsList" class="mt-6 space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Comments loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Moderate Comments Modal -->
+    <div id="moderateCommentsModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-comment-processing mr-2 text-primary"></i>
+                    Moderate Comments
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="moderationSearch" class="form-control" 
+                           placeholder="Search comments...">
+                </div>
+                
+                <div id="moderationList" class="space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Pending comments loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Export Modal -->
+    <div id="pdfExportModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold">
+                    <i class="mdi mdi-file-pdf mr-2 text-primary"></i>
+                    Export Project to PDF
+                </h3>
+                <button class="modal-close btn btn-outline btn-sm">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pdfProjectSelect" class="form-label">Select Project</label>
+                    <select id="pdfProjectSelect" class="form-control">
+                        <option value="">-- Choose a project --</option>
+                    </select>
+                </div>
+                
+                <button id="generatePDFBtn" class="btn btn-danger w-full mt-6">
+                    <i class="mdi mdi-file-pdf-box"></i>
+                    <span>Generate & Download PDF</span>
+                </button>
+                <div id="pdfError" class="alert alert-danger hidden mt-4"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script>
@@ -1869,23 +1483,23 @@
         let currentProjectComments = null;
         let commentCounts = {};
         let pendingComments = [];
-        let selectedCommentIds = new Set();
 
         // ===== TOAST SYSTEM =====
-        function showToast(message, type = 'info', duration = 5000) {
+        function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
+            toast.className = `p-4 rounded-lg shadow-lg mb-2 ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'} text-white`;
             toast.innerHTML = `
-                <i class="mdi mdi-${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : type === 'warning' ? 'alert' : 'information'}"></i>
-                <span>${message}</span>
+                <div class="flex items-center gap-2">
+                    <i class="mdi mdi-${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'information'}"></i>
+                    <span>${message}</span>
+                </div>
             `;
             container.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.animation = 'fadeIn 0.3s reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+                toast.remove();
+            }, 5000);
         }
 
         // ===== PASSWORD UTILITIES =====
@@ -1898,10 +1512,6 @@
             return password;
         }
 
-        function generateEditCode() {
-            return Math.floor(10000 + Math.random() * 90000).toString();
-        }
-
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -1912,9 +1522,6 @@
 
         // ===== AUTHENTICATION =====
         async function loginUser(email, password) {
-            const errorEl = document.getElementById('loginError');
-            errorEl.classList.add('hidden');
-            
             try {
                 const hashedPassword = await hashPassword(password);
                 
@@ -1922,19 +1529,14 @@
                     .from('users')
                     .select('*')
                     .eq('email', email.toLowerCase().trim())
-                    .eq('status', 'active')
                     .single();
                 
                 if (error || !data) {
-                    errorEl.textContent = 'Invalid email or password';
-                    errorEl.classList.remove('hidden');
-                    return false;
+                    throw new Error('Invalid email or password');
                 }
                 
                 if (data.encrypted_password !== hashedPassword) {
-                    errorEl.textContent = 'Invalid email or password';
-                    errorEl.classList.remove('hidden');
-                    return false;
+                    throw new Error('Invalid email or password');
                 }
                 
                 currentUser = {
@@ -1943,46 +1545,29 @@
                     full_name: data.full_name || 'User',
                     role: data.role || 'guest',
                     department: data.department || '',
-                    email: data.email,
-                    is_active: data.status === 'active'
+                    email: data.email
                 };
                 
                 authToken = btoa(JSON.stringify(currentUser));
                 localStorage.setItem('traci_auth_token', authToken);
                 
-                await logAudit('login', { email, role: currentUser.role });
                 showToast('Login successful!', 'success');
-                
                 return true;
                 
             } catch (error) {
-                console.error('Login error:', error);
-                errorEl.textContent = 'Login failed. Please try again.';
-                errorEl.classList.remove('hidden');
+                showToast(error.message, 'error');
                 return false;
             }
         }
 
         async function signUpUser(userData) {
             try {
-                // Validation
                 if (userData.password !== userData.confirmPassword) {
-                    return { success: false, error: 'Passwords do not match' };
+                    throw new Error('Passwords do not match');
                 }
                 
                 if (userData.password.length < 8) {
-                    return { success: false, error: 'Password must be at least 8 characters' };
-                }
-                
-                // Check existing user
-                const { data: existing } = await supabaseClient
-                    .from('users')
-                    .select('id')
-                    .or(`email.eq.${userData.email},username.eq.${userData.username}`)
-                    .single();
-                
-                if (existing) {
-                    return { success: false, error: 'Email or username already exists' };
+                    throw new Error('Password must be at least 8 characters');
                 }
                 
                 const hashedPassword = await hashPassword(userData.password);
@@ -2006,46 +1591,27 @@
                 
                 if (error) throw error;
                 
-                // Send welcome email (simulated)
-                console.log(`Welcome email sent to ${userData.email}`);
-                
+                showToast('Account created! Pending admin approval.', 'success');
                 return { success: true, data };
                 
             } catch (error) {
-                console.error('Sign up error:', error);
+                showToast('Error: ' + error.message, 'error');
                 return { success: false, error: error.message };
             }
         }
 
         async function sendPasswordReset(email) {
             try {
-                const { data: user } = await supabaseClient
-                    .from('users')
-                    .select('id, email')
-                    .eq('email', email.toLowerCase())
-                    .single();
-                
-                if (!user) {
-                    return { success: false, error: 'No account found with this email' };
-                }
-                
-                // In production, integrate with Supabase Auth reset
-                // For now, simulate sending email
-                console.log(`Password reset link would be sent to ${email}`);
-                
+                // Simulate sending reset email
+                showToast('Reset link would be sent to ' + email, 'info');
                 return { success: true };
-                
             } catch (error) {
-                console.error('Password reset error:', error);
+                showToast('Error: ' + error.message, 'error');
                 return { success: false, error: error.message };
             }
         }
 
         function logoutUser() {
-            if (currentUser) {
-                logAudit('logout', {});
-            }
-            
             currentUser = null;
             authToken = null;
             localStorage.removeItem('traci_auth_token');
@@ -2054,29 +1620,222 @@
             showToast('Logged out successfully', 'info');
         }
 
-        // ===== AUDIT LOGGING =====
-        async function logAudit(action, details = {}, projectId = null) {
+        // ===== DATABASE FUNCTIONS =====
+        async function fetchProjects() {
             try {
-                if (!currentUser) return;
+                let query = supabaseClient
+                    .from('projects')
+                    .select('*');
                 
-                const auditData = {
-                    user_id: currentUser.id,
-                    user_name: currentUser.full_name || currentUser.username,
-                    user_role: currentUser.role,
-                    action: action,
-                    details: JSON.stringify(details),
-                    project_id: projectId,
+                if (currentUser) {
+                    if (currentUser.role === 'guest') {
+                        query = query.eq('visibility', 'public');
+                    } else if (currentUser.role === 'doctor' || currentUser.role === 'researcher') {
+                        query = query.in('visibility', ['public', 'private']);
+                    }
+                }
+                
+                const { data, error } = await query
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+                return [];
+            }
+        }
+
+        async function addProject(projectData) {
+            try {
+                const projectToInsert = {
+                    name: projectData.name,
+                    description: projectData.description,
+                    status: projectData.status,
+                    progress: projectData.progress,
+                    category: projectData.category,
+                    priority: projectData.priority,
+                    visibility: projectData.visibility,
+                    owner: projectData.owner,
+                    edit_code: Math.floor(10000 + Math.random() * 90000).toString(),
+                    created_at: new Date().toISOString(),
+                    last_updated: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([projectToInsert])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                showToast('Project created successfully!', 'success');
+                return { success: true, data };
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function updateProject(projectId, projectData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .update({
+                        name: projectData.name,
+                        description: projectData.description,
+                        status: projectData.status,
+                        progress: projectData.progress,
+                        owner: projectData.owner,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('id', projectId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                showToast('Project updated successfully!', 'success');
+                return { success: true, data };
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function deleteProject(projectId) {
+            try {
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .delete()
+                    .eq('id', projectId);
+                
+                if (error) throw error;
+                
+                showToast('Project deleted successfully!', 'success');
+                return { success: true };
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function fetchTools() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching tools:', error);
+                return [];
+            }
+        }
+
+        async function addTool(toolData) {
+            try {
+                const toolToInsert = {
+                    name: toolData.name,
+                    description: toolData.description,
+                    url: toolData.url,
+                    status: toolData.status,
+                    category: toolData.category,
                     created_at: new Date().toISOString()
                 };
                 
-                const { error } = await supabaseClient
-                    .from('audit_logs')
-                    .insert([auditData]);
+                const { data, error } = await supabaseClient
+                    .from('tools')
+                    .insert([toolToInsert])
+                    .select()
+                    .single();
                 
-                if (error) console.error('Error saving audit log:', error);
+                if (error) throw error;
+                
+                showToast('Tool added successfully!', 'success');
+                return { success: true, data };
                 
             } catch (error) {
-                console.error('Error in audit logging:', error);
+                showToast('Error: ' + error.message, 'error');
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function fetchUsers() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                return [];
+            }
+        }
+
+        async function createUser(userData) {
+            try {
+                const hashedPassword = await hashPassword(userData.password);
+                
+                const userToInsert = {
+                    username: userData.username.toLowerCase(),
+                    full_name: userData.full_name,
+                    email: userData.email,
+                    role: userData.role,
+                    department: userData.department,
+                    encrypted_password: hashedPassword,
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .insert([userToInsert])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                showToast('User created successfully!', 'success');
+                return { success: true, data, password: userData.password };
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function fetchCommentCounts() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
+                    .select('project_id')
+                    .eq('action', 'comment_added');
+                
+                if (error) throw error;
+                
+                const counts = {};
+                if (data) {
+                    data.forEach(log => {
+                        if (log.project_id) {
+                            counts[log.project_id] = (counts[log.project_id] || 0) + 1;
+                        }
+                    });
+                }
+                return counts;
+            } catch (error) {
+                console.error('Error fetching comment counts:', error);
+                return {};
             }
         }
 
@@ -2105,9 +1864,7 @@
                 avatar.textContent = initials;
                 
                 document.getElementById('currentUsername').textContent = name;
-                const roleBadge = document.getElementById('currentUserRole');
-                roleBadge.textContent = currentUser.role;
-                roleBadge.className = `text-xs font-medium ${currentUser.role === 'admin' ? 'text-danger' : currentUser.role === 'doctor' ? 'text-primary' : 'text-gray-600'}`;
+                document.getElementById('currentUserRole').textContent = currentUser.role;
                 
                 statusPanel.classList.remove('hidden');
                 statsContainer.classList.remove('hidden');
@@ -2183,14 +1940,11 @@
             });
         }
 
-        // ===== DATA LOADING WITH SKELETONS =====
+        // ===== DASHBOARD FUNCTIONS =====
         async function initDashboard() {
             showSkeletonLoading();
             
             try {
-                // Simulate loading delay for better UX
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
                 const [projects, tools, users, commentCountsData] = await Promise.all([
                     fetchProjects(),
                     fetchTools(),
@@ -2209,29 +1963,29 @@
                 updateTimestamp();
                 
                 // Hide skeletons
-                document.querySelectorAll('.skeleton').forEach(el => {
-                    el.style.display = 'none';
-                });
+                setTimeout(() => {
+                    document.querySelectorAll('.skeleton').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }, 800);
                 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 showToast('Failed to load dashboard data', 'error');
-                showErrorState();
             }
         }
 
         function showSkeletonLoading() {
-            // Show skeleton placeholders
             const toolsGrid = document.getElementById('toolsGrid');
             const projectsList = document.getElementById('projectsList');
             
             toolsGrid.innerHTML = `
                 <div class="space-y-4">
                     ${Array(3).fill().map(() => `
-                        <div class="skeleton-card space-y-3">
+                        <div class="skeleton p-4 rounded-lg">
                             <div class="skeleton-text"></div>
                             <div class="skeleton-text"></div>
-                            <div class="skeleton-text w-3/4"></div>
+                            <div class="skeleton-text" style="width: 75%;"></div>
                         </div>
                     `).join('')}
                 </div>
@@ -2240,98 +1994,16 @@
             projectsList.innerHTML = `
                 <div class="space-y-4">
                     ${Array(3).fill().map(() => `
-                        <div class="skeleton-card space-y-3">
+                        <div class="skeleton p-4 rounded-lg">
                             <div class="skeleton-text"></div>
                             <div class="skeleton-text"></div>
-                            <div class="skeleton-text w-3/4"></div>
+                            <div class="skeleton-text" style="width: 75%;"></div>
                         </div>
                     `).join('')}
                 </div>
             `;
         }
 
-        // ===== DATABASE FUNCTIONS =====
-        async function fetchProjects() {
-            try {
-                let query = supabaseClient
-                    .from('projects')
-                    .select('*');
-                
-                if (currentUser) {
-                    if (currentUser.role === 'guest') {
-                        query = query.eq('visibility', 'public');
-                    } else if (currentUser.role === 'doctor' || currentUser.role === 'researcher') {
-                        query = query.in('visibility', ['public', 'private']);
-                    }
-                }
-                
-                const { data, error } = await query
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-                return [];
-            }
-        }
-
-        async function fetchTools() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('tools')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching tools:', error);
-                return [];
-            }
-        }
-
-        async function fetchUsers() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                return data || [];
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                return [];
-            }
-        }
-
-        async function fetchCommentCounts() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('audit_logs')
-                    .select('project_id')
-                    .eq('action', 'comment_added');
-                
-                if (error) throw error;
-                
-                const counts = {};
-                if (data) {
-                    data.forEach(log => {
-                        if (log.project_id) {
-                            counts[log.project_id] = (counts[log.project_id] || 0) + 1;
-                        }
-                    });
-                }
-                return counts;
-            } catch (error) {
-                console.error('Error fetching comment counts:', error);
-                return {};
-            }
-        }
-
-        // ===== RENDER FUNCTIONS =====
         function updateStats() {
             const toolsCount = dashboardData.tools.length;
             const projectsCount = dashboardData.projects.length;
@@ -2367,16 +2039,9 @@
             
             if (dashboardData.tools.length === 0) {
                 toolsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="mdi mdi-toolbox-outline"></i>
-                        </div>
-                        <h3 class="empty-state-title">No Tools Available</h3>
-                        <p class="empty-state-description">
-                            ${currentUser && currentUser.role === 'admin' 
-                                ? 'Click "Add Tool" to add clinical tools and resources.' 
-                                : 'Tools will be added by administrators.'}
-                        </p>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="mdi mdi-toolbox-outline text-4xl mb-4"></i>
+                        <p>No tools available</p>
                     </div>
                 `;
                 return;
@@ -2388,43 +2053,28 @@
                 const statusClass = `badge ${tool.status === 'operational' ? 'badge-success' : 
                                    tool.status === 'maintenance' ? 'badge-warning' : 'badge-outline'}`;
                 
-                let adminActions = '';
-                if (currentUser && currentUser.role === 'admin') {
-                    adminActions = `
-                        <div class="flex gap-2 mt-4">
-                            <button class="btn btn-outline btn-sm flex-1 tool-edit-btn" data-tool-id="${tool.id}">
-                                <i class="mdi mdi-pencil"></i> Edit
-                            </button>
-                            <button class="btn btn-outline btn-sm flex-1 tool-delete-btn" data-tool-id="${tool.id}">
-                                <i class="mdi mdi-delete"></i> Delete
-                            </button>
-                        </div>
-                    `;
-                }
-                
                 toolsHTML += `
                     <div class="card hover:shadow-md transition-all duration-300">
                         <div class="card-body">
                             <div class="flex items-start gap-4">
                                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white flex-shrink-0">
-                                    <i class="${tool.icon || 'mdi mdi-toolbox'} text-xl"></i>
+                                    <i class="mdi mdi-toolbox text-xl"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-start justify-between gap-2 mb-2">
                                         <h3 class="font-bold text-gray-900 truncate">${tool.name}</h3>
-                                        <span class="${statusClass} badge-sm">${tool.status}</span>
+                                        <span class="${statusClass}">${tool.status}</span>
                                     </div>
-                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">${tool.description || 'No description available'}</p>
+                                    <p class="text-gray-600 text-sm mb-4">${tool.description || 'No description available'}</p>
                                     <div class="flex items-center justify-between">
                                         <a href="${tool.url}" target="_blank" class="btn btn-outline btn-sm">
                                             <i class="mdi mdi-open-in-new"></i>
                                             Access Tool
                                         </a>
-                                        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        <span class="text-xs font-medium text-gray-500">
                                             ${tool.category || 'General'}
                                         </span>
                                     </div>
-                                    ${adminActions}
                                 </div>
                             </div>
                         </div>
@@ -2433,28 +2083,6 @@
             });
             
             toolsGrid.innerHTML = toolsHTML;
-            
-            // Attach event listeners
-            if (currentUser && currentUser.role === 'admin') {
-                document.querySelectorAll('.tool-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const toolId = this.dataset.toolId;
-                        // Load and show edit modal
-                        showToast('Edit tool feature', 'info');
-                    });
-                });
-                
-                document.querySelectorAll('.tool-delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const toolId = this.dataset.toolId;
-                        if (confirm('Are you sure you want to delete this tool?')) {
-                            // Delete logic here
-                            showToast('Tool deleted', 'success');
-                            await initDashboard();
-                        }
-                    });
-                });
-            }
         }
 
         function renderProjects() {
@@ -2463,14 +2091,9 @@
             
             if (filteredProjects.length === 0) {
                 projectsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="mdi mdi-flask-outline"></i>
-                        </div>
-                        <h3 class="empty-state-title">No Projects Found</h3>
-                        <p class="empty-state-description">
-                            No projects match your current filter selection.
-                        </p>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="mdi mdi-flask-outline text-4xl mb-4"></i>
+                        <p>No projects found</p>
                     </div>
                 `;
                 return;
@@ -2480,11 +2103,11 @@
             
             filteredProjects.forEach(project => {
                 const commentCount = commentCounts[project.id] || 0;
-                const priorityClass = project.priority === 'critical' ? 'badge-priority-critical' :
-                                   project.priority === 'high' ? 'badge-priority-high' :
-                                   project.priority === 'medium' ? 'badge-priority-medium' : 'badge-priority-low';
+                const priorityClass = project.priority === 'critical' ? 'badge-danger' :
+                                   project.priority === 'high' ? 'badge-warning' :
+                                   project.priority === 'medium' ? 'badge-outline' : 'badge-outline';
                 
-                let projectHTML = `
+                projectsHTML += `
                     <div class="card hover:shadow-md transition-all duration-300" data-project-id="${project.id}">
                         <div class="card-body">
                             <!-- Header -->
@@ -2493,15 +2116,13 @@
                                     <div class="flex items-center gap-2 mb-2">
                                         <h3 class="font-bold text-gray-900 truncate">${project.name}</h3>
                                         ${project.visibility === 'private' ? 
-                                            '<span class="badge badge-outline badge-sm"><i class="mdi mdi-lock"></i> Private</span>' : ''}
-                                        ${project.needs_feedback ? 
-                                            '<span class="badge badge-warning badge-sm"><i class="mdi mdi-alert"></i> Needs Review</span>' : ''}
+                                            '<span class="badge badge-outline">Private</span>' : ''}
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <span class="badge ${priorityClass} badge-sm">${project.priority}</span>
-                                        <span class="badge badge-outline badge-sm">${project.status}</span>
+                                        <span class="badge ${priorityClass}">${project.priority}</span>
+                                        <span class="badge badge-outline">${project.status}</span>
                                         ${commentCount > 0 ? 
-                                            `<span class="badge badge-outline badge-sm">
+                                            `<span class="badge badge-outline">
                                                 <i class="mdi mdi-comment"></i> ${commentCount}
                                             </span>` : ''}
                                     </div>
@@ -2509,7 +2130,7 @@
                             </div>
                             
                             <!-- Description -->
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">${project.description || 'No description available'}</p>
+                            <p class="text-gray-600 text-sm mb-4">${project.description || 'No description available'}</p>
                             
                             <!-- Progress -->
                             <div class="mb-4">
@@ -2527,17 +2148,17 @@
                                 <span class="text-sm font-medium text-gray-700">Share Feedback:</span>
                                 <div class="flex gap-2">
                                     <a href="https://wa.me/?text=Project: ${encodeURIComponent(project.name)}" 
-                                       class="channel-btn whatsapp" target="_blank" title="Share on WhatsApp">
+                                       class="channel-btn whatsapp" target="_blank" title="WhatsApp">
                                         <i class="mdi mdi-whatsapp"></i>
                                     </a>
                                     <a href="mailto:?subject=Project: ${encodeURIComponent(project.name)}" 
-                                       class="channel-btn email" title="Share via Email">
+                                       class="channel-btn email" title="Email">
                                         <i class="mdi mdi-email"></i>
                                     </a>
-                                    <button class="channel-btn github" title="View on GitHub" onclick="showToast('GitHub integration coming soon', 'info')">
+                                    <button class="channel-btn github" title="GitHub" onclick="showToast('GitHub integration coming soon', 'info')">
                                         <i class="mdi mdi-github"></i>
                                     </button>
-                                    <button class="channel-btn discord" title="Discuss on Discord" onclick="showToast('Discord integration coming soon', 'info')">
+                                    <button class="channel-btn discord" title="Discord" onclick="showToast('Discord integration coming soon', 'info')">
                                         <i class="mdi mdi-discord"></i>
                                     </button>
                                 </div>
@@ -2545,49 +2166,35 @@
                             
                             <!-- Actions -->
                             <div class="flex flex-wrap gap-2">
-                `;
-                
-                if (currentUser) {
-                    if (currentUser.role === 'admin') {
-                        projectHTML += `
-                            <button class="btn btn-outline btn-sm flex-1" onclick="editProject('${project.id}')">
-                                <i class="mdi mdi-pencil"></i> Edit
-                            </button>
-                            <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
-                                <i class="mdi mdi-comment"></i> Comments
-                            </button>
-                            <button class="btn btn-outline btn-sm flex-1" onclick="exportProject('${project.id}')">
-                                <i class="mdi mdi-file-pdf"></i> PDF
-                            </button>
-                        `;
-                    } else if (currentUser.role === 'doctor') {
-                        projectHTML += `
-                            <button class="btn btn-outline btn-sm flex-1" onclick="editProjectWithCode('${project.id}')">
-                                <i class="mdi mdi-pencil"></i> Edit
-                            </button>
-                            <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
-                                <i class="mdi mdi-comment"></i> Comments
-                            </button>
-                        `;
-                    } else {
-                        projectHTML += `
-                            <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
-                                <i class="mdi mdi-comment"></i> Comments
-                            </button>
-                            <button class="btn btn-outline btn-sm flex-1" onclick="upvoteProject('${project.id}')">
-                                <i class="mdi mdi-thumb-up"></i> Upvote
-                            </button>
-                        `;
-                    }
-                }
-                
-                projectHTML += `
+                                ${currentUser && currentUser.role === 'admin' ? `
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="editProject('${project.id}')">
+                                        <i class="mdi mdi-pencil"></i> Edit
+                                    </button>
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
+                                        <i class="mdi mdi-comment"></i> Comments
+                                    </button>
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="exportProject('${project.id}')">
+                                        <i class="mdi mdi-file-pdf"></i> PDF
+                                    </button>
+                                ` : currentUser && currentUser.role === 'doctor' ? `
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="editProjectWithCode('${project.id}')">
+                                        <i class="mdi mdi-pencil"></i> Edit
+                                    </button>
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
+                                        <i class="mdi mdi-comment"></i> Comments
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="showComments('${project.id}')">
+                                        <i class="mdi mdi-comment"></i> Comments
+                                    </button>
+                                    <button class="btn btn-outline btn-sm flex-1" onclick="upvoteProject('${project.id}')">
+                                        <i class="mdi mdi-thumb-up"></i> Upvote
+                                    </button>
+                                `}
                             </div>
                         </div>
                     </div>
                 `;
-                
-                projectsHTML += projectHTML;
             });
             
             projectsList.innerHTML = projectsHTML;
@@ -2607,256 +2214,20 @@
             dashboardData.lastUpdated = now;
         }
 
-        function showErrorState() {
-            document.getElementById('lastUpdatedTime').innerHTML = '<span class="text-danger">Error loading data</span>';
-        }
-
-        // ===== EVENT LISTENERS =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load stored user
-            if (authToken) {
-                try {
-                    currentUser = JSON.parse(atob(authToken));
-                } catch (e) {
-                    console.error('Failed to parse auth token:', e);
-                    localStorage.removeItem('traci_auth_token');
-                }
-            }
-            
-            updateAuthUI();
-            
-            // Setup tab switching in login modal
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Update active tab
-                    document.querySelectorAll('.tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Show correct form
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    document.getElementById(tabId + 'Form').classList.add('active');
-                    clearFormMessages();
-                });
-            });
-            
-            // Login button
-            document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
-            
-            // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-            
-            // Guest buttons
-            document.getElementById('guestContactBtn').addEventListener('click', () => {
-                window.open('mailto:pneumology.innovation@hospital.com?subject=TRAci Platform Inquiry');
-            });
-            
-            document.getElementById('guestLearnBtn').addEventListener('click', () => {
-                showToast('TRAci Platform Overview:\n• Clinical Tools & Resources\n• Research Project Management\n• Secure Collaboration\n• HIPAA Compliant', 'info', 10000);
-            });
-            
-            // Quick actions
-            document.getElementById('quickAddProject').addEventListener('click', () => {
-                if (currentUser && currentUser.role === 'admin') {
-                    showToast('Add project feature', 'info');
-                } else {
-                    showToast('Admin access required', 'warning');
-                }
-            });
-            
-            document.getElementById('quickSync').addEventListener('click', () => {
-                if (currentUser && currentUser.role === 'admin') {
-                    showToast('Sync projects feature', 'info');
-                } else {
-                    showToast('Admin access required', 'warning');
-                }
-            });
-            
-            document.getElementById('quickExport').addEventListener('click', () => {
-                showToast('Export PDF feature', 'info');
-            });
-            
-            // Modal close buttons
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', hideAllModals);
-            });
-            
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) hideAllModals();
-                });
-            });
-            
-            // Login form submission
-            document.getElementById('submitLogin').addEventListener('click', async function() {
-                const email = document.getElementById('loginEmail').value.trim();
-                const password = document.getElementById('loginPassword').value.trim();
-                
-                if (!email || !password) {
-                    showToast('Please enter both email and password', 'warning');
-                    return;
-                }
-                
-                this.innerHTML = '<span class="loading-spinner"></span> Signing In...';
-                this.disabled = true;
-                
-                const success = await loginUser(email, password);
-                
-                this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
-                this.disabled = false;
-                
-                if (success) {
-                    hideAllModals();
-                    updateAuthUI();
-                }
-            });
-            
-            // Signup form submission
-            document.getElementById('submitSignup').addEventListener('click', async function() {
-                const userData = {
-                    full_name: document.getElementById('signupFullName').value.trim(),
-                    email: document.getElementById('signupEmail').value.trim(),
-                    username: document.getElementById('signupUsername').value.trim(),
-                    department: document.getElementById('signupDepartment').value,
-                    role: document.getElementById('signupRole').value,
-                    password: document.getElementById('signupPassword').value,
-                    confirmPassword: document.getElementById('signupConfirmPassword').value
-                };
-                
-                // Validation
-                if (!userData.full_name || !userData.email || !userData.username || !userData.password) {
-                    showToast('All fields are required', 'warning');
-                    return;
-                }
-                
-                this.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
-                this.disabled = true;
-                
-                const result = await signUpUser(userData);
-                
-                this.innerHTML = '<i class="mdi mdi-account-plus"></i> Create Account';
-                this.disabled = false;
-                
-                if (result.success) {
-                    document.getElementById('signupSuccess').textContent = 
-                        'Account created successfully! Your account requires admin approval.';
-                    document.getElementById('signupSuccess').classList.remove('hidden');
-                    
-                    // Clear form
-                    ['signupFullName', 'signupEmail', 'signupUsername', 'signupPassword', 'signupConfirmPassword']
-                        .forEach(id => document.getElementById(id).value = '');
-                        
-                    // Switch back to login
-                    setTimeout(() => {
-                        document.querySelector('.tab[data-tab="login"]').click();
-                    }, 3000);
-                } else {
-                    showToast('Error: ' + result.error, 'error');
-                }
-            });
-            
-            // Forgot password submission
-            document.getElementById('submitForgot').addEventListener('click', async function() {
-                const email = document.getElementById('forgotEmail').value.trim();
-                
-                if (!email) {
-                    showToast('Please enter your email', 'warning');
-                    return;
-                }
-                
-                this.innerHTML = '<span class="loading-spinner"></span> Sending...';
-                this.disabled = true;
-                
-                const result = await sendPasswordReset(email);
-                
-                this.innerHTML = '<i class="mdi mdi-email-send"></i> Send Reset Link';
-                this.disabled = false;
-                
-                if (result.success) {
-                    showToast('Password reset link sent to your email! Check your spam folder too.', 'success');
-                    document.getElementById('forgotEmail').value = '';
-                } else {
-                    showToast('Error: ' + result.error, 'error');
-                }
-            });
-            
-            // Filter controls
-            document.querySelectorAll('.tab[data-filter]').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const filterType = this.dataset.filter;
-                    
-                    // Update active tab
-                    document.querySelectorAll('.tab[data-filter]').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Filter projects
-                    filterProjects(filterType);
-                });
-            });
-            
-            // Refresh link
-            document.getElementById('refreshLink').addEventListener('click', async function(e) {
-                e.preventDefault();
-                if (!currentUser) return;
-                
-                this.innerHTML = '<span class="loading-spinner"></span> Refreshing...';
-                await initDashboard();
-                this.innerHTML = '<i class="mdi mdi-refresh"></i> Refresh Data';
-                
-                showToast('Data refreshed successfully', 'success');
-            });
-            
-            // Admin control buttons
-            document.getElementById('addProjectBtn').addEventListener('click', () => {
-                showToast('Add project modal', 'info');
-            });
-            
-            document.getElementById('addToolBtn').addEventListener('click', () => {
-                showToast('Add tool modal', 'info');
-            });
-            
-            document.getElementById('manageUsersBtn').addEventListener('click', () => {
-                showToast('Manage users modal', 'info');
-            });
-            
-            document.getElementById('syncProjectsBtn').addEventListener('click', () => {
-                showToast('Sync projects modal', 'info');
-            });
-            
-            document.getElementById('viewCodesBtn').addEventListener('click', () => {
-                showToast('View edit codes modal', 'info');
-            });
-            
-            document.getElementById('moderateCommentsBtn').addEventListener('click', () => {
-                showToast('Moderate comments modal', 'info');
-            });
-            
-            // Auto-refresh every 10 minutes
-            setInterval(async () => {
-                if (currentUser) {
-                    await initDashboard();
-                }
-            }, 10 * 60 * 1000);
-        });
-
         // ===== FILTER FUNCTIONS =====
         function filterProjects(filterType) {
+            document.querySelectorAll('.tab[data-filter]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
             switch (filterType) {
                 case 'all':
                     dashboardData.filteredProjects = [...dashboardData.projects];
                     break;
                 case 'needs_review':
                     dashboardData.filteredProjects = dashboardData.projects.filter(p => 
-                        p.review_status === 'pending' || p.needs_feedback
+                        p.needs_feedback
                     );
                     break;
                 case 'proposals':
@@ -2894,25 +2265,357 @@
             renderProjects();
         }
 
+        // ===== EVENT LISTENERS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load stored user
+            if (authToken) {
+                try {
+                    currentUser = JSON.parse(atob(authToken));
+                } catch (e) {
+                    localStorage.removeItem('traci_auth_token');
+                }
+            }
+            
+            updateAuthUI();
+            
+            // Setup tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    document.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    document.getElementById(tabId + 'Form').classList.add('active');
+                    clearFormMessages();
+                });
+            });
+            
+            // Login
+            document.getElementById('loginBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('loginRequiredBtn').addEventListener('click', () => showModal('loginModal'));
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Guest buttons
+            document.getElementById('guestContactBtn').addEventListener('click', () => {
+                window.open('mailto:pneumology.innovation@hospital.com?subject=TRAci Platform Inquiry');
+            });
+            
+            document.getElementById('guestLearnBtn').addEventListener('click', () => {
+                showToast('TRAci Platform: Clinical innovation management system', 'info');
+            });
+            
+            // Quick actions
+            document.getElementById('quickAddProject').addEventListener('click', () => {
+                if (currentUser && currentUser.role === 'admin') {
+                    showModal('addProjectModal');
+                } else {
+                    showToast('Admin access required', 'warning');
+                }
+            });
+            
+            document.getElementById('quickSync').addEventListener('click', () => {
+                if (currentUser && currentUser.role === 'admin') {
+                    showModal('syncProjectsModal');
+                } else {
+                    showToast('Admin access required', 'warning');
+                }
+            });
+            
+            document.getElementById('quickExport').addEventListener('click', () => {
+                showModal('pdfExportModal');
+            });
+            
+            // Modal close
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', hideAllModals);
+            });
+            
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) hideAllModals();
+                });
+            });
+            
+            // Login form
+            document.getElementById('submitLogin').addEventListener('click', async function() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!email || !password) {
+                    showToast('Please enter both email and password', 'warning');
+                    return;
+                }
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Signing In...';
+                this.disabled = true;
+                
+                const success = await loginUser(email, password);
+                
+                this.innerHTML = '<i class="mdi mdi-login"></i> Sign In';
+                this.disabled = false;
+                
+                if (success) {
+                    hideAllModals();
+                    updateAuthUI();
+                }
+            });
+            
+            // Signup form
+            document.getElementById('submitSignup').addEventListener('click', async function() {
+                const userData = {
+                    full_name: document.getElementById('signupFullName').value.trim(),
+                    email: document.getElementById('signupEmail').value.trim(),
+                    username: document.getElementById('signupUsername').value.trim(),
+                    department: document.getElementById('signupDepartment').value,
+                    role: document.getElementById('signupRole').value,
+                    password: document.getElementById('signupPassword').value,
+                    confirmPassword: document.getElementById('signupConfirmPassword').value
+                };
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Creating...';
+                this.disabled = true;
+                
+                const result = await signUpUser(userData);
+                
+                this.innerHTML = '<i class="mdi mdi-account-plus"></i> Create Account';
+                this.disabled = false;
+                
+                if (result.success) {
+                    document.getElementById('signupSuccess').textContent = 'Account created! Pending admin approval.';
+                    document.getElementById('signupSuccess').classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        document.querySelector('.tab[data-tab="login"]').click();
+                    }, 3000);
+                }
+            });
+            
+            // Forgot password
+            document.getElementById('submitForgot').addEventListener('click', async function() {
+                const email = document.getElementById('forgotEmail').value.trim();
+                
+                if (!email) {
+                    showToast('Please enter your email', 'warning');
+                    return;
+                }
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Sending...';
+                this.disabled = true;
+                
+                await sendPasswordReset(email);
+                
+                this.innerHTML = '<i class="mdi mdi-email-send"></i> Send Reset Link';
+                this.disabled = false;
+            });
+            
+            // Admin buttons
+            document.getElementById('addProjectBtn').addEventListener('click', () => showModal('addProjectModal'));
+            document.getElementById('addToolBtn').addEventListener('click', () => showModal('addToolModal'));
+            document.getElementById('manageUsersBtn').addEventListener('click', () => {
+                loadUsersTable();
+                showModal('manageUsersModal');
+            });
+            document.getElementById('syncProjectsBtn').addEventListener('click', () => showModal('syncProjectsModal'));
+            document.getElementById('viewCodesBtn').addEventListener('click', () => showToast('Edit codes feature', 'info'));
+            document.getElementById('moderateCommentsBtn').addEventListener('click', () => showModal('moderateCommentsModal'));
+            
+            // Filter controls
+            document.querySelectorAll('.tab[data-filter]').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const filterType = this.dataset.filter;
+                    filterProjects(filterType);
+                });
+            });
+            
+            // Add Project
+            document.getElementById('saveProjectBtn').addEventListener('click', async function() {
+                const projectData = {
+                    name: document.getElementById('projectName').value.trim(),
+                    description: document.getElementById('projectDescription').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    progress: parseInt(document.getElementById('projectProgress').value) || 0,
+                    category: document.getElementById('projectCategory').value,
+                    priority: document.getElementById('projectPriority').value,
+                    visibility: document.getElementById('projectVisibility').value,
+                    owner: document.getElementById('projectOwner').value.trim()
+                };
+                
+                if (!projectData.name) {
+                    showToast('Project name is required', 'warning');
+                    return;
+                }
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Creating...';
+                this.disabled = true;
+                
+                const result = await addProject(projectData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Create Project';
+                this.disabled = false;
+                
+                if (result.success) {
+                    hideAllModals();
+                    await initDashboard();
+                }
+            });
+            
+            // Add User
+            document.getElementById('addUserBtn').addEventListener('click', () => {
+                document.getElementById('userFormTitle').textContent = 'Add New User';
+                document.getElementById('saveUserBtnText').textContent = 'Create User';
+                document.getElementById('editUserId').value = '';
+                document.getElementById('userFullName').value = '';
+                document.getElementById('userUsername').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userRole').value = 'doctor';
+                document.getElementById('userDepartment').value = 'pulmonology';
+                document.getElementById('userPassword').value = generatePassword();
+                showModal('userFormModal');
+            });
+            
+            document.getElementById('generatePasswordBtn').addEventListener('click', () => {
+                document.getElementById('userPassword').value = generatePassword();
+            });
+            
+            document.getElementById('saveUserBtn').addEventListener('click', async function() {
+                const userData = {
+                    full_name: document.getElementById('userFullName').value.trim(),
+                    username: document.getElementById('userUsername').value.trim().toLowerCase(),
+                    email: document.getElementById('userEmail').value.trim(),
+                    role: document.getElementById('userRole').value,
+                    department: document.getElementById('userDepartment').value,
+                    password: document.getElementById('userPassword').value
+                };
+                
+                if (!userData.full_name || !userData.username || !userData.password) {
+                    showToast('Full name, username, and password are required', 'warning');
+                    return;
+                }
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Saving...';
+                this.disabled = true;
+                
+                const result = await createUser(userData);
+                
+                this.innerHTML = '<i class="mdi mdi-content-save"></i> Create User';
+                this.disabled = false;
+                
+                if (result.success) {
+                    hideAllModals();
+                    loadUsersTable();
+                }
+            });
+            
+            // Refresh link
+            document.getElementById('refreshLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                this.innerHTML = '<span class="loading-spinner"></span> Refreshing...';
+                await initDashboard();
+                this.innerHTML = '<i class="mdi mdi-refresh"></i> Refresh Data';
+                
+                showToast('Data refreshed', 'success');
+            });
+            
+            // Auto-refresh
+            setInterval(async () => {
+                if (currentUser) {
+                    await initDashboard();
+                }
+            }, 10 * 60 * 1000);
+        });
+
+        // ===== USERS TABLE =====
+        async function loadUsersTable() {
+            try {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                
+                if (dashboardData.users.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-gray-500">
+                                No users found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                dashboardData.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <div class="font-medium">${user.full_name || user.email}</div>
+                            <div class="text-xs text-gray-500">${user.department || ''}</div>
+                        </td>
+                        <td>
+                            <code class="text-sm bg-gray-100 px-2 py-1 rounded">${user.username}</code>
+                        </td>
+                        <td>
+                            <span class="badge ${user.role === 'admin' ? 'badge-danger' : user.role === 'doctor' ? 'badge-primary' : 'badge-outline'}">
+                                ${user.role}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${user.status === 'active' ? 'badge-success' : 'badge-outline'}">
+                                ${user.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="editUser('${user.id}')">
+                                <i class="mdi mdi-pencil"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading users table:', error);
+            }
+        }
+
         // ===== GLOBAL FUNCTIONS =====
         window.editProject = function(projectId) {
-            showToast(`Edit project ${projectId}`, 'info');
+            const project = dashboardData.projects.find(p => p.id === projectId);
+            if (project) {
+                document.getElementById('editProjectId').value = project.id;
+                document.getElementById('editProjectName').value = project.name;
+                document.getElementById('editProjectDescription').value = project.description || '';
+                document.getElementById('editProjectStatus').value = project.status;
+                document.getElementById('editProjectProgress').value = project.progress || 0;
+                document.getElementById('editProjectOwner').value = project.owner || '';
+                showModal('editProjectModal');
+            }
         };
         
         window.editProjectWithCode = function(projectId) {
-            showToast(`Edit project with code ${projectId}`, 'info');
+            showToast('Edit code required for doctors', 'info');
         };
         
         window.showComments = function(projectId) {
-            showToast(`Show comments for project ${projectId}`, 'info');
+            showToast('Comments feature', 'info');
         };
         
         window.exportProject = function(projectId) {
-            showToast(`Export project ${projectId} to PDF`, 'info');
+            showModal('pdfExportModal');
         };
         
         window.upvoteProject = function(projectId) {
-            showToast(`Upvoted project ${projectId}`, 'success');
+            showToast('Project upvoted!', 'success');
+        };
+        
+        window.editUser = function(userId) {
+            showToast('Edit user feature', 'info');
         };
     </script>
 </body>
